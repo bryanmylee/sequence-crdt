@@ -1,9 +1,10 @@
 # Directories
+SRCDIR     := src
+TESTDIR    := test
 INCDIR     := inc
 OBJDIR     := obj
-SRCDIR     := src
 BINDIR     := bin
-TESTDIR    := test
+TESTBINDIR := bin_test
 
 # Flags, Libraries, and Includes
 CFLAGS  := -Wall
@@ -21,8 +22,9 @@ all: directories link
 
 # Make the directories
 directories:
-	@mkdir -p $(BINDIR)
 	@mkdir -p $(OBJDIR)
+	@mkdir -p $(BINDIR)
+	@mkdir -p $(TESTBINDIR)
 
 # Link the main binary
 link: $(SRCOBJS)
@@ -48,8 +50,8 @@ test: link_tests
 # Link all test binaries
 link_tests: $(TESTOBJS) $(SRCOBJS)
 	$(foreach obj,$(TESTOBJS), \
-		mkdir -p $(patsubst $(OBJDIR)/%,$(BINDIR)/%,$(dir $(obj))); \
-		$(CC) -o $(patsubst $(OBJDIR)/%,$(BINDIR)/%,$(obj:.o=)) $(obj) $(filter-out obj/main.o,$(SRCOBJS)) $(LIB) $(TESTLIB); \
+		mkdir -p $(patsubst $(OBJDIR)/%,$(TESTBINDIR)/%,$(dir $(obj))); \
+		$(CC) -o $(patsubst $(OBJDIR)/%,$(TESTBINDIR)/%,$(obj:.o=)) $(obj) $(filter-out obj/main.o,$(SRCOBJS)) $(LIB) $(TESTLIB); \
 	)
 
 # Compile and assemble test files
@@ -71,7 +73,7 @@ clean:
 
 # Full clean, objects and binaries
 cleaner: clean
-	@$(RM) -rf $(BINDIR)
+	@$(RM) -rf $(BINDIR) $(TESTBINDIR)
 
 # Non-File targets
 .PHONY: all remake clean cleaner

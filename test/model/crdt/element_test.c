@@ -1,4 +1,5 @@
 #include <check.h>
+#include <stdlib.h>
 #include <src/model/crdt/element.h>
 
 START_TEST(test_key_from_tokens) {

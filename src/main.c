@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <src/model/crdt/element.h>
 
-int main() {
+int main(void) {
   printf("oof");
   return 0;
 }

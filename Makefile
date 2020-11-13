@@ -2,10 +2,10 @@ TARGET := program
 
 # Directories
 SRCDIR    := src
+TESTDIR   := test
 INCDIR    := inc
 BUILDDIR  := obj
 TARGETDIR := bin
-RESDIR    := res
 SRCEXT    := c
 DEPEXT    := d
 OBJEXT    := o
@@ -15,24 +15,21 @@ CFLAGS := -Wall -I$(INCDIR) -I.
 
 # Targets
 SOURCES     := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+TESTS       := $(shell find $(TESTDIR) -type f -name *.$(SRCEXT))
 OBJECTS     := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.$(OBJEXT)))
 
 # Defauilt Make
-all: resources $(TARGET)
+all: directories $(TARGET)
 
 # Remake
 remake: cleaner all
-
-# Copy Resources from Resources Directory to Target Directory
-resources: directories
-	@cp $(RESDIR)/* $(TARGETDIR)/
 
 # Make the Directories
 directories:
 	@mkdir -p $(TARGETDIR)
 	@mkdir -p $(BUILDDIR)
 
-# Clean only Objecst
+# Clean only Objects
 clean:
 	@$(RM) -rf $(BUILDDIR)
 
@@ -58,4 +55,5 @@ $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@rm -f $(BUILDDIR)/$*.$(DEPEXT).tmp
 
 # Non-File Targets
-.PHONY: all remake clean cleaner resources
+.PHONY: all remake clean cleaner
+

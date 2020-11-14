@@ -75,13 +75,13 @@ int key_compare(element* l, element* r) {
   for (int i = 1; i <= min_depth; i++) {
     int l_key_token = l_key % base;
     int r_key_token = r_key % base;
-    int kcompare = r_key_token - l_key_token;
+    int kcompare = l_key_token - r_key_token;
     if (kcompare != 0) {
       return kcompare;
     }
     int l_uids_token = l_uids & 63;
     int r_uids_token = r_uids & 63;
-    int ucompare = r_uids_token - l_uids_token;
+    int ucompare = l_uids_token - r_uids_token;
     if (ucompare != 0) {
       return ucompare;
     }
@@ -89,10 +89,10 @@ int key_compare(element* l, element* r) {
     r_key /= base;
     base <<= i;
     l_uids >>= 6;
-    l_uids >>= 6;
+    r_uids >>= 6;
   }
   // the keys and uids match. the deeper key is larger.
-  return r->depth - l->depth;
+  return l->depth - r->depth;
 }
 
 bool key_equal(element* l, element* r) {

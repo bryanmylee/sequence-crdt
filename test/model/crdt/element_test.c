@@ -8,67 +8,126 @@ START_TEST(test_key_from_tokens) {
 } END_TEST
 
 START_TEST(test_uids_from_tokens) {
-  int result = uids_from_tokens(3, 1, 1, 2);
+  int result;
+  result = uids_from_tokens(3, 1, 1, 2);
   ck_assert_uint_eq(result, 8257);
+  result = uids_from_tokens(4, 1, 1, 1, 1);
+  ck_assert_uint_eq(result, 266305);
 } END_TEST
 
 START_TEST(test_key_compare_siblings) {
-  element l = { .key = 0, .depth = 3 };
-  element r = { .key = 16, .depth = 3 };
+  element l = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 0, 0),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  element r = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 0, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
   int result = key_compare(&l, &r);
-  ck_assert_int_gt(result, 0);
-  result = key_compare(&r, &l);
   ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
 } END_TEST
 
 START_TEST(test_key_compare_parent_child) {
-  element l = { .key = 0, .depth = 3 };
-  element r = { .key = 0, .depth = 4 };
+  element l = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 3),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  element r = {
+    .depth = 4,
+    .key = key_from_tokens(4, 0, 1, 3, 0),
+    .uids = uids_from_tokens(4, 1, 1, 1, 1),
+  };
   int result = key_compare(&l, &r);
-  ck_assert_int_gt(result, 0);
-  result = key_compare(&r, &l);
   ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
 } END_TEST
 
 START_TEST(test_key_compare_parent_second_child) {
-  element l = { .key = 0, .depth = 2 };
-  element r = { .key = 8, .depth = 3 };
+  element l = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 3),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  element r = {
+    .depth = 4,
+    .key = key_from_tokens(4, 0, 1, 3, 1),
+    .uids = uids_from_tokens(4, 1, 1, 1, 1),
+  };
   int result = key_compare(&l, &r);
-  ck_assert_int_gt(result, 0);
-  result = key_compare(&r, &l);
   ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
 } END_TEST
 
 START_TEST(test_key_compare_parent_grandchild) {
-  element l = { .key = 0, .depth = 1 };
-  element r = { .key = 8, .depth = 3 };
+  element l = {
+    .depth = 2,
+    .key = key_from_tokens(2, 0, 1),
+    .uids = uids_from_tokens(2, 1, 1),
+  };
+  element r = {
+    .depth = 4,
+    .key = key_from_tokens(4, 0, 1, 3, 1),
+    .uids = uids_from_tokens(4, 1, 1, 1, 1),
+  };
   int result = key_compare(&l, &r);
-  ck_assert_int_gt(result, 0);
-  result = key_compare(&r, &l);
   ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
 } END_TEST
 
 START_TEST(test_key_compare_uncle_nephew) {
-  element l = { .key = 4, .depth = 3 };
-  element r = { .key = 5, .depth = 2 };
+  element l = {
+    .depth = 2,
+    .key = key_from_tokens(2, 0, 1),
+    .uids = uids_from_tokens(2, 1, 1),
+  };
+  element r = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 4),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
   int result = key_compare(&l, &r);
-  ck_assert_int_gt(result, 0);
-  result = key_compare(&r, &l);
   ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
 } END_TEST
 
-START_TEST(test_key_compare_uncle_nephew_opposite) {
-  element l = { .key = 4, .depth = 2 };
-  element r = { .key = 5, .depth = 3 };
+START_TEST(test_key_compare_nephew_uncle) {
+  element l = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 2),
+    .uids = uids_from_tokens(2, 1, 1, 1),
+  };
+  element r = {
+    .depth = 2,
+    .key = key_from_tokens(2, 0, 3),
+    .uids = uids_from_tokens(2, 1, 1),
+  };
   int result = key_compare(&l, &r);
-  ck_assert_int_gt(result, 0);
-  result = key_compare(&r, &l);
   ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
 } END_TEST
 
 START_TEST(test_key_compare_equal) {
-  element l = { .key = 4, .depth = 2 };
-  element r = { .key = 4, .depth = 2 };
+  element l = {
+    .depth = 2,
+    .key = key_from_tokens(2, 0, 1),
+    .uids = uids_from_tokens(2, 1, 1),
+  };
+  element r = {
+    .depth = 2,
+    .key = key_from_tokens(2, 0, 1),
+    .uids = uids_from_tokens(2, 1, 1),
+  };
   int result = key_compare(&l, &r);
   ck_assert_int_eq(result, 0);
   result = key_compare(&r, &l);
@@ -76,10 +135,18 @@ START_TEST(test_key_compare_equal) {
 } END_TEST
 
 START_TEST(test_key_equal) {
-  element l = { .key = 4, .depth = 2 };
-  element r = { .key = 4, .depth = 2 };
+  element l = {
+    .depth = 2,
+    .key = key_from_tokens(2, 0, 1),
+    .uids = uids_from_tokens(2, 1, 1),
+  };
+  element r = {
+    .depth = 2,
+    .key = key_from_tokens(2, 0, 1),
+    .uids = uids_from_tokens(2, 1, 1),
+  };
   int result = key_equal(&l, &r);
-  ck_assert_int_eq(result, 1);
+  ck_assert_int_eq(result, true);
 } END_TEST
 
 Suite* element_suite(void) {
@@ -102,7 +169,7 @@ Suite* element_suite(void) {
   tcase_add_test(tc_comparing, test_key_compare_parent_second_child);
   tcase_add_test(tc_comparing, test_key_compare_parent_grandchild);
   tcase_add_test(tc_comparing, test_key_compare_uncle_nephew);
-  tcase_add_test(tc_comparing, test_key_compare_uncle_nephew_opposite);
+  tcase_add_test(tc_comparing, test_key_compare_nephew_uncle);
   tcase_add_test(tc_comparing, test_key_compare_equal);
   tcase_add_test(tc_comparing, test_key_equal);
   suite_add_tcase(s, tc_comparing);

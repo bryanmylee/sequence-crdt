@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "arraylist.h"
 
 #define INITIAL_CAPACITY 16
@@ -20,11 +19,28 @@ void al_init(arraylist* al) {
   al->data = malloc(al->cap * sizeof(void*));
 }
 
-void al_add(arraylist* al, void* e) {
+bool al_add(arraylist* al, void* e) {
   if (al->size == al->cap) {
     _al_expand(al);
   }
   al->data[al->size] = e;
   al->size++;
+  return true;
+}
+
+bool al_add_at(arraylist* al, void* e, unsigned int index) {
+  if (index < 0 || index > al->size) {
+    return false;
+  }
+  if (al->size == al->cap) {
+    _al_expand(al);
+  }
+  // shift right elements
+  for (int i = al->size; i > index; i--) {
+    al->data[i] = al->data[i - 1];
+  }
+  al->data[index] = e;
+  al->size++;
+  return true;
 }
 

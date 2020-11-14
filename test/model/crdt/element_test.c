@@ -117,6 +117,40 @@ START_TEST(test_key_compare_nephew_uncle) {
   ck_assert_int_gt(result, 0);
 } END_TEST
 
+START_TEST(test_key_compare_different_user_parent) {
+  element l = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 2),
+    .uids = uids_from_tokens(2, 1, 1, 1),
+  };
+  element r = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 2),
+    .uids = uids_from_tokens(2, 1, 2, 1),
+  };
+  int result = key_compare(&l, &r);
+  ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
+} END_TEST
+
+START_TEST(test_key_compare_different_user_sibling) {
+  element l = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  element r = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 1, 2),
+    .uids = uids_from_tokens(3, 1, 1, 2),
+  };
+  int result = key_compare(&l, &r);
+  ck_assert_int_lt(result, 0);
+  result = key_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
+} END_TEST
+
 START_TEST(test_key_compare_equal) {
   element l = {
     .depth = 2,
@@ -170,6 +204,8 @@ Suite* element_suite(void) {
   tcase_add_test(tc_comparing, test_key_compare_parent_grandchild);
   tcase_add_test(tc_comparing, test_key_compare_uncle_nephew);
   tcase_add_test(tc_comparing, test_key_compare_nephew_uncle);
+  tcase_add_test(tc_comparing, test_key_compare_different_user_parent);
+  tcase_add_test(tc_comparing, test_key_compare_different_user_sibling);
   tcase_add_test(tc_comparing, test_key_compare_equal);
   tcase_add_test(tc_comparing, test_key_equal);
   suite_add_tcase(s, tc_comparing);

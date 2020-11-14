@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "element.h"
 
-unsigned int vkey_from_tokens(unsigned int depth, va_list valist) {
-  unsigned int key = 0;
+unsigned long vkey_from_tokens(int depth, va_list valist) {
+  unsigned long key = 0;
   int base = 1;
   for (int i = 0; i < depth; i++) {
     base <<= i;
-    key += va_arg(valist, int) * base;
+    key += va_arg(valist, unsigned long) * base;
   }
   return key;
 }
@@ -26,35 +26,45 @@ unsigned int vkey_from_tokens(unsigned int depth, va_list valist) {
  *
  * @return An unsigned integer representation of the key.
  */
-unsigned int key_from_tokens(unsigned int depth, ...) {
+unsigned long key_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  int key = vkey_from_tokens(depth, valist);
+  unsigned long key = vkey_from_tokens(depth, valist);
   va_end(valist);
   return key;
 }
 
-unsigned int vuser_ids_from_ids(unsigned int depth, va_list valist) {
-  unsigned int user_ids = 0;
+unsigned long vuser_ids_from_ids(int depth, va_list valist) {
+  unsigned long user_ids = 0;
   for (int i = 0; i < depth; i++) {
-    int v = va_arg(valist, int);
-    user_ids += v << (i * 8); // shift by eight bits per user id.
+    // shift by eight bits per user id.
+    user_ids += va_arg(valist, unsigned long) << (i * 8);
   }
   return user_ids;
 }
 
-unsigned int user_ids_from_ids(unsigned int depth, ...) {
+/**
+ * @brief Given a key comprising k tokens, each token has an attached 8-bit
+ * user id. We can represent the list of user ids as a single unsigned long
+ * (8 bytes in 64-bit) value, giving us a maximum key length of 8.
+ *
+ * @param depth The number of tokens in the key.
+ * @param ... The integer tokens of the key.
+ *
+ * @return An unsigned integer representation of the key.
+ */
+unsigned long user_ids_from_ids(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  int user_ids = vuser_ids_from_ids(depth, valist);
+  unsigned long user_ids = vuser_ids_from_ids(depth, valist);
   va_end(valist);
   return user_ids;
 }
 
 int key_compare(element* l, element* r) {
-  unsigned int min_depth = l->depth < r->depth ? l->depth : r->depth;
-  unsigned int l_key = l->key;
-  unsigned int r_key = r->key;
+  int min_depth = l->depth < r->depth ? l->depth : r->depth;
+  unsigned long l_key = l->key;
+  unsigned long r_key = r->key;
   int base = 2;
   for (int i = 1; i <= min_depth; i++) {
     int l_token = l_key % base;
@@ -74,12 +84,12 @@ bool key_equal(element* l, element* r) {
   return key_compare(l, r) == 0;
 }
 
-void vset_key_tokens(element* e, unsigned int depth, va_list valist) {
+void vset_key_tokens(element* e, int depth, va_list valist) {
   e->key = vkey_from_tokens(depth, valist);
   e->depth = depth;
 }
 
-void set_key_tokens(element* e, unsigned int depth, ...) {
+void set_key_tokens(element* e, int depth, ...) {
   va_list valist;
   va_start(valist, depth);
   vset_key_tokens(e, depth, valist);

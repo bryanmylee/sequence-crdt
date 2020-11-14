@@ -1,10 +1,5 @@
 #include <stdarg.h>
-
-typedef struct {
-  unsigned int key;
-  void* value;
-} element;
-
+#include "element.h"
 
 /**
  * @brief Given a key comprising k tokens, each token doubling in base size

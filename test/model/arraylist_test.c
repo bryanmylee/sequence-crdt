@@ -75,6 +75,30 @@ START_TEST(test_al_add_all_at_expand) {
   }
 } END_TEST
 
+START_TEST(test_al_add_all_at_empty) {
+  arraylist al;
+  al_init(&al);
+
+  // insert 20 zeros at index 0.
+  int* es[20];
+  for (int i = 0; i < 20; i++) {
+    int* e = malloc(sizeof(int));
+    *e = 0;
+    es[i] = e;
+  }
+  al_add_all_at(&al, (void**) es, 20, 0);
+  ck_assert_int_eq(al.cap, 32);
+  ck_assert_int_eq(al.size, 20);
+  int expected[] = {
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0  \
+  };
+  for (int i = 0; i < al.size; i++) {
+    int e = *((int*) al.data[i]);
+    ck_assert_int_eq(e, expected[i]);
+  }
+} END_TEST
+
 START_TEST(test_al_add_all_expand) {
   arraylist al;
   al_init(&al);
@@ -141,6 +165,7 @@ Suite* arraylist_suite(void) {
   tcase_add_test(tc_core, test_al_add_at_expand);
   tcase_add_test(tc_core, test_al_add_expand);
   tcase_add_test(tc_core, test_al_add_all_at_expand);
+  tcase_add_test(tc_core, test_al_add_all_at_empty);
   tcase_add_test(tc_core, test_al_add_all_expand);
   tcase_add_test(tc_core, test_al_remove_at);
   suite_add_tcase(s, tc_core);

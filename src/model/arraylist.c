@@ -67,3 +67,16 @@ bool al_add_all(arraylist* al, void** es, unsigned int n) {
   return al_add_all_at(al, es, n, al->size);
 }
 
+void* al_remove_at(arraylist* al, unsigned int index) {
+  if (index < 0 || index > al->size) {
+    return NULL;
+  }
+  void* to_return = al->data[index];
+  // shift right elements.
+  for (int i = index; i < al->size; i++) {
+    al->data[i] = al->data[i + 1];
+  }
+  al->size--;
+  return to_return;
+}
+

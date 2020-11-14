@@ -53,7 +53,7 @@ START_TEST(test_al_add_all_at_expand) {
     *e = i;
     al_add(&al, e);
   }
-  int** es = malloc(10 * sizeof(int*));
+  int* es[10];
   for (int i = 0; i < 10; i++) {
     int* e = malloc(sizeof(int));
     *e = 0;
@@ -85,7 +85,7 @@ START_TEST(test_al_add_all_expand) {
     *e = i;
     al_add(&al, e);
   }
-  int** es = malloc(10 * sizeof(int*));
+  int* es[10];
   for (int i = 0; i < 10; i++) {
     int* e = malloc(sizeof(int));
     *e = 0;

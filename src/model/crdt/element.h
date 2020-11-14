@@ -2,6 +2,7 @@
 #define CRDT_ELEMENT_H
 #include <stdarg.h>
 #include <stdbool.h>
+#include "token.h"
 
 typedef struct {
   unsigned long key;      // bit representation of the key, up to 10 tokens (55 bits).
@@ -15,6 +16,7 @@ unsigned long key_from_tokens(int depth, ...);
 unsigned long uids_from_tokens(int depth, ...);
 int key_compare(element* l, element* r);
 bool key_equal(element* l, element* r);
+void add_token(element* l, token t);
 
 #endif
 

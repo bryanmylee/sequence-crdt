@@ -15,6 +15,25 @@ START_TEST(test_uids_from_tokens) {
   ck_assert_uint_eq(result, 266305);
 } END_TEST
 
+START_TEST(test_add_token) {
+  element l = {
+    .depth = 3,
+    .key = key_from_tokens(3, 0, 0, 0),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  token t = { .key = 1, .uid = 1 };
+  add_token(&l, t);
+
+  element expected = {
+    .depth = 4,
+    .key = key_from_tokens(4, 0, 0, 0, 1),
+    .uids = uids_from_tokens(4, 1, 1, 1, 1),
+  };
+  ck_assert_int_eq(l.depth, expected.depth);
+  ck_assert_int_eq(l.key, expected.key);
+  ck_assert_int_eq(l.uids, expected.uids);
+} END_TEST
+
 START_TEST(test_key_compare_siblings) {
   element l = {
     .depth = 3,
@@ -185,17 +204,18 @@ START_TEST(test_key_equal) {
 
 Suite* element_suite(void) {
   Suite *s;
-  TCase *tc_converting;
+  TCase *tc_creating;
   TCase *tc_comparing;
 
   s = suite_create("element_suite");
-  tc_converting = tcase_create("converting");
+  tc_creating = tcase_create("creating");
   tc_comparing = tcase_create("comparing");
 
-  // Conversion of key test case
-  tcase_add_test(tc_converting, test_key_from_tokens);
-  tcase_add_test(tc_converting, test_uids_from_tokens);
-  suite_add_tcase(s, tc_converting);
+  // Creation of key test case
+  tcase_add_test(tc_creating, test_key_from_tokens);
+  tcase_add_test(tc_creating, test_uids_from_tokens);
+  tcase_add_test(tc_creating, test_add_token);
+  suite_add_tcase(s, tc_creating);
 
   // Comparing keys test case
   tcase_add_test(tc_comparing, test_key_compare_siblings);

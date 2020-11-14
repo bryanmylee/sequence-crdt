@@ -99,3 +99,11 @@ bool key_equal(element* l, element* r) {
   return l->depth == r->depth && l->key == r->key && l->uids == r->uids;
 }
 
+void add_token(element* l, token t) {
+  int key_base = l->depth * (l->depth + 1) / 2;
+  l->key += ((unsigned long) t.key) << key_base;
+  int uids_base = l->depth * 6;
+  l->uids += ((unsigned long) t.uid) << uids_base;
+  l->depth++;
+}
+

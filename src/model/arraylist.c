@@ -6,7 +6,7 @@
 /**
  * @brief Increase the capacity of an existing arraylist.
  *
- * @param a The arraylist to expand.
+ * @param al A pointer to arraylist to expand.
  */
 void _al_expand(arraylist* al) {
   al->cap *= EXPAND_FACTOR;

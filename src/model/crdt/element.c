@@ -46,3 +46,22 @@ void set_key_tokens(element* e, unsigned int depth, ...) {
   va_end(valist);
 }
 
+int compare_key(element* l, element* r) {
+  unsigned int min_depth = l->depth < r->depth ? l->depth : r->depth;
+  unsigned int l_key = l->key;
+  unsigned int r_key = r->key;
+  int base = 2;
+  for (int i = 1; i <= min_depth; i++) {
+    int l_token = l_key % base;
+    int r_token = r_key % base;
+    int compare = r_token - l_token;
+    if (compare != 0) {
+      return compare;
+    }
+    l_key /= base;
+    r_key /= base;
+    base <<= i;
+  }
+  return r->depth - l->depth;
+}
+

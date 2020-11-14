@@ -9,6 +9,7 @@ typedef struct {
 
 unsigned int key_from_tokens(unsigned int depth, ...);
 void set_key_tokens(element* e, unsigned int depth, ...);
+int compare_key(element* l, element* r);
 
 #endif
 

@@ -24,7 +24,24 @@ START_TEST(test_al_add_expand) {
   for (int i = 0; i < al.size; i++) {
     ck_assert_int_eq(*((int*) al.data[i]), i);
   }
-}
+} END_TEST
+
+START_TEST(test_al_add_at_expand) {
+  arraylist al;
+  al_init(&al);
+
+  for (int i = 0; i < 20; i++) {
+    int* e = malloc(sizeof(int));
+    *e = i;
+    al_add_at(&al, e, 0);
+  }
+
+  ck_assert_int_eq(al.cap, 32);
+  ck_assert_int_eq(al.size, 20);
+  for (int i = 0; i < al.size; i++) {
+    ck_assert_int_eq(*((int*) al.data[al.size - 1 - i]), i);
+  }
+} END_TEST
 
 Suite* arraylist_suite(void) {
   Suite *s;
@@ -35,6 +52,7 @@ Suite* arraylist_suite(void) {
 
   tcase_add_test(tc_core, test_al_init);
   tcase_add_test(tc_core, test_al_add_expand);
+  tcase_add_test(tc_core, test_al_add_at_expand);
   suite_add_tcase(s, tc_core);
 
   return s;

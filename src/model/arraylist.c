@@ -19,15 +19,6 @@ void al_init(arraylist* al) {
   al->data = malloc(al->cap * sizeof(void*));
 }
 
-bool al_add(arraylist* al, void* e) {
-  if (al->size == al->cap) {
-    _al_expand(al);
-  }
-  al->data[al->size] = e;
-  al->size++;
-  return true;
-}
-
 bool al_add_at(arraylist* al, void* e, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
@@ -42,5 +33,9 @@ bool al_add_at(arraylist* al, void* e, unsigned int index) {
   al->data[index] = e;
   al->size++;
   return true;
+}
+
+bool al_add(arraylist* al, void* e) {
+  return al_add_at(al, e, al->size);
 }
 

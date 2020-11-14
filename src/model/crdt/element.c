@@ -96,7 +96,7 @@ int key_compare(element* l, element* r) {
 }
 
 bool key_equal(element* l, element* r) {
-  return key_compare(l, r) == 0;
+  return l->depth == r->depth && l->key == r->key && l->uids == r->uids;
 }
 
 void vset_key_tokens(element* e, int depth, va_list valist) {

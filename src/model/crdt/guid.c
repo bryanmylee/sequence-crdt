@@ -64,6 +64,12 @@ unsigned long uids_from_tokens(int depth, ...) {
   return uids;
 }
 
+void guid_init(guid* g) {
+  g->keys = 0;
+  g->uids = 0;
+  g->depth = 0;
+}
+
 int guid_compare(guid* l, guid* r) {
   int min_depth = l->depth < r->depth ? l->depth : r->depth;
   unsigned long l_keys = l->keys;
@@ -99,12 +105,12 @@ bool guid_equal(guid* l, guid* r) {
   return l->depth == r->depth && l->keys == r->keys && l->uids == r->uids;
 }
 
-void guid_add_token(guid* l, token t) {
-  int key_base = l->depth * (l->depth + 1) / 2;
-  l->keys += ((unsigned long) t.key) << key_base;
-  int uids_base = l->depth * 6;
-  l->uids += ((unsigned long) t.uid) << uids_base;
-  l->depth++;
+void guid_add_token(guid* g, token t) {
+  int key_base = g->depth * (g->depth + 1) / 2;
+  g->keys += ((unsigned long) t.key) << key_base;
+  int uids_base = g->depth * 6;
+  g->uids += ((unsigned long) t.uid) << uids_base;
+  g->depth++;
 }
 
 guid guid_copy(guid* o) {

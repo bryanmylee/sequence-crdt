@@ -15,9 +15,9 @@ void _al_expand(arraylist* al) {
 
 /**
  * @brief Increase the capacity of an existing arraylist until it is greater
- * than or equal to a minimum capacity.
+ *        than or equal to a minimum capacity.
  *
- * @param al A pointer to the arraylist to expand.
+ * @param al  A pointer to the arraylist to expand.
  * @param min The minimum capacity to expand to.
  */
 void _al_expand_to_min(arraylist* al, unsigned int min) {
@@ -41,8 +41,8 @@ void al_init(arraylist* al) {
 /**
  * @brief Add an element to the arraylist at a specified index.
  *
- * @param al A pointer to the arraylist to add to.
- * @param e A pointer to the element to add. The element must be alloc-ed.
+ * @param al    A pointer to the arraylist to add to.
+ * @param e     A pointer to the element to add. The element must be alloc-ed.
  * @param index The index at which to add the element.
  *
  * @return If the add was successful, returns true.
@@ -67,7 +67,7 @@ bool al_add_at(arraylist* al, void* e, unsigned int index) {
  * @brief Add an element to the end of the arraylist.
  *
  * @param al A pointer to the arraylist to add to.
- * @param e A pointer to the element to add. The element must be alloc-ed.
+ * @param e  A pointer to the element to add. The element must be alloc-ed.
  *
  * @return If the add was successful, returns true.
  */
@@ -78,12 +78,13 @@ bool al_add(arraylist* al, void* e) {
 /**
  * @brief Add an array of elements to the arraylist at a specified index.
  *
- * This method is more efficient than adding each element sequentially, as it
- * swaps each shifted element only once.
+ *        This method is more efficient than adding each element sequentially,
+ *        as it swaps each shifted element only once.
  *
- * @param al A pointer to the arraylist to add to.
- * @param es A pointer to the array of elements to add. The elements must each be alloc-ed.
- * @param n The size of the elements.
+ * @param al    A pointer to the arraylist to add to.
+ * @param es    A pointer to the array of elements to add. The elements must
+ *              each be alloc-ed.
+ * @param n     The size of the elements.
  * @param index The index at which to add the element.
  *
  * @return If the add was successful, returns true.
@@ -109,8 +110,9 @@ bool al_add_all_at(arraylist* al, void** es, unsigned int n, unsigned int index)
  * @brief Add an array of elements to the end of the arraylist.
  *
  * @param al A pointer to the arraylist to add to.
- * @param es A pointer to the array of elements to add. The elements must each be alloc-ed.
- * @param n The size of the elements.
+ * @param es A pointer to the array of elements to add. The elements must each
+ *           be alloc-ed.
+ * @param n  The size of the elements.
  *
  * @return If the add was successful, returns true.
  */
@@ -121,10 +123,11 @@ bool al_add_all(arraylist* al, void** es, unsigned int n) {
 /**
  * @brief Remove an element from the arraylist at a given index.
  *
- * @param al A pointer to the arraylist to remove from.
+ * @param al    A pointer to the arraylist to remove from.
  * @param index The index to remove the element from.
  *
- * @return A pointer to the removed element.
+ * @return A pointer to the removed element, or NULL if the remove is
+ *         unsuccessful.
  */
 void* al_remove_at(arraylist* al, unsigned int index) {
   if (index < 0 || index > al->size) {

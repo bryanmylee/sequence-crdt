@@ -104,6 +104,30 @@ START_TEST(test_al_add_all_expand) {
   }
 } END_TEST
 
+START_TEST(test_al_remove_at) {
+  arraylist al;
+  al_init(&al);
+
+  int* es[10];
+  for (int i = 0; i < 10; i++) {
+    int* e = malloc(sizeof(int));
+    *e = i;
+    es[i] = e;
+  }
+  al_add_all(&al, (void**) es, 10);
+
+  int* removed = (int*) al_remove_at(&al, 5);
+  ck_assert_int_eq(*removed, 5);
+
+  ck_assert_int_eq(al.cap, 16);
+  ck_assert_int_eq(al.size, 9);
+  int expected[] = { 0, 1, 2, 3, 4, 6, 7, 8, 9 };
+  for (int i = 0; i < al.size; i++) {
+    int e = *((int*) al.data[i]);
+    ck_assert_int_eq(e, expected[i]);
+  }
+} END_TEST
+
 Suite* arraylist_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -116,6 +140,7 @@ Suite* arraylist_suite(void) {
   tcase_add_test(tc_core, test_al_add_expand);
   tcase_add_test(tc_core, test_al_add_all_at_expand);
   tcase_add_test(tc_core, test_al_add_all_expand);
+  tcase_add_test(tc_core, test_al_remove_at);
   suite_add_tcase(s, tc_core);
 
   return s;

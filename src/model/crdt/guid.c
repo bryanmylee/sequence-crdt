@@ -107,3 +107,11 @@ void guid_add_token(guid* l, token t) {
   l->depth++;
 }
 
+guid guid_copy(guid* o) {
+  return (guid) {
+    .keys = o->keys,
+    .uids = o->uids,
+    .depth = o->depth,
+  };
+}
+

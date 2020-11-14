@@ -14,6 +14,7 @@ unsigned long uids_from_tokens(int depth, ...);
 int guid_compare(guid* l, guid* r);
 bool guid_equal(guid* l, guid* r);
 void guid_add_token(guid* l, token t);
+guid guid_copy(guid* o);
 
 #endif
 

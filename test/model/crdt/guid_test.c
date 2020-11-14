@@ -34,6 +34,19 @@ START_TEST(test_guid_add_token) {
   ck_assert_int_eq(g.uids, expected.uids);
 } END_TEST
 
+START_TEST(test_guid_copy) {
+  unsigned long orig_keys = keys_from_tokens(3, 0, 1, 3);
+  guid orig = {
+    .depth = 3,
+    .keys = orig_keys,
+    .uids = uids_from_tokens(3, 1, 2, 1),
+  };
+  guid copy = guid_copy(&orig);
+  orig.keys = keys_from_tokens(3, 0, 1, 4);
+
+  ck_assert_int_eq(copy.keys, orig_keys);
+} END_TEST
+
 START_TEST(test_guid_compare_siblings) {
   guid l = {
     .depth = 3,
@@ -215,6 +228,7 @@ Suite* element_suite(void) {
   tcase_add_test(tc_creating, test_keys_from_tokens);
   tcase_add_test(tc_creating, test_uids_from_tokens);
   tcase_add_test(tc_creating, test_guid_add_token);
+  tcase_add_test(tc_creating, test_guid_copy);
   suite_add_tcase(s, tc_creating);
 
   // Comparing keys test case

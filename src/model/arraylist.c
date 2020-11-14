@@ -63,3 +63,7 @@ bool al_add_all_at(arraylist* al, void** es, unsigned int n, unsigned int index)
   return true;
 }
 
+bool al_add_all(arraylist* al, void** es, unsigned int n) {
+  return al_add_all_at(al, es, n, al->size);
+}
+

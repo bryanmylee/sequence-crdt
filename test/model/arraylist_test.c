@@ -76,6 +76,36 @@ START_TEST(test_al_add_all_at_expand) {
   }
 } END_TEST
 
+START_TEST(test_al_add_all_expand) {
+  arraylist al;
+  al_init(&al);
+
+  for (int i = 0; i < 20; i++) {
+    int* e = malloc(sizeof(int));
+    *e = i;
+    al_add(&al, e);
+  }
+  int** es = malloc(10 * sizeof(int*));
+  for (int i = 0; i < 10; i++) {
+    int* e = malloc(sizeof(int));
+    *e = 0;
+    es[i] = e;
+  }
+  // insert 20 zeros.
+  al_add_all(&al, (void**) es, 10);
+  ck_assert_int_eq(al.cap, 32);
+  ck_assert_int_eq(al.size, 30);
+  // array should be {0,1,2,...,19,20,0,0,...,0}
+  for (int i = 0; i < al.size; i++) {
+    int e = *((int*) al.data[i]);
+    if (i / 10 < 2) {
+      ck_assert_int_eq(e, i);
+    } else if (i / 10 == 2) {
+      ck_assert_int_eq(e, 0);
+    }
+  }
+} END_TEST
+
 Suite* arraylist_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -87,6 +117,7 @@ Suite* arraylist_suite(void) {
   tcase_add_test(tc_core, test_al_add_at_expand);
   tcase_add_test(tc_core, test_al_add_expand);
   tcase_add_test(tc_core, test_al_add_all_at_expand);
+  tcase_add_test(tc_core, test_al_add_all_expand);
   suite_add_tcase(s, tc_core);
 
   return s;

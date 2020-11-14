@@ -1,5 +1,15 @@
 #include "element.h"
 
+unsigned int vkey_from_tokens(unsigned int depth, va_list valist) {
+  unsigned int key = 0;
+  int base = 1;
+  for (int i = 0; i < depth; i++) {
+    base <<= i;
+    key += va_arg(valist, int) * base;
+  }
+  return key;
+}
+
 /**
  * @brief Given a key comprising k tokens, each token doubling in base size
  * in comparison to the previous, we can represent the key as a single
@@ -15,16 +25,6 @@
  *
  * @return An unsigned integer representation of the key.
  */
-unsigned int vkey_from_tokens(unsigned int depth, va_list valist) {
-  unsigned int key = 0;
-  int base = 1;
-  for (int i = 0; i < depth; i++) {
-    base <<= i;
-    key += va_arg(valist, int) * base;
-  }
-  return key;
-}
-
 unsigned int key_from_tokens(unsigned int depth, ...) {
   va_list valist;
   va_start(valist, depth);

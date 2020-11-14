@@ -53,18 +53,19 @@ START_TEST(test_al_add_all_at_expand) {
     *e = i;
     al_add(&al, e);
   }
-  int* es[10];
-  for (int i = 0; i < 10; i++) {
+  // insert 20 zeros at index 10.
+  int* es[20];
+  for (int i = 0; i < 20; i++) {
     int* e = malloc(sizeof(int));
     *e = 0;
     es[i] = e;
   }
-  // insert 10 zeros at index 10.
-  al_add_all_at(&al, (void**) es, 10, 10);
-  ck_assert_int_eq(al.cap, 32);
-  ck_assert_int_eq(al.size, 30);
+  al_add_all_at(&al, (void**) es, 20, 10);
+  ck_assert_int_eq(al.cap, 64);
+  ck_assert_int_eq(al.size, 40);
   int expected[] = {
      0,  1,  2,  3,  4,  5,  6,  7,  8,  9, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
     10, 11, 12, 13, 14, 15, 16, 17, 18, 19  \
   };
@@ -83,19 +84,20 @@ START_TEST(test_al_add_all_expand) {
     *e = i;
     al_add(&al, e);
   }
-  int* es[10];
-  for (int i = 0; i < 10; i++) {
+  // insert 20 zeros.
+  int* es[20];
+  for (int i = 0; i < 20; i++) {
     int* e = malloc(sizeof(int));
     *e = 0;
     es[i] = e;
   }
-  // insert 10 zeros.
-  al_add_all(&al, (void**) es, 10);
-  ck_assert_int_eq(al.cap, 32);
-  ck_assert_int_eq(al.size, 30);
+  al_add_all(&al, (void**) es, 20);
+  ck_assert_int_eq(al.cap, 64);
+  ck_assert_int_eq(al.size, 40);
   int expected[] = {
      0,  1,  2,  3,  4,  5,  6,  7,  8,  9, \
     10, 11, 12, 13, 14, 15, 16, 17, 18, 19, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0  \
   };
   for (int i = 0; i < al.size; i++) {

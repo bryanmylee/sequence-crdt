@@ -59,20 +59,18 @@ START_TEST(test_al_add_all_at_expand) {
     *e = 0;
     es[i] = e;
   }
-  // insert 20 zeros at index 10.
+  // insert 10 zeros at index 10.
   al_add_all_at(&al, (void**) es, 10, 10);
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 30);
-  // array should be {0,1,2,...,9,0,0,0,...,0,10,11,12,...,19,20}
+  int expected[] = {
+     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19  \
+  };
   for (int i = 0; i < al.size; i++) {
     int e = *((int*) al.data[i]);
-    if (i / 10 == 0) {
-      ck_assert_int_eq(e, i);
-    } else if (i / 10 == 1) {
-      ck_assert_int_eq(e, 0);
-    } else if (i / 10 == 2) {
-      ck_assert_int_eq(e, i - 10);
-    }
+    ck_assert_int_eq(e, expected[i]);
   }
 } END_TEST
 
@@ -91,18 +89,18 @@ START_TEST(test_al_add_all_expand) {
     *e = 0;
     es[i] = e;
   }
-  // insert 20 zeros.
+  // insert 10 zeros.
   al_add_all(&al, (void**) es, 10);
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 30);
-  // array should be {0,1,2,...,19,20,0,0,...,0}
+  int expected[] = {
+     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, \
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0  \
+  };
   for (int i = 0; i < al.size; i++) {
     int e = *((int*) al.data[i]);
-    if (i / 10 < 2) {
-      ck_assert_int_eq(e, i);
-    } else if (i / 10 == 2) {
-      ck_assert_int_eq(e, 0);
-    }
+    ck_assert_int_eq(e, expected[i]);
   }
 } END_TEST
 

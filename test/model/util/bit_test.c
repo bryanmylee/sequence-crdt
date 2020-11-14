@@ -1,11 +1,13 @@
 #include <check.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <util/bit.h>
 
 START_TEST(test_print_bits) {
   int x = 51;
-  print_bits(sizeof(x), &x);
-  ck_assert(1);
+  char str[sizeof(x) * 8 + 1];
+  sprint_bits(str, sizeof(x), &x);
+  ck_assert_str_eq(str, "00000000000000000000000000110011");
 } END_TEST
 
 Suite* element_suite(void) {

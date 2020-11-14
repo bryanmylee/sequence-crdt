@@ -42,16 +42,41 @@ START_TEST(test_get_guid_between_siblings) {
   ck_assert_int_eq(result.uids, expected.uids);
 } END_TEST
 
+START_TEST(test_get_guid_between_siblings_no_space) {
+  guid l = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 1, 2, 1),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  guid r = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 1, 2, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  guid result = get_guid_between(&l, &r, 2);
+  // next guid is one level deeper.
+  guid expected = {
+    .depth = 4,
+    .uids = uids_from_tokens(4, 1, 1, 1, 2),
+  };
+  int base = 1 << 4;
+  ck_assert_int_eq(result.depth, expected.depth);
+  ck_assert_uint_ge(result.keys, keys_from_tokens(4, 1, 2, 2, 0));
+  ck_assert_uint_lt(result.keys, keys_from_tokens(4, 1, 2, 2, base));
+  ck_assert_int_eq(result.uids, expected.uids);
+} END_TEST
+
 Suite* element_suite(void) {
   Suite *s;
   TCase *tc_guid;
 
-  s = suite_create("element_suite");
+  s = suite_create("sequence_suite");
   tc_guid = tcase_create("guid");
 
   tcase_add_test(tc_guid, test_get_token_between);
   tcase_add_test(tc_guid, test_get_token_between_no_space);
   tcase_add_test(tc_guid, test_get_guid_between_siblings);
+  tcase_add_test(tc_guid, test_get_guid_between_siblings_no_space);
   suite_add_tcase(s, tc_guid);
 
   return s;

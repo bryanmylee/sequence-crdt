@@ -3,8 +3,11 @@
 #include <model/crdt/guid.h>
 
 START_TEST(test_keys_from_tokens) {
-  int result = keys_from_tokens(3, 0, 2, 7);
+  int result;
+  result = keys_from_tokens(3, 0, 2, 7);
   ck_assert_uint_eq(result, 60);
+  result = keys_from_tokens(3, 0, 1, 2);
+  ck_assert_uint_eq(result, 18);
 } END_TEST
 
 START_TEST(test_uids_from_tokens) {

@@ -1,4 +1,3 @@
-#include <stdarg.h>
 #include "element.h"
 
 /**
@@ -34,19 +33,7 @@ unsigned int key_from_tokens(unsigned int depth, ...) {
   return key;
 }
 
-void vset_key_tokens(element* e, unsigned int depth, va_list valist) {
-  e->key = vkey_from_tokens(depth, valist);
-  e->depth = depth;
-}
-
-void set_key_tokens(element* e, unsigned int depth, ...) {
-  va_list valist;
-  va_start(valist, depth);
-  vset_key_tokens(e, depth, valist);
-  va_end(valist);
-}
-
-int compare_key(element* l, element* r) {
+int key_compare(element* l, element* r) {
   unsigned int min_depth = l->depth < r->depth ? l->depth : r->depth;
   unsigned int l_key = l->key;
   unsigned int r_key = r->key;
@@ -63,5 +50,21 @@ int compare_key(element* l, element* r) {
     base <<= i;
   }
   return r->depth - l->depth;
+}
+
+bool key_equal(element* l, element* r) {
+  return key_compare(l, r) == 0;
+}
+
+void vset_key_tokens(element* e, unsigned int depth, va_list valist) {
+  e->key = vkey_from_tokens(depth, valist);
+  e->depth = depth;
+}
+
+void set_key_tokens(element* e, unsigned int depth, ...) {
+  va_list valist;
+  va_start(valist, depth);
+  vset_key_tokens(e, depth, valist);
+  va_end(valist);
 }
 

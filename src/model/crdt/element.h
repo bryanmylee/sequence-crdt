@@ -1,5 +1,7 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
+#include <stdarg.h>
+#include <stdbool.h>
 
 typedef struct {
   unsigned int key;   // bit representation of the key.
@@ -8,8 +10,9 @@ typedef struct {
 } element;
 
 unsigned int key_from_tokens(unsigned int depth, ...);
+int key_compare(element* l, element* r);
+bool key_equal(element* l, element* r);
 void set_key_tokens(element* e, unsigned int depth, ...);
-int compare_key(element* l, element* r);
 
 #endif
 

@@ -7,8 +7,8 @@ START_TEST(test_key_from_tokens) {
   ck_assert_uint_eq(result, 60);
 } END_TEST
 
-START_TEST(test_user_ids_from_ids) {
-  int result = user_ids_from_ids(3, 1, 1, 2);
+START_TEST(test_uids_from_tokens) {
+  int result = uids_from_tokens(3, 1, 1, 2);
   ck_assert_uint_eq(result, 8257);
 } END_TEST
 
@@ -93,7 +93,7 @@ Suite* element_suite(void) {
 
   // Conversion of key test case
   tcase_add_test(tc_converting, test_key_from_tokens);
-  tcase_add_test(tc_converting, test_user_ids_from_ids);
+  tcase_add_test(tc_converting, test_uids_from_tokens);
   suite_add_tcase(s, tc_converting);
 
   // Comparing keys test case

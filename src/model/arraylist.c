@@ -142,3 +142,28 @@ void* al_remove_at(arraylist* al, unsigned int index) {
   return to_return;
 }
 
+/**
+ * @brief Remove multiple consecutive elements from the arraylist.
+ *
+ * @param al   A pointer to the arraylist to remove from.
+ * @param es   A pointer to an array to store the removed elements in. The
+ *             array must be large enough to store all removed elements.
+ * @param from The index of the first element to remove inclusive.
+ * @param to   The index of the last element to remove exclusive.
+ */
+void al_remove_all_at(arraylist* al, void** es, unsigned int from, unsigned int to) {
+  if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
+    return;
+  }
+  int n = to - from;
+  // store deleted elements.
+  for (int i = 0; i < n; i++) {
+    es[i] = al->data[from + i];
+  }
+  // shift right elements.
+  for (int i = to; i < al->size; i++) {
+    al->data[i - n] = al->data[i];
+  }
+  al->size -= n;
+}
+

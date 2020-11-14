@@ -15,5 +15,6 @@ bool al_add(arraylist* al, void* e);
 bool al_add_all_at(arraylist* al, void** es, unsigned int n, unsigned int index);
 bool al_add_all(arraylist* al, void** es, unsigned int n);
 void* al_remove_at(arraylist* al, unsigned int index);
+void al_remove_all_at(arraylist* al, void** es, unsigned int from, unsigned int to);
 
 #endif

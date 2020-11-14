@@ -52,8 +52,8 @@ bool al_add_all_at(arraylist* al, void** es, unsigned int n, unsigned int index)
   }
   _al_expand_to_min(al, al->size + n);
   // shift right elements.
-  for (unsigned int i = al->size - 1; i >= index; i--) {
-    al->data[i + n] = al->data[i];
+  for (unsigned int i = al->size; i > index; i--) {
+    al->data[i - 1 + n] = al->data[i - 1];
   }
   // copy elements.
   for (unsigned int i = 0; i < n; i++) {

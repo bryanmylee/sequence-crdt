@@ -15,7 +15,6 @@ unsigned long key_from_tokens(int depth, ...);
 unsigned long uids_from_tokens(int depth, ...);
 int key_compare(element* l, element* r);
 bool key_equal(element* l, element* r);
-void set_key_tokens(element* e, int depth, ...);
 
 #endif
 

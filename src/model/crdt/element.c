@@ -99,15 +99,3 @@ bool key_equal(element* l, element* r) {
   return l->depth == r->depth && l->key == r->key && l->uids == r->uids;
 }
 
-void _vset_key_tokens(element* e, int depth, va_list valist) {
-  e->key = _vkey_from_tokens(depth, valist);
-  e->depth = depth;
-}
-
-void set_key_tokens(element* e, int depth, ...) {
-  va_list valist;
-  va_start(valist, depth);
-  _vset_key_tokens(e, depth, valist);
-  va_end(valist);
-}
-

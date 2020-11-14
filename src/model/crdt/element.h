@@ -1,5 +1,5 @@
-#ifndef ELEMENT_H
-#define ELEMENT_H
+#ifndef CRDT_ELEMENT_H
+#define CRDT_ELEMENT_H
 #include <stdarg.h>
 #include <stdbool.h>
 

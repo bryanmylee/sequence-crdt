@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "element.h"
 
-unsigned long vkey_from_tokens(int depth, va_list valist) {
+unsigned long _vkey_from_tokens(int depth, va_list valist) {
   unsigned long key = 0;
   int base = 1;
   for (int i = 0; i < depth; i++) {
@@ -32,12 +32,12 @@ unsigned long vkey_from_tokens(int depth, va_list valist) {
 unsigned long key_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  unsigned long key = vkey_from_tokens(depth, valist);
+  unsigned long key = _vkey_from_tokens(depth, valist);
   va_end(valist);
   return key;
 }
 
-unsigned long vuids_from_tokens(int depth, va_list valist) {
+unsigned long _vuids_from_tokens(int depth, va_list valist) {
   unsigned long uids = 0;
   for (int i = 0; i < depth; i++) {
     // shift by 6 bits per user id.
@@ -59,7 +59,7 @@ unsigned long vuids_from_tokens(int depth, va_list valist) {
 unsigned long uids_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  unsigned long uids = vuids_from_tokens(depth, valist);
+  unsigned long uids = _vuids_from_tokens(depth, valist);
   va_end(valist);
   return uids;
 }
@@ -99,15 +99,15 @@ bool key_equal(element* l, element* r) {
   return l->depth == r->depth && l->key == r->key && l->uids == r->uids;
 }
 
-void vset_key_tokens(element* e, int depth, va_list valist) {
-  e->key = vkey_from_tokens(depth, valist);
+void _vset_key_tokens(element* e, int depth, va_list valist) {
+  e->key = _vkey_from_tokens(depth, valist);
   e->depth = depth;
 }
 
 void set_key_tokens(element* e, int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  vset_key_tokens(e, depth, valist);
+  _vset_key_tokens(e, depth, valist);
   va_end(valist);
 }
 

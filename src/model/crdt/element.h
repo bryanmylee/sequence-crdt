@@ -4,8 +4,8 @@
 #include <stdbool.h>
 
 typedef struct {
-  unsigned long key;      // bit representation of the key, up to 6 tokens.
-  unsigned long user_ids; // user ids associated with each key token.
+  unsigned long key;      // bit representation of the key, up to 10 tokens (55 bits).
+  unsigned long user_ids; // user ids for each key token, up to 10 tokens (60 bits).
   int depth;              // length of the key.
   unsigned int version;   // the version of the element.
   void* value;            // value of the element.

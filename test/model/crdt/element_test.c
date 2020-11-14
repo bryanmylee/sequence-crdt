@@ -9,7 +9,7 @@ START_TEST(test_key_from_tokens) {
 
 START_TEST(test_user_ids_from_ids) {
   int result = user_ids_from_ids(3, 1, 1, 2);
-  ck_assert_uint_eq(result, 131329);
+  ck_assert_uint_eq(result, 8257);
 } END_TEST
 
 START_TEST(test_key_compare_siblings) {

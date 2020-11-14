@@ -37,8 +37,8 @@ unsigned long key_from_tokens(int depth, ...) {
 unsigned long vuser_ids_from_ids(int depth, va_list valist) {
   unsigned long user_ids = 0;
   for (int i = 0; i < depth; i++) {
-    // shift by eight bits per user id.
-    user_ids += va_arg(valist, unsigned long) << (i * 8);
+    // shift by 6 bits per user id.
+    user_ids += va_arg(valist, unsigned long) << (i * 6);
   }
   return user_ids;
 }

@@ -10,7 +10,7 @@ START_TEST(test_print_bits) {
   ck_assert_str_eq("00000000000000000000000000110011", str);
 } END_TEST
 
-Suite* element_suite(void) {
+Suite* bit_suite(void) {
   Suite *s;
   TCase *tc_core;
 
@@ -28,7 +28,7 @@ int main(void) {
   Suite *s;
   SRunner *runner;
 
-  s = element_suite();
+  s = bit_suite();
   runner = srunner_create(s);
 
   srunner_run_all(runner, CK_NORMAL);

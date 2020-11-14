@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include "element.h"
+#include <stdarg.h>
+#include "guid.h"
 
-unsigned long _vkey_from_tokens(int depth, va_list valist) {
+unsigned long _vkeys_from_tokens(int depth, va_list valist) {
   unsigned long key = 0;
   int base = 1;
   for (int i = 0; i < depth; i++) {
@@ -29,10 +29,10 @@ unsigned long _vkey_from_tokens(int depth, va_list valist) {
  *
  * @return An unsigned integer representation of the key.
  */
-unsigned long key_from_tokens(int depth, ...) {
+unsigned long keys_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  unsigned long key = _vkey_from_tokens(depth, valist);
+  unsigned long key = _vkeys_from_tokens(depth, valist);
   va_end(valist);
   return key;
 }
@@ -64,17 +64,17 @@ unsigned long uids_from_tokens(int depth, ...) {
   return uids;
 }
 
-int key_compare(element* l, element* r) {
+int guid_compare(guid* l, guid* r) {
   int min_depth = l->depth < r->depth ? l->depth : r->depth;
-  unsigned long l_key = l->key;
-  unsigned long r_key = r->key;
+  unsigned long l_keys = l->keys;
+  unsigned long r_keys = r->keys;
   unsigned long l_uids = l->uids;
   unsigned long r_uids = r->uids;
   int base = 2;
   // traverse down the key and uids and compare each token.
   for (int i = 1; i <= min_depth; i++) {
-    int l_key_token = l_key % base;
-    int r_key_token = r_key % base;
+    int l_key_token = l_keys % base;
+    int r_key_token = r_keys % base;
     int kcompare = l_key_token - r_key_token;
     if (kcompare != 0) {
       return kcompare;
@@ -85,8 +85,8 @@ int key_compare(element* l, element* r) {
     if (ucompare != 0) {
       return ucompare;
     }
-    l_key /= base;
-    r_key /= base;
+    l_keys /= base;
+    r_keys /= base;
     base <<= i;
     l_uids >>= 6;
     r_uids >>= 6;
@@ -95,13 +95,13 @@ int key_compare(element* l, element* r) {
   return l->depth - r->depth;
 }
 
-bool key_equal(element* l, element* r) {
-  return l->depth == r->depth && l->key == r->key && l->uids == r->uids;
+bool guid_equal(guid* l, guid* r) {
+  return l->depth == r->depth && l->keys == r->keys && l->uids == r->uids;
 }
 
-void add_token(element* l, token t) {
+void guid_add_token(guid* l, token t) {
   int key_base = l->depth * (l->depth + 1) / 2;
-  l->key += ((unsigned long) t.key) << key_base;
+  l->keys += ((unsigned long) t.key) << key_base;
   int uids_base = l->depth * 6;
   l->uids += ((unsigned long) t.uid) << uids_base;
   l->depth++;

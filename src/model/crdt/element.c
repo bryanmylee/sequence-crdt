@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "element.h"
 
 unsigned int vkey_from_tokens(unsigned int depth, va_list valist) {
@@ -31,6 +32,23 @@ unsigned int key_from_tokens(unsigned int depth, ...) {
   int key = vkey_from_tokens(depth, valist);
   va_end(valist);
   return key;
+}
+
+unsigned int vuser_ids_from_ids(unsigned int depth, va_list valist) {
+  unsigned int user_ids = 0;
+  for (int i = 0; i < depth; i++) {
+    int v = va_arg(valist, int);
+    user_ids += v << (i * 8); // shift by eight bits per user id.
+  }
+  return user_ids;
+}
+
+unsigned int user_ids_from_ids(unsigned int depth, ...) {
+  va_list valist;
+  va_start(valist, depth);
+  int user_ids = vuser_ids_from_ids(depth, valist);
+  va_end(valist);
+  return user_ids;
 }
 
 int key_compare(element* l, element* r) {

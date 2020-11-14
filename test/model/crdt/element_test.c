@@ -7,6 +7,11 @@ START_TEST(test_key_from_tokens) {
   ck_assert_uint_eq(result, 60);
 } END_TEST
 
+START_TEST(test_user_ids_from_ids) {
+  int result = user_ids_from_ids(3, 1, 1, 2);
+  ck_assert_uint_eq(result, 131329);
+} END_TEST
+
 START_TEST(test_key_compare_siblings) {
   element l = { .key = 0, .depth = 3 };
   element r = { .key = 16, .depth = 3 };
@@ -88,6 +93,7 @@ Suite* element_suite(void) {
 
   // Conversion of key test case
   tcase_add_test(tc_converting, test_key_from_tokens);
+  tcase_add_test(tc_converting, test_user_ids_from_ids);
   suite_add_tcase(s, tc_converting);
 
   // Comparing keys test case

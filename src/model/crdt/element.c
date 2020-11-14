@@ -1,8 +1,8 @@
 #include <stdarg.h>
 
 typedef struct {
-  void* value;
   unsigned int key;
+  void* value;
 } element;
 
 
@@ -21,16 +21,32 @@ typedef struct {
  *
  * @return An unsigned integer representation of the key.
  */
-unsigned int key_from_tokens(int depth, ...) {
-  va_list valist;
+unsigned int vkey_from_tokens(int depth, va_list valist) {
   unsigned int key = 0;
   int base = 1;
-  va_start(valist, depth);
   for (int i = 0; i < depth; i++) {
     base <<= i;
     key += va_arg(valist, int) * base;
   }
+  return key;
+}
+
+unsigned int key_from_tokens(int depth, ...) {
+  va_list valist;
+  va_start(valist, depth);
+  int key = vkey_from_tokens(depth, valist);
   va_end(valist);
   return key;
+}
+
+void vset_key_tokens(element* e, int depth, va_list valist) {
+  e->key = vkey_from_tokens(depth, valist);
+}
+
+void set_key_tokens(element* e, int depth, ...) {
+  va_list valist;
+  va_start(valist, depth);
+  vset_key_tokens(e, depth, valist);
+  va_end(valist);
 }
 

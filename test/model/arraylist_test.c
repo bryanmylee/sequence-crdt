@@ -156,19 +156,22 @@ START_TEST(test_al_remove_at) {
 
 Suite* arraylist_suite(void) {
   Suite *s;
-  TCase *tc_core;
+  TCase *tc_add;
+  TCase *tc_remove;
 
   s = suite_create("arraylist_suite");
-  tc_core = tcase_create("core");
+  tc_add = tcase_create("add");
+  tc_remove = tcase_create("remove");
 
-  tcase_add_test(tc_core, test_al_init);
-  tcase_add_test(tc_core, test_al_add_at_expand);
-  tcase_add_test(tc_core, test_al_add_expand);
-  tcase_add_test(tc_core, test_al_add_all_at_expand);
-  tcase_add_test(tc_core, test_al_add_all_at_empty);
-  tcase_add_test(tc_core, test_al_add_all_expand);
-  tcase_add_test(tc_core, test_al_remove_at);
-  suite_add_tcase(s, tc_core);
+  tcase_add_test(tc_add, test_al_init);
+  tcase_add_test(tc_add, test_al_add_at_expand);
+  tcase_add_test(tc_add, test_al_add_expand);
+  tcase_add_test(tc_add, test_al_add_all_at_expand);
+  tcase_add_test(tc_add, test_al_add_all_at_empty);
+  tcase_add_test(tc_add, test_al_add_all_expand);
+  suite_add_tcase(s, tc_add);
+  tcase_add_test(tc_remove, test_al_remove_at);
+  suite_add_tcase(s, tc_remove);
 
   return s;
 }

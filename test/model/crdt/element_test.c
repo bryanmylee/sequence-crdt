@@ -1,6 +1,6 @@
 #include <check.h>
 #include <stdlib.h>
-#include <src/model/crdt/element.h>
+#include <model/crdt/element.h>
 
 START_TEST(test_key_from_tokens) {
   int result = key_from_tokens(3, 0, 2, 7);

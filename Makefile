@@ -8,7 +8,7 @@ TESTBINDIR := bin_test
 
 # Flags, Libraries, and Includes
 CFLAGS  := -Wall
-INC     := -I$(INCDIR) -I.
+INC     := -I$(INCDIR) -Isrc
 TESTLIB := -lcheck -lm -lpthread
 
 # Targets

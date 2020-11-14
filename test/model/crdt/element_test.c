@@ -71,6 +71,13 @@ START_TEST(test_key_compare_equal) {
   ck_assert_int_eq(result, 0);
 } END_TEST
 
+START_TEST(test_key_equal) {
+  element l = { .key = 4, .depth = 2 };
+  element r = { .key = 4, .depth = 2 };
+  int result = key_equal(&l, &r);
+  ck_assert_int_eq(result, 1);
+} END_TEST
+
 Suite* element_suite(void) {
   Suite *s;
   TCase *tc_converting;
@@ -92,6 +99,7 @@ Suite* element_suite(void) {
   tcase_add_test(tc_comparing, test_key_compare_uncle_nephew);
   tcase_add_test(tc_comparing, test_key_compare_uncle_nephew_opposite);
   tcase_add_test(tc_comparing, test_key_compare_equal);
+  tcase_add_test(tc_comparing, test_key_equal);
   suite_add_tcase(s, tc_comparing);
 
   return s;

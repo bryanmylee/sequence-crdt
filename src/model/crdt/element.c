@@ -21,6 +21,9 @@ unsigned long vkey_from_tokens(int depth, va_list valist) {
  * The next three bits hold the values of the next token with size 8.
  * ... and so on.
  *
+ * With an unsigned long (64 bits), a total of 10 tokens can be fitted:
+ * 1 + 2 + 3 + ... + 10 = 55 bits < 64 bits.
+ *
  * @param depth The number of tokens in the key.
  * @param ... The integer tokens of the key.
  *
@@ -44,9 +47,9 @@ unsigned long vuser_ids_from_ids(int depth, va_list valist) {
 }
 
 /**
- * @brief Given a key comprising k tokens, each token has an attached 8-bit
- * user id. We can represent the list of user ids as a single unsigned long
- * (8 bytes in 64-bit) value, giving us a maximum key length of 8.
+ * @brief Given a key comprising k tokens, we need to store k attached user ids.
+ * To match the key tokens and fit 10 user ids in an unsigned long (64 bits),
+ * we can use 6-bit user ids for a total size of 6 * 10 = 60 bits < 64 bits.
  *
  * @param depth The number of tokens in the key.
  * @param ... The integer tokens of the key.

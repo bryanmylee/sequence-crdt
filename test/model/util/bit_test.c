@@ -7,7 +7,7 @@ START_TEST(test_print_bits) {
   int x = 51;
   char str[sizeof(x) * 8 + 1];
   sprint_bits(str, sizeof(x), &x);
-  ck_assert_str_eq(str, "00000000000000000000000000110011");
+  ck_assert_str_eq("00000000000000000000000000110011", str);
 } END_TEST
 
 Suite* element_suite(void) {

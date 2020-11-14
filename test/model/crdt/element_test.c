@@ -1,21 +1,38 @@
 #include <check.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <model/crdt/element.h>
 
 START_TEST(test_key_from_tokens) {
   int result = key_from_tokens(3, 0, 2, 7);
-  ck_assert_uint_eq(60, result);
+  ck_assert_uint_eq(result, 60);
 } END_TEST
+
+START_TEST(test_compare_key_siblings) {
+  element l = { .key = 0, .depth = 3 };
+  element r = { .key = 16, .depth = 3 };
+  int result = compare_key(&l, &r);
+  ck_assert_int_gt(result, 0);
+  result = compare_key(&r, &l);
+  ck_assert_int_lt(result, 0);
+}
 
 Suite* element_suite(void) {
   Suite *s;
-  TCase *tc_core;
+  TCase *tc_converting;
+  TCase *tc_comparing;
 
   s = suite_create("element_suite");
-  tc_core = tcase_create("core");
+  tc_converting = tcase_create("converting");
+  tc_comparing = tcase_create("comparing");
 
-  tcase_add_test(tc_core, test_key_from_tokens);
-  suite_add_tcase(s, tc_core);
+  // Conversion of key test case
+  tcase_add_test(tc_converting, test_key_from_tokens);
+  suite_add_tcase(s, tc_converting);
+
+  // Comparing keys test case
+  tcase_add_test(tc_comparing, test_compare_key_siblings);
+  suite_add_tcase(s, tc_comparing);
 
   return s;
 }

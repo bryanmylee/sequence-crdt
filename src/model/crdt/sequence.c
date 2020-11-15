@@ -1,3 +1,4 @@
+#include <util/bit.h>
 #include "sequence.h"
 
 #define BOUNDARY 10
@@ -37,13 +38,13 @@ void _r_generate_guid_between(guid* new_guid, guid* l, int curr_l_depth, guid* r
 
   bool l_has_next = curr_l_depth <= l->depth;
   token l_token = {
-    .key = l_has_next ? l->keys & ((1 << curr_l_depth) - 1) : 0,
+    .key = l_has_next ? l->keys & bit_n_ones(curr_l_depth) : 0,
     .uid = l_has_next ? l->uids & 63 : uid,
   };
 
   bool r_has_next = r != NULL && curr_r_depth <= r->depth;
   token r_token = {
-    .key = r_has_next ? r->keys & ((1 << curr_r_depth) - 1) : _get_base(new_depth),
+    .key = r_has_next ? r->keys & bit_n_ones(curr_r_depth) : _get_base(new_depth),
     .uid = r_has_next ? r->uids & 63 : uid,
   };
 

@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <util/bit.h>
 #include "guid.h"
 
 unsigned long _vkeys_from_tokens(int depth, va_list valist) {
@@ -78,8 +79,8 @@ int guid_compare(guid* l, guid* r) {
   unsigned long r_uids = r->uids;
   // traverse down the key and uids and compare each token.
   for (int i = 1; i <= min_depth; i++) {
-    int l_token_key = l_keys & ((1 << i) - 1);
-    int r_token_key = r_keys & ((1 << i) - 1);
+    int l_token_key = l_keys & bit_n_ones(i);
+    int r_token_key = r_keys & bit_n_ones(i);
     int kcompare = l_token_key - r_token_key;
     if (kcompare != 0) {
       return kcompare;

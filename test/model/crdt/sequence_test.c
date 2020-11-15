@@ -85,6 +85,57 @@ START_TEST(test_seq_new_guid_between_parent_child) {
   free(result);
 } END_TEST
 
+START_TEST(test_seq_new_guid_between_uncle_nephew) {
+  Guid l = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 1, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  Guid r = {
+    .depth = 4,
+    .keys = keys_from_tokens(4, 1, 1, 2, 2),
+    .uids = uids_from_tokens(4, 1, 1, 1, 1),
+  };
+  Guid* result = seq_new_guid_between(&l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, result), 0);
+  ck_assert_int_lt(guid_compare(result, &r), 0);
+  free(result);
+} END_TEST
+
+START_TEST(test_seq_new_guid_between_nephew_uncle) {
+  Guid l = {
+    .depth = 4,
+    .keys = keys_from_tokens(4, 0, 1, 2, 2),
+    .uids = uids_from_tokens(4, 1, 1, 1, 1),
+  };
+  Guid r = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 2, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  Guid* result = seq_new_guid_between(&l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, result), 0);
+  ck_assert_int_lt(guid_compare(result, &r), 0);
+  free(result);
+} END_TEST
+
+START_TEST(test_seq_new_guid_between_same_key_different_uid) {
+  Guid l = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 2, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  Guid r = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 2, 2),
+    .uids = uids_from_tokens(3, 1, 2, 1),
+  };
+  Guid* result = seq_new_guid_between(&l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, result), 0);
+  ck_assert_int_lt(guid_compare(result, &r), 0);
+  free(result);
+} END_TEST
+
 Suite* element_suite(void) {
   Suite *s;
   TCase *tc_guid;
@@ -97,6 +148,9 @@ Suite* element_suite(void) {
   tcase_add_test(tc_guid, test_seq_new_guid_between_siblings);
   tcase_add_test(tc_guid, test_seq_new_guid_between_siblings_no_space);
   tcase_add_test(tc_guid, test_seq_new_guid_between_parent_child);
+  tcase_add_test(tc_guid, test_seq_new_guid_between_uncle_nephew);
+  tcase_add_test(tc_guid, test_seq_new_guid_between_nephew_uncle);
+  tcase_add_test(tc_guid, test_seq_new_guid_between_same_key_different_uid);
   suite_add_tcase(s, tc_guid);
 
   return s;

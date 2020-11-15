@@ -86,6 +86,23 @@ START_TEST(test_guid_compare_siblings) {
   ck_assert_int_gt(result, 0);
 } END_TEST
 
+START_TEST(test_guid_compare_siblings_nested) {
+  guid l = {
+    .depth = 5,
+    .keys = keys_from_tokens(5, 0, 1, 2, 4, 6),
+    .uids = uids_from_tokens(5, 1, 1, 1, 1, 1),
+  };
+  guid r = {
+    .depth = 5,
+    .keys = keys_from_tokens(5, 0, 1, 2, 4, 10),
+    .uids = uids_from_tokens(5, 1, 1, 1, 1, 1),
+  };
+  int result = guid_compare(&l, &r);
+  ck_assert_int_lt(result, 0);
+  result = guid_compare(&r, &l);
+  ck_assert_int_gt(result, 0);
+} END_TEST
+
 START_TEST(test_guid_compare_parent_child) {
   guid l = {
     .depth = 3,
@@ -256,6 +273,7 @@ Suite* element_suite(void) {
 
   // Comparing keys test case
   tcase_add_test(tc_comparing, test_guid_compare_siblings);
+  tcase_add_test(tc_comparing, test_guid_compare_siblings_nested);
   tcase_add_test(tc_comparing, test_guid_compare_parent_child);
   tcase_add_test(tc_comparing, test_guid_compare_parent_second_child);
   tcase_add_test(tc_comparing, test_guid_compare_parent_grandchild);

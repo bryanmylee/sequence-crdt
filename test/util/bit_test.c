@@ -1,5 +1,4 @@
 #include <check.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <util/bit.h>
 
@@ -10,6 +9,12 @@ START_TEST(test_print_bits) {
   ck_assert_str_eq("00000000000000000000000000110011", str);
 } END_TEST
 
+START_TEST(test_bit_n_ones) {
+  char result = bit_n_ones(5);
+  char expected = 0b11111;
+  ck_assert_int_eq(result, expected);
+} END_TEST
+
 Suite* bit_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -18,6 +23,7 @@ Suite* bit_suite(void) {
   tc_core = tcase_create("core");
 
   tcase_add_test(tc_core, test_print_bits);
+  tcase_add_test(tc_core, test_bit_n_ones);
   suite_add_tcase(s, tc_core);
 
   return s;

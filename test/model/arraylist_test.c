@@ -10,6 +10,13 @@ START_TEST(test_al_init) {
   ck_assert_int_eq(al.size, 0);
 } END_TEST
 
+START_TEST(test_al_new) {
+  arraylist* al = al_new();
+  ck_assert_int_eq(al->cap, 16);
+  ck_assert_int_eq(al->size, 0);
+  free(al);
+} END_TEST
+
 START_TEST(test_al_add_at_expand) {
   arraylist al;
   al_init(&al);
@@ -320,6 +327,7 @@ Suite* arraylist_suite(void) {
   tc_outofbounds = tcase_create("outofbounds");
 
   tcase_add_test(tc_add, test_al_init);
+  tcase_add_test(tc_add, test_al_new);
   tcase_add_test(tc_add, test_al_add_at_expand);
   tcase_add_test(tc_add, test_al_add_expand);
   tcase_add_test(tc_add, test_al_add_all_at_expand);

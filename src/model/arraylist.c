@@ -38,6 +38,12 @@ void al_init(arraylist* al) {
   al->data = malloc(al->cap * sizeof(void*));
 }
 
+arraylist* al_new(void) {
+  arraylist* new = malloc(sizeof(arraylist));
+  al_init(new);
+  return new;
+}
+
 /**
  * @brief Add an element to the arraylist at a specified index.
  *

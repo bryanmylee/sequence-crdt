@@ -4,7 +4,7 @@
 /**
  * @brief Compose a string with the same text that would be printed by print_bits.
  *
- * @param str A pointer to a string bugger where the result is stored.
+ * @param str A pointer to a string buffer where the result is stored.
  * @param size The size of the object.
  * @param ptr A pointer to the object.
  */

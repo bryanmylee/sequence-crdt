@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <stdlib.h>
 #include <util/bit.h>
 #include "guid.h"
 
@@ -71,6 +72,20 @@ void guid_init(guid* g) {
   g->depth = 0;
 }
 
+guid* guid_new(void) {
+  guid* new = malloc(sizeof(guid));
+  guid_init(new);
+  return new;
+}
+
+guid* guid_copy(guid* o) {
+  guid* copy = malloc(sizeof(guid));
+  copy->depth = o->depth;
+  copy->keys = o->keys;
+  copy->uids = o->uids;
+  return copy;
+}
+
 int guid_compare(guid* l, guid* r) {
   int min_depth = l->depth < r->depth ? l->depth : r->depth;
   unsigned long l_keys = l->keys;
@@ -110,13 +125,5 @@ void guid_add_token(guid* g, token t) {
   int uids_base = g->depth * 6;
   g->uids += ((unsigned long) t.uid) << uids_base;
   g->depth++;
-}
-
-guid guid_copy(guid* o) {
-  return (guid) {
-    .keys = o->keys,
-    .uids = o->uids,
-    .depth = o->depth,
-  };
 }
 

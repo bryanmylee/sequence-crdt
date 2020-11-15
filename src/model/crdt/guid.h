@@ -12,10 +12,11 @@ typedef struct {
 unsigned long keys_from_tokens(int depth, ...);
 unsigned long uids_from_tokens(int depth, ...);
 void guid_init(guid* g);
+guid* guid_new(void);
+guid* guid_copy(guid* o);
 int guid_compare(guid* l, guid* r);
 bool guid_equal(guid* l, guid* r);
 void guid_add_token(guid* g, token t);
-guid guid_copy(guid* o);
 
 #endif
 

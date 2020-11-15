@@ -16,6 +16,7 @@ SRCS     := $(shell find $(SRCDIR) -type f -name *.c)
 SRCOBJS  := $(patsubst $(SRCDIR)/%,$(OBJDIR)/%,$(SRCS:.c=.o))
 TESTS    := $(shell find $(TESTDIR) -type f -name *.c)
 TESTOBJS := $(patsubst $(TESTDIR)/%,$(OBJDIR)/%,$(TESTS:.c=.o))
+TESTEXECS = $(shell find $(TESTBINDIR) -type f)
 
 # Default Make
 all: directories link
@@ -28,16 +29,18 @@ directories:
 
 # Link the main binary
 link: $(SRCOBJS)
+	@echo linking main binary
 	@mkdir -p $(dir $@)
-	$(CC) -o $(patsubst $(OBJDIR)/%,$(BINDIR)/%,$(<:.o=)) $^ $(LIB)
+	@$(CC) -o $(patsubst $(OBJDIR)/%,$(BINDIR)/%,$(<:.o=)) $^ $(LIB)
 
 # Pull in dependency info for existing source files
 -include $(SRCOBJS:.o=.d)
 
 # Compile and assemble source files
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
+	@echo assembling $<
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	@$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 	@$(CC) $(CFLAGS) $(INC) -MM $(SRCDIR)/$*.c > $(OBJDIR)/$*.d
 	@cp -f $(OBJDIR)/$*.d $(OBJDIR)/$*.d.tmp
 	@sed -e 's|.*:|$(OBJDIR)/$*.o:|' < $(OBJDIR)/$*.d.tmp > $(OBJDIR)/$*.d
@@ -46,18 +49,23 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 
 # Run tests
 test: link_tests
+	@$(foreach obj,$(TESTEXECS), \
+		$(obj); \
+	)
 
 # Link all test binaries
 link_tests: $(TESTOBJS) $(SRCOBJS)
-	$(foreach obj,$(TESTOBJS), \
+	@echo linking test binaries
+	@$(foreach obj,$(TESTOBJS), \
 		mkdir -p $(patsubst $(OBJDIR)/%,$(TESTBINDIR)/%,$(dir $(obj))); \
 		$(CC) -o $(patsubst $(OBJDIR)/%,$(TESTBINDIR)/%,$(obj:.o=)) $(obj) $(filter-out obj/main.o,$(SRCOBJS)) $(LIB) $(TESTLIB); \
 	)
 
 # Compile and assemble test files
 $(OBJDIR)/%.o: $(TESTDIR)/%.c
+	@echo assembling $<
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	@$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 	@$(CC) $(CFLAGS) $(INC) -MM $(TESTDIR)/$*.c > $(OBJDIR)/$*.d
 	@cp -f $(OBJDIR)/$*.d $(OBJDIR)/$*.d.tmp
 	@sed -e 's|.*:|$(OBJDIR)/$*.o:|' < $(OBJDIR)/$*.d.tmp > $(OBJDIR)/$*.d

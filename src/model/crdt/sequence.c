@@ -1,4 +1,5 @@
 #include <util/bit.h>
+#include "element.h"
 #include "sequence.h"
 
 #define BOUNDARY 10
@@ -83,5 +84,11 @@ guid get_guid_between(guid* l, guid* r, char uid) {
   guid_init(&new_guid);
   _r_generate_guid_between(&new_guid, &l_guid, 1, &r_guid, 1, uid);
   return new_guid;
+}
+
+guid seq_new_guid_at(sequence* s, unsigned int index) {
+  guid* before = &((element*) s->elements.data[index - 1])->id;
+  guid* after = &((element*) s->elements.data[index])->id;
+  return get_guid_between(before, after, s->uid);
 }
 

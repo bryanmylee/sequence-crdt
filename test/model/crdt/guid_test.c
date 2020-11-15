@@ -2,6 +2,36 @@
 #include <stdlib.h>
 #include <model/crdt/guid.h>
 
+START_TEST(test_guid_init) {
+  guid g;
+  guid_init(&g);
+  ck_assert_int_eq(g.keys, 0);
+  ck_assert_int_eq(g.uids, 0);
+  ck_assert_int_eq(g.depth, 0);
+}
+
+START_TEST(test_guid_new) {
+  guid* g = guid_new();
+  ck_assert_int_eq(g->keys, 0);
+  ck_assert_int_eq(g->uids, 0);
+  ck_assert_int_eq(g->depth, 0);
+  free(g);
+}
+
+START_TEST(test_guid_copy) {
+  unsigned long orig_keys = keys_from_tokens(3, 0, 1, 3);
+  guid orig = {
+    .depth = 3,
+    .keys = orig_keys,
+    .uids = uids_from_tokens(3, 1, 2, 1),
+  };
+  guid* copy = guid_copy(&orig);
+  orig.keys = keys_from_tokens(3, 0, 1, 4);
+
+  ck_assert_int_eq(copy->keys, orig_keys);
+  free(copy);
+} END_TEST
+
 START_TEST(test_keys_from_tokens) {
   int result;
   result = keys_from_tokens(3, 0, 2, 7);
@@ -54,19 +84,6 @@ START_TEST(test_guid_add_token_second_uid) {
   ck_assert_int_eq(g.depth, expected.depth);
   ck_assert_int_eq(g.keys, expected.keys);
   ck_assert_int_eq(g.uids, expected.uids);
-} END_TEST
-
-START_TEST(test_guid_copy) {
-  unsigned long orig_keys = keys_from_tokens(3, 0, 1, 3);
-  guid orig = {
-    .depth = 3,
-    .keys = orig_keys,
-    .uids = uids_from_tokens(3, 1, 2, 1),
-  };
-  guid copy = guid_copy(&orig);
-  orig.keys = keys_from_tokens(3, 0, 1, 4);
-
-  ck_assert_int_eq(copy.keys, orig_keys);
 } END_TEST
 
 START_TEST(test_guid_compare_siblings) {
@@ -264,11 +281,13 @@ Suite* element_suite(void) {
   tc_comparing = tcase_create("comparing");
 
   // Creation of key test case
+  tcase_add_test(tc_creating, test_guid_init);
+  tcase_add_test(tc_creating, test_guid_new);
+  tcase_add_test(tc_creating, test_guid_copy);
   tcase_add_test(tc_creating, test_keys_from_tokens);
   tcase_add_test(tc_creating, test_uids_from_tokens);
   tcase_add_test(tc_creating, test_guid_add_token);
   tcase_add_test(tc_creating, test_guid_add_token_second_uid);
-  tcase_add_test(tc_creating, test_guid_copy);
   suite_add_tcase(s, tc_creating);
 
   // Comparing keys test case

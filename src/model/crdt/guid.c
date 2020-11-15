@@ -76,11 +76,10 @@ int guid_compare(guid* l, guid* r) {
   unsigned long r_keys = r->keys;
   unsigned long l_uids = l->uids;
   unsigned long r_uids = r->uids;
-  int base = 2;
   // traverse down the key and uids and compare each token.
   for (int i = 1; i <= min_depth; i++) {
-    int l_token_key = l_keys % base;
-    int r_token_key = r_keys % base;
+    int l_token_key = l_keys & ((1 << i) - 1);
+    int r_token_key = r_keys & ((1 << i) - 1);
     int kcompare = l_token_key - r_token_key;
     if (kcompare != 0) {
       return kcompare;
@@ -91,9 +90,8 @@ int guid_compare(guid* l, guid* r) {
     if (ucompare != 0) {
       return ucompare;
     }
-    l_keys /= base;
-    r_keys /= base;
-    base <<= i;
+    l_keys >>= i;
+    r_keys >>= i;
     l_uids >>= 6;
     r_uids >>= 6;
   }

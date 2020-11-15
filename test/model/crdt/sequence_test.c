@@ -1,4 +1,5 @@
 #include <check.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <model/crdt/sequence.h>
 
@@ -66,6 +67,24 @@ START_TEST(test_get_guid_between_siblings_no_space) {
   ck_assert_int_eq(result.uids, expected.uids);
 } END_TEST
 
+START_TEST(test_get_guid_between_parent_child) {
+  guid l = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 1, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  guid r = {
+    .depth = 4,
+    .keys = keys_from_tokens(4, 0, 1, 2, 2),
+    .uids = uids_from_tokens(4, 1, 1, 1, 1),
+  };
+  guid result = get_guid_between(&l, &r, 1);
+  printf("result depth: %d, keys: %lu\n", result.depth, result.keys);
+  printf("r depth: %d, keys: %lu\n", r.depth, r.keys);
+  ck_assert_int_lt(guid_compare(&l, &result), 0);
+  ck_assert_int_lt(guid_compare(&result, &r), 0);
+} END_TEST
+
 Suite* element_suite(void) {
   Suite *s;
   TCase *tc_guid;
@@ -77,6 +96,7 @@ Suite* element_suite(void) {
   tcase_add_test(tc_guid, test_get_token_between_no_space);
   tcase_add_test(tc_guid, test_get_guid_between_siblings);
   tcase_add_test(tc_guid, test_get_guid_between_siblings_no_space);
+  tcase_add_test(tc_guid, test_get_guid_between_parent_child);
   suite_add_tcase(s, tc_guid);
 
   return s;

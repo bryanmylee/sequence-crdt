@@ -66,27 +66,27 @@ unsigned long uids_from_tokens(int depth, ...) {
   return uids;
 }
 
-void guid_init(guid* g) {
+void guid_init(Guid* g) {
   g->keys = 0;
   g->uids = 0;
   g->depth = 0;
 }
 
-guid* guid_new(void) {
-  guid* new = malloc(sizeof(guid));
+Guid* guid_new(void) {
+  Guid* new = malloc(sizeof(Guid));
   guid_init(new);
   return new;
 }
 
-guid* guid_copy(guid* o) {
-  guid* copy = malloc(sizeof(guid));
+Guid* guid_copy(Guid* o) {
+  Guid* copy = malloc(sizeof(Guid));
   copy->depth = o->depth;
   copy->keys = o->keys;
   copy->uids = o->uids;
   return copy;
 }
 
-int guid_compare(guid* l, guid* r) {
+int guid_compare(Guid* l, Guid* r) {
   int min_depth = l->depth < r->depth ? l->depth : r->depth;
   unsigned long l_keys = l->keys;
   unsigned long r_keys = r->keys;
@@ -115,11 +115,11 @@ int guid_compare(guid* l, guid* r) {
   return l->depth - r->depth;
 }
 
-bool guid_equal(guid* l, guid* r) {
+bool guid_equal(Guid* l, Guid* r) {
   return l->depth == r->depth && l->keys == r->keys && l->uids == r->uids;
 }
 
-void guid_add_token(guid* g, token t) {
+void guid_add_token(Guid* g, token t) {
   int key_base = g->depth * (g->depth + 1) / 2;
   g->keys += ((unsigned long) t.key) << key_base;
   int uids_base = g->depth * 6;

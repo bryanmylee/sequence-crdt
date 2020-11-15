@@ -20,7 +20,7 @@ int _get_base(int depth) {
   return 1 << depth;
 }
 
-token get_token_between(token* l, token* r, int depth, char uid) {
+token seq_token_between(token* l, token* r, int depth, char uid) {
   int interval = r->key - l->key - 1;
   if (interval < 1) {
     // invalid token.
@@ -34,7 +34,7 @@ token get_token_between(token* l, token* r, int depth, char uid) {
   return (token) { .key = r->key - rand_step, .uid = uid };
 }
 
-void _r_generate_guid_between(guid* new_guid, guid* l, int curr_l_depth, guid* r, int curr_r_depth, char uid) {
+void _r_generate_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int curr_r_depth, char uid) {
   int new_depth = new_guid->depth + 1;
 
   bool l_has_next = curr_l_depth <= l->depth;
@@ -51,7 +51,7 @@ void _r_generate_guid_between(guid* new_guid, guid* l, int curr_l_depth, guid* r
 
   int interval = r_token.key - l_token.key;
   if (interval > 1) {
-    token new_token = get_token_between(&l_token, &r_token, new_depth, uid);
+    token new_token = seq_token_between(&l_token, &r_token, new_depth, uid);
     return guid_add_token(new_guid, new_token);
   }
   if (interval == 1) {
@@ -77,19 +77,19 @@ void _r_generate_guid_between(guid* new_guid, guid* l, int curr_l_depth, guid* r
   }
 }
 
-guid* get_guid_between(guid* l, guid* r, char uid) {
-  guid* l_guid = guid_copy(l);
-  guid* r_guid = guid_copy(r);
-  guid* new_guid = guid_new();
+Guid* seq_new_guid_between(Guid* l, Guid* r, char uid) {
+  Guid* l_guid = guid_copy(l);
+  Guid* r_guid = guid_copy(r);
+  Guid* new_guid = guid_new();
   _r_generate_guid_between(new_guid, l_guid, 1, r_guid, 1, uid);
   free(l_guid);
   free(r_guid);
   return new_guid;
 }
 
-guid* seq_new_guid_at(sequence* s, unsigned int index) {
-  guid* before = &((element*) s->elements.data[index - 1])->id;
-  guid* after = &((element*) s->elements.data[index])->id;
-  return get_guid_between(before, after, s->uid);
+Guid* seq_new_guid_at(sequence* s, unsigned int index) {
+  Guid* before = &((Element*) s->elements.data[index - 1])->id;
+  Guid* after = &((Element*) s->elements.data[index])->id;
+  return seq_new_guid_between(before, after, s->uid);
 }
 

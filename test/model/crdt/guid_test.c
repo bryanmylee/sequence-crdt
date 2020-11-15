@@ -3,7 +3,7 @@
 #include <model/crdt/guid.h>
 
 START_TEST(test_guid_init) {
-  guid g;
+  Guid g;
   guid_init(&g);
   ck_assert_int_eq(g.keys, 0);
   ck_assert_int_eq(g.uids, 0);
@@ -11,7 +11,7 @@ START_TEST(test_guid_init) {
 }
 
 START_TEST(test_guid_new) {
-  guid* g = guid_new();
+  Guid* g = guid_new();
   ck_assert_int_eq(g->keys, 0);
   ck_assert_int_eq(g->uids, 0);
   ck_assert_int_eq(g->depth, 0);
@@ -20,12 +20,12 @@ START_TEST(test_guid_new) {
 
 START_TEST(test_guid_copy) {
   unsigned long orig_keys = keys_from_tokens(3, 0, 1, 3);
-  guid orig = {
+  Guid orig = {
     .depth = 3,
     .keys = orig_keys,
     .uids = uids_from_tokens(3, 1, 2, 1),
   };
-  guid* copy = guid_copy(&orig);
+  Guid* copy = guid_copy(&orig);
   orig.keys = keys_from_tokens(3, 0, 1, 4);
 
   ck_assert_int_eq(copy->keys, orig_keys);
@@ -49,7 +49,7 @@ START_TEST(test_uids_from_tokens) {
 } END_TEST
 
 START_TEST(test_guid_add_token) {
-  guid g = {
+  Guid g = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 0, 0),
     .uids = uids_from_tokens(3, 1, 1, 1),
@@ -57,7 +57,7 @@ START_TEST(test_guid_add_token) {
   token t = { .key = 1, .uid = 1 };
   guid_add_token(&g, t);
 
-  guid expected = {
+  Guid expected = {
     .depth = 4,
     .keys = keys_from_tokens(4, 0, 0, 0, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
@@ -68,7 +68,7 @@ START_TEST(test_guid_add_token) {
 } END_TEST
 
 START_TEST(test_guid_add_token_second_uid) {
-  guid g = {
+  Guid g = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 0, 0),
     .uids = uids_from_tokens(3, 1, 1, 1),
@@ -76,7 +76,7 @@ START_TEST(test_guid_add_token_second_uid) {
   token t = { .key = 1, .uid = 2 };
   guid_add_token(&g, t);
 
-  guid expected = {
+  Guid expected = {
     .depth = 4,
     .keys = keys_from_tokens(4, 0, 0, 0, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 2),
@@ -87,12 +87,12 @@ START_TEST(test_guid_add_token_second_uid) {
 } END_TEST
 
 START_TEST(test_guid_compare_siblings) {
-  guid l = {
+  Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 0, 0),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 0, 2),
     .uids = uids_from_tokens(3, 1, 1, 1),
@@ -104,12 +104,12 @@ START_TEST(test_guid_compare_siblings) {
 } END_TEST
 
 START_TEST(test_guid_compare_siblings_nested) {
-  guid l = {
+  Guid l = {
     .depth = 5,
     .keys = keys_from_tokens(5, 0, 1, 2, 4, 6),
     .uids = uids_from_tokens(5, 1, 1, 1, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 5,
     .keys = keys_from_tokens(5, 0, 1, 2, 4, 10),
     .uids = uids_from_tokens(5, 1, 1, 1, 1, 1),
@@ -121,12 +121,12 @@ START_TEST(test_guid_compare_siblings_nested) {
 } END_TEST
 
 START_TEST(test_guid_compare_parent_child) {
-  guid l = {
+  Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 3),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 4,
     .keys = keys_from_tokens(4, 0, 1, 3, 0),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
@@ -138,12 +138,12 @@ START_TEST(test_guid_compare_parent_child) {
 } END_TEST
 
 START_TEST(test_guid_compare_parent_second_child) {
-  guid l = {
+  Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 3),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 4,
     .keys = keys_from_tokens(4, 0, 1, 3, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
@@ -155,12 +155,12 @@ START_TEST(test_guid_compare_parent_second_child) {
 } END_TEST
 
 START_TEST(test_guid_compare_parent_grandchild) {
-  guid l = {
+  Guid l = {
     .depth = 2,
     .keys = keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 4,
     .keys = keys_from_tokens(4, 0, 1, 3, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
@@ -172,12 +172,12 @@ START_TEST(test_guid_compare_parent_grandchild) {
 } END_TEST
 
 START_TEST(test_guid_compare_uncle_nephew) {
-  guid l = {
+  Guid l = {
     .depth = 2,
     .keys = keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 4),
     .uids = uids_from_tokens(3, 1, 1, 1),
@@ -189,12 +189,12 @@ START_TEST(test_guid_compare_uncle_nephew) {
 } END_TEST
 
 START_TEST(test_guid_compare_nephew_uncle) {
-  guid l = {
+  Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(2, 1, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 2,
     .keys = keys_from_tokens(2, 0, 3),
     .uids = uids_from_tokens(2, 1, 1),
@@ -206,12 +206,12 @@ START_TEST(test_guid_compare_nephew_uncle) {
 } END_TEST
 
 START_TEST(test_guid_compare_different_user_parent) {
-  guid l = {
+  Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(2, 1, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(2, 1, 2, 1),
@@ -223,12 +223,12 @@ START_TEST(test_guid_compare_different_user_parent) {
 } END_TEST
 
 START_TEST(test_guid_compare_different_user_sibling) {
-  guid l = {
+  Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(3, 1, 1, 2),
@@ -240,12 +240,12 @@ START_TEST(test_guid_compare_different_user_sibling) {
 } END_TEST
 
 START_TEST(test_guid_compare_equal) {
-  guid l = {
+  Guid l = {
     .depth = 2,
     .keys = keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 2,
     .keys = keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
@@ -257,12 +257,12 @@ START_TEST(test_guid_compare_equal) {
 } END_TEST
 
 START_TEST(test_guid_equal) {
-  guid l = {
+  Guid l = {
     .depth = 2,
     .keys = keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
-  guid r = {
+  Guid r = {
     .depth = 2,
     .keys = keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),

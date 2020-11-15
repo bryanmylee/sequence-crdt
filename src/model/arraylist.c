@@ -4,23 +4,23 @@
 #define EXPAND_FACTOR 2
 
 /**
- * @brief Increase the capacity of an existing arraylist.
+ * @brief Increase the capacity of an existing ArrayList.
  *
- * @param al A pointer to the arraylist to expand.
+ * @param al A pointer to the ArrayList to expand.
  */
-void _al_expand(arraylist* al) {
+void _al_expand(ArrayList* al) {
   al->cap *= EXPAND_FACTOR;
   al->data = realloc(al->data, al->cap * sizeof(void*));
 }
 
 /**
- * @brief Increase the capacity of an existing arraylist until it is greater
+ * @brief Increase the capacity of an existing ArrayList until it is greater
  *        than or equal to a minimum capacity.
  *
- * @param al  A pointer to the arraylist to expand.
+ * @param al  A pointer to the ArrayList to expand.
  * @param min The minimum capacity to expand to.
  */
-void _al_expand_to_min(arraylist* al, unsigned int min) {
+void _al_expand_to_min(ArrayList* al, unsigned int min) {
   while (al->cap < min) {
     al->cap *= EXPAND_FACTOR;
   }
@@ -28,32 +28,32 @@ void _al_expand_to_min(arraylist* al, unsigned int min) {
 }
 
 /**
- * @brief Initialize an arraylist.
+ * @brief Initialize an ArrayList.
  *
- * @param al A pointer to the arraylist to initialize.
+ * @param al A pointer to the ArrayList to initialize.
  */
-void al_init(arraylist* al) {
+void al_init(ArrayList* al) {
   al->cap = INITIAL_CAPACITY;
   al->size = 0;
   al->data = malloc(al->cap * sizeof(void*));
 }
 
-arraylist* al_new(void) {
-  arraylist* new = malloc(sizeof(arraylist));
+ArrayList* al_new(void) {
+  ArrayList* new = malloc(sizeof(ArrayList));
   al_init(new);
   return new;
 }
 
 /**
- * @brief Add an element to the arraylist at a specified index.
+ * @brief Add an element to the ArrayList at a specified index.
  *
- * @param al    A pointer to the arraylist to add to.
+ * @param al    A pointer to the ArrayList to add to.
  * @param e     A pointer to the element to add. The element must be alloc-ed.
  * @param index The index at which to add the element.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_at(arraylist* al, void* e, unsigned int index) {
+bool al_add_at(ArrayList* al, void* e, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
@@ -70,24 +70,24 @@ bool al_add_at(arraylist* al, void* e, unsigned int index) {
 }
 
 /**
- * @brief Add an element to the end of the arraylist.
+ * @brief Add an element to the end of the ArrayList.
  *
- * @param al A pointer to the arraylist to add to.
+ * @param al A pointer to the ArrayList to add to.
  * @param e  A pointer to the element to add. The element must be alloc-ed.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add(arraylist* al, void* e) {
+bool al_add(ArrayList* al, void* e) {
   return al_add_at(al, e, al->size);
 }
 
 /**
- * @brief Add an array of elements to the arraylist at a specified index.
+ * @brief Add an array of elements to the ArrayList at a specified index.
  *
  *        This method is more efficient than adding each element sequentially,
  *        as it swaps each shifted element only once.
  *
- * @param al    A pointer to the arraylist to add to.
+ * @param al    A pointer to the ArrayList to add to.
  * @param es    A pointer to the array of elements to add. The elements must
  *              each be alloc-ed.
  * @param n     The size of the elements.
@@ -95,7 +95,7 @@ bool al_add(arraylist* al, void* e) {
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all_at(arraylist* al, void** es, unsigned int n, unsigned int index) {
+bool al_add_all_at(ArrayList* al, void** es, unsigned int n, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
@@ -113,29 +113,29 @@ bool al_add_all_at(arraylist* al, void** es, unsigned int n, unsigned int index)
 }
 
 /**
- * @brief Add an array of elements to the end of the arraylist.
+ * @brief Add an array of elements to the end of the ArrayList.
  *
- * @param al A pointer to the arraylist to add to.
+ * @param al A pointer to the ArrayList to add to.
  * @param es A pointer to the array of elements to add. The elements must each
  *           be alloc-ed.
  * @param n  The size of the elements.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all(arraylist* al, void** es, unsigned int n) {
+bool al_add_all(ArrayList* al, void** es, unsigned int n) {
   return al_add_all_at(al, es, n, al->size);
 }
 
 /**
- * @brief Remove an element from the arraylist at a given index.
+ * @brief Remove an element from the ArrayList at a given index.
  *
- * @param al    A pointer to the arraylist to remove from.
+ * @param al    A pointer to the ArrayList to remove from.
  * @param index The index to remove the element from.
  *
  * @return A pointer to the removed element, or NULL if the remove is
  *         unsuccessful.
  */
-void* al_remove_at(arraylist* al, unsigned int index) {
+void* al_remove_at(ArrayList* al, unsigned int index) {
   if (index < 0 || index > al->size) {
     return NULL;
   }
@@ -149,15 +149,15 @@ void* al_remove_at(arraylist* al, unsigned int index) {
 }
 
 /**
- * @brief Remove multiple consecutive elements from the arraylist.
+ * @brief Remove multiple consecutive elements from the ArrayList.
  *
- * @param al   A pointer to the arraylist to remove from.
+ * @param al   A pointer to the ArrayList to remove from.
  * @param es   A pointer to an array to store the removed elements in. The
  *             array must be large enough to store all removed elements.
  * @param from The index of the first element to remove inclusive.
  * @param to   The index of the last element to remove exclusive.
  */
-void al_remove_all_at(arraylist* al, void** es, unsigned int from, unsigned int to) {
+void al_remove_all_at(ArrayList* al, void** es, unsigned int from, unsigned int to) {
   if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
     return;
   }

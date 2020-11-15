@@ -3,10 +3,10 @@
 #include "guid.h"
 
 typedef struct {
-  guid id;
+  Guid id;
   unsigned int version;
   void* value;
-} element;
+} Element;
 
 #endif
 

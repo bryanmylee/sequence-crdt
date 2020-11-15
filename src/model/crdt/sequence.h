@@ -8,12 +8,12 @@
 typedef struct {
   char uid;
   unsigned int version;
-  arraylist elements;
+  ArrayList elements;
 } sequence;
 
-token get_token_between(token* l, token* r, int depth, char uid);
-guid* get_guid_between(guid* l, guid* r, char uid);
-guid* seq_new_guid_at(sequence* s, unsigned int index);
+token seq_token_between(token* l, token* r, int depth, char uid);
+Guid* seq_new_guid_between(Guid* l, Guid* r, char uid);
+Guid* seq_new_guid_at(sequence* s, unsigned int index);
 
 #endif
 

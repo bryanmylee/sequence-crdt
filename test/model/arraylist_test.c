@@ -4,21 +4,21 @@
 #include <model/arraylist.h>
 
 START_TEST(test_al_init) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 0);
 } END_TEST
 
 START_TEST(test_al_new) {
-  arraylist* al = al_new();
+  ArrayList* al = al_new();
   ck_assert_int_eq(al->cap, 16);
   ck_assert_int_eq(al->size, 0);
   free(al);
 } END_TEST
 
 START_TEST(test_al_add_at_expand) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
@@ -35,7 +35,7 @@ START_TEST(test_al_add_at_expand) {
 } END_TEST
 
 START_TEST(test_al_add_expand) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
@@ -52,7 +52,7 @@ START_TEST(test_al_add_expand) {
 } END_TEST
 
 START_TEST(test_al_add_all_at_expand) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
@@ -83,7 +83,7 @@ START_TEST(test_al_add_all_at_expand) {
 } END_TEST
 
 START_TEST(test_al_add_all_at_empty) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   // insert 20 zeros at index 0.
@@ -107,7 +107,7 @@ START_TEST(test_al_add_all_at_empty) {
 } END_TEST
 
 START_TEST(test_al_add_all_expand) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
@@ -138,7 +138,7 @@ START_TEST(test_al_add_all_expand) {
 } END_TEST
 
 START_TEST(test_al_remove_at) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   int* es[10];
@@ -162,7 +162,7 @@ START_TEST(test_al_remove_at) {
 } END_TEST
 
 START_TEST(test_al_remove_all_at) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   int* es[10];
@@ -189,7 +189,7 @@ START_TEST(test_al_remove_all_at) {
 } END_TEST
 
 START_TEST(test_al_add_at_outofbounds) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
@@ -210,7 +210,7 @@ START_TEST(test_al_add_at_outofbounds) {
 } END_TEST
 
 START_TEST(test_al_add_all_at_outofbounds) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
@@ -240,7 +240,7 @@ START_TEST(test_al_add_all_at_outofbounds) {
 } END_TEST
 
 START_TEST(test_al_remove_at_outofbounds) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   int* es[10];
@@ -264,7 +264,7 @@ START_TEST(test_al_remove_at_outofbounds) {
 } END_TEST
 
 START_TEST(test_al_remove_all_at_outofbounds) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   int* es[10];
@@ -290,7 +290,7 @@ START_TEST(test_al_remove_all_at_outofbounds) {
 } END_TEST
 
 START_TEST(test_al_remove_all_at_invalid_from_to) {
-  arraylist al;
+  ArrayList al;
   al_init(&al);
 
   int* es[10];

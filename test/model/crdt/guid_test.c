@@ -271,12 +271,12 @@ START_TEST(test_guid_equal) {
   ck_assert_int_eq(result, true);
 } END_TEST
 
-Suite* element_suite(void) {
+Suite* guid_suite(void) {
   Suite *s;
   TCase *tc_creating;
   TCase *tc_comparing;
 
-  s = suite_create("element_suite");
+  s = suite_create("guid_suite");
   tc_creating = tcase_create("creating");
   tc_comparing = tcase_create("comparing");
 
@@ -312,7 +312,7 @@ int main(void) {
   Suite *s;
   SRunner *runner;
 
-  s = element_suite();
+  s = guid_suite();
   runner = srunner_create(s);
 
   srunner_run_all(runner, CK_NORMAL);

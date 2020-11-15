@@ -136,7 +136,7 @@ START_TEST(test_seq_new_guid_between_same_key_different_uid) {
   free(result);
 } END_TEST
 
-Suite* element_suite(void) {
+Suite* sequence_suite(void) {
   Suite *s;
   TCase *tc_guid;
 
@@ -161,7 +161,7 @@ int main(void) {
   Suite *s;
   SRunner *runner;
 
-  s = element_suite();
+  s = sequence_suite();
   runner = srunner_create(s);
 
   srunner_run_all(runner, CK_NORMAL);

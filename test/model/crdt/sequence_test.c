@@ -1,5 +1,4 @@
 #include <check.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <model/crdt/sequence.h>
 
@@ -79,8 +78,6 @@ START_TEST(test_get_guid_between_parent_child) {
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
   guid result = get_guid_between(&l, &r, 1);
-  printf("result depth: %d, keys: %lu\n", result.depth, result.keys);
-  printf("r depth: %d, keys: %lu\n", r.depth, r.keys);
   ck_assert_int_lt(guid_compare(&l, &result), 0);
   ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST

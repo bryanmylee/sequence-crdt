@@ -36,10 +36,11 @@ START_TEST(test_get_guid_between_siblings) {
     .keys = keys_from_tokens(3, 1, 2, 2),
     .uids = uids_from_tokens(3, 1, 1, 2),
   };
-  guid result = get_guid_between(&l, &r, 2);
-  ck_assert_int_eq(result.depth, expected.depth);
-  ck_assert_uint_eq(result.keys, expected.keys);
-  ck_assert_int_eq(result.uids, expected.uids);
+  guid* result = get_guid_between(&l, &r, 2);
+  ck_assert_int_eq(result->depth, expected.depth);
+  ck_assert_uint_eq(result->keys, expected.keys);
+  ck_assert_int_eq(result->uids, expected.uids);
+  free(result);
 } END_TEST
 
 START_TEST(test_get_guid_between_siblings_no_space) {
@@ -53,17 +54,18 @@ START_TEST(test_get_guid_between_siblings_no_space) {
     .keys = keys_from_tokens(3, 1, 2, 2),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
-  guid result = get_guid_between(&l, &r, 2);
+  guid* result = get_guid_between(&l, &r, 2);
   // next guid is one level deeper.
   guid expected = {
     .depth = 4,
     .uids = uids_from_tokens(4, 1, 1, 1, 2),
   };
   int base = 1 << 4;
-  ck_assert_int_eq(result.depth, expected.depth);
-  ck_assert_uint_ge(result.keys, keys_from_tokens(4, 1, 2, 2, 0));
-  ck_assert_uint_lt(result.keys, keys_from_tokens(4, 1, 2, 2, base));
-  ck_assert_int_eq(result.uids, expected.uids);
+  ck_assert_int_eq(result->depth, expected.depth);
+  ck_assert_uint_ge(result->keys, keys_from_tokens(4, 1, 2, 2, 0));
+  ck_assert_uint_lt(result->keys, keys_from_tokens(4, 1, 2, 2, base));
+  ck_assert_int_eq(result->uids, expected.uids);
+  free(result);
 } END_TEST
 
 START_TEST(test_get_guid_between_parent_child) {
@@ -77,9 +79,10 @@ START_TEST(test_get_guid_between_parent_child) {
     .keys = keys_from_tokens(4, 0, 1, 2, 2),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
-  guid result = get_guid_between(&l, &r, 1);
-  ck_assert_int_lt(guid_compare(&l, &result), 0);
-  ck_assert_int_lt(guid_compare(&result, &r), 0);
+  guid* result = get_guid_between(&l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, result), 0);
+  ck_assert_int_lt(guid_compare(result, &r), 0);
+  free(result);
 } END_TEST
 
 Suite* element_suite(void) {

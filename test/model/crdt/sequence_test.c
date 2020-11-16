@@ -335,14 +335,33 @@ START_TEST(test_seq_index_of_odd_non_existent) {
   seq_free(&s);
 } END_TEST
 
+START_TEST(test_seq_insert) {
+  Sequence* s = seq_new();
+  char* data = "this is a string";
+  int n = strlen(data);
+  for (int i = 0; i < n; i++) {
+    seq_insert(s, data + i, i);
+  }
+
+  // check that all elements are stored properly.
+  for (int i = 0; i < n; i++) {
+    // avoid the null value
+    Element* e = ((Element**) s->elements.data)[i + 1];
+    char c = *((char*) e->value);
+    ck_assert_int_eq(c, data[i]);
+  }
+}
+
 Suite* sequence_suite(void) {
   Suite *s;
   TCase *tc_guid;
   TCase *tc_find;
+  TCase *tc_insert_delete;
 
   s = suite_create("sequence_suite");
   tc_guid = tcase_create("guid");
   tc_find = tcase_create("find");
+  tc_insert_delete = tcase_create("insert delete");
 
   tcase_add_test(tc_guid, test_seq_token_between);
   tcase_add_test(tc_guid, test_seq_token_between_no_space);
@@ -352,13 +371,16 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_guid, test_seq_guid_between_uncle_nephew);
   tcase_add_test(tc_guid, test_seq_guid_between_nephew_uncle);
   tcase_add_test(tc_guid, test_seq_guid_between_same_key_different_uid);
-  suite_add_tcase(s, tc_guid);
+  // suite_add_tcase(s, tc_guid);
 
   tcase_add_test(tc_find, test_seq_index_of_even);
   tcase_add_test(tc_find, test_seq_index_of_odd);
   tcase_add_test(tc_find, test_seq_index_of_even_non_existent);
   tcase_add_test(tc_find, test_seq_index_of_odd_non_existent);
-  suite_add_tcase(s, tc_find);
+  // suite_add_tcase(s, tc_find);
+
+  tcase_add_test(tc_insert_delete, test_seq_insert);
+  suite_add_tcase(s, tc_insert_delete);
 
   return s;
 }

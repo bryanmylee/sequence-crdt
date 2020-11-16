@@ -87,7 +87,7 @@ Guid* seq_new_guid_between(Guid* l, Guid* r, char uid) {
   return new_guid;
 }
 
-Guid* seq_new_guid_at(sequence* s, unsigned int index) {
+Guid* seq_new_guid_at(Sequence* s, unsigned int index) {
   Guid* before = &((Element*) s->elements.data[index - 1])->id;
   Guid* after = &((Element*) s->elements.data[index])->id;
   return seq_new_guid_between(before, after, s->uid);

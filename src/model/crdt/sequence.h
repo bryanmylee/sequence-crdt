@@ -9,11 +9,11 @@ typedef struct {
   char uid;
   unsigned int version;
   ArrayList elements;
-} sequence;
+} Sequence;
 
 token seq_token_between(token* l, token* r, int depth, char uid);
 Guid* seq_new_guid_between(Guid* l, Guid* r, char uid);
-Guid* seq_new_guid_at(sequence* s, unsigned int index);
+Guid* seq_new_guid_at(Sequence* s, unsigned int index);
 
 #endif
 

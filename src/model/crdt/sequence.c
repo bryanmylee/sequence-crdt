@@ -170,6 +170,13 @@ unsigned int seq_index_of_element_or_after(Sequence* s, Element* target) {
   return i;
 }
 
+Element* seq_get_element(Sequence* s, unsigned int index) {
+  if (index < 0 || index > s->elements.size - 2) {
+    return NULL;
+  }
+  return ((Element**) s->elements.data)[index + 1];
+}
+
 Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
   if (index < 0 || index > s->elements.size - 2) {
     return NULL;

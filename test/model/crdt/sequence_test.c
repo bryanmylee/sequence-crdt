@@ -23,7 +23,7 @@ START_TEST(test_seq_token_between_no_space) {
   ck_assert_int_eq(result.uid, expected.uid);
 } END_TEST
 
-START_TEST(test_seq_new_guid_between_siblings) {
+START_TEST(test_seq_guid_between_siblings) {
   Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 1, 2, 1),
@@ -39,14 +39,14 @@ START_TEST(test_seq_new_guid_between_siblings) {
     .keys = keys_from_tokens(3, 1, 2, 2),
     .uids = uids_from_tokens(3, 1, 1, 2),
   };
-  Guid* result = seq_new_guid_between(&l, &r, 2);
-  ck_assert_int_eq(result->depth, expected.depth);
-  ck_assert_uint_eq(result->keys, expected.keys);
-  ck_assert_int_eq(result->uids, expected.uids);
-  free(result);
+  Guid result;
+  seq_guid_between(&result, &l, &r, 2);
+  ck_assert_int_eq(result.depth, expected.depth);
+  ck_assert_uint_eq(result.keys, expected.keys);
+  ck_assert_int_eq(result.uids, expected.uids);
 } END_TEST
 
-START_TEST(test_seq_new_guid_between_siblings_no_space) {
+START_TEST(test_seq_guid_between_siblings_no_space) {
   Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 1, 2, 1),
@@ -57,21 +57,21 @@ START_TEST(test_seq_new_guid_between_siblings_no_space) {
     .keys = keys_from_tokens(3, 1, 2, 2),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
-  Guid* result = seq_new_guid_between(&l, &r, 2);
+  Guid result;
+  seq_guid_between(&result, &l, &r, 2);
   // next Guid is one level deeper.
   Guid expected = {
     .depth = 4,
     .uids = uids_from_tokens(4, 1, 1, 1, 2),
   };
   int base = 1 << 4;
-  ck_assert_int_eq(result->depth, expected.depth);
-  ck_assert_uint_ge(result->keys, keys_from_tokens(4, 1, 2, 2, 0));
-  ck_assert_uint_lt(result->keys, keys_from_tokens(4, 1, 2, 2, base));
-  ck_assert_int_eq(result->uids, expected.uids);
-  free(result);
+  ck_assert_int_eq(result.depth, expected.depth);
+  ck_assert_uint_ge(result.keys, keys_from_tokens(4, 1, 2, 2, 0));
+  ck_assert_uint_lt(result.keys, keys_from_tokens(4, 1, 2, 2, base));
+  ck_assert_int_eq(result.uids, expected.uids);
 } END_TEST
 
-START_TEST(test_seq_new_guid_between_parent_child) {
+START_TEST(test_seq_guid_between_parent_child) {
   Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 2),
@@ -82,13 +82,13 @@ START_TEST(test_seq_new_guid_between_parent_child) {
     .keys = keys_from_tokens(4, 0, 1, 2, 2),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
-  Guid* result = seq_new_guid_between(&l, &r, 1);
-  ck_assert_int_lt(guid_compare(&l, result), 0);
-  ck_assert_int_lt(guid_compare(result, &r), 0);
-  free(result);
+  Guid result;
+  seq_guid_between(&result, &l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, &result), 0);
+  ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST
 
-START_TEST(test_seq_new_guid_between_uncle_nephew) {
+START_TEST(test_seq_guid_between_uncle_nephew) {
   Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 1, 2),
@@ -99,13 +99,13 @@ START_TEST(test_seq_new_guid_between_uncle_nephew) {
     .keys = keys_from_tokens(4, 1, 1, 2, 2),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
-  Guid* result = seq_new_guid_between(&l, &r, 1);
-  ck_assert_int_lt(guid_compare(&l, result), 0);
-  ck_assert_int_lt(guid_compare(result, &r), 0);
-  free(result);
+  Guid result;
+  seq_guid_between(&result, &l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, &result), 0);
+  ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST
 
-START_TEST(test_seq_new_guid_between_nephew_uncle) {
+START_TEST(test_seq_guid_between_nephew_uncle) {
   Guid l = {
     .depth = 4,
     .keys = keys_from_tokens(4, 0, 1, 2, 2),
@@ -116,13 +116,13 @@ START_TEST(test_seq_new_guid_between_nephew_uncle) {
     .keys = keys_from_tokens(3, 0, 2, 2),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
-  Guid* result = seq_new_guid_between(&l, &r, 1);
-  ck_assert_int_lt(guid_compare(&l, result), 0);
-  ck_assert_int_lt(guid_compare(result, &r), 0);
-  free(result);
+  Guid result;
+  seq_guid_between(&result, &l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, &result), 0);
+  ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST
 
-START_TEST(test_seq_new_guid_between_same_key_different_uid) {
+START_TEST(test_seq_guid_between_same_key_different_uid) {
   Guid l = {
     .depth = 3,
     .keys = keys_from_tokens(3, 0, 2, 2),
@@ -133,14 +133,15 @@ START_TEST(test_seq_new_guid_between_same_key_different_uid) {
     .keys = keys_from_tokens(3, 0, 2, 2),
     .uids = uids_from_tokens(3, 1, 2, 1),
   };
-  Guid* result = seq_new_guid_between(&l, &r, 1);
-  ck_assert_int_lt(guid_compare(&l, result), 0);
-  ck_assert_int_lt(guid_compare(result, &r), 0);
-  free(result);
+  Guid result;
+  seq_guid_between(&result, &l, &r, 1);
+  ck_assert_int_lt(guid_compare(&l, &result), 0);
+  ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST
 
 START_TEST(test_seq_index_of_even) {
   Sequence* s = seq_new();
+  al_init(&s->elements);
   // insert 8 Element pointers.
   for (int i = 0; i < 8; i++) {
     Element* e = element_new();
@@ -186,6 +187,7 @@ START_TEST(test_seq_index_of_even) {
 
 START_TEST(test_seq_index_of_odd) {
   Sequence* s = seq_new();
+  al_init(&s->elements);
   // insert 7 Element pointers.
   for (int i = 0; i < 7; i++) {
     Element* e = element_new();
@@ -231,6 +233,7 @@ START_TEST(test_seq_index_of_odd) {
 
 START_TEST(test_seq_index_of_even_non_existent) {
   Sequence* s = seq_new();
+  al_init(&s->elements);
   // insert 8 Element pointers with even key tokens.
   for (int i = 0; i < 8; i++) {
     Element* e = element_new();
@@ -289,12 +292,12 @@ Suite* sequence_suite(void) {
 
   tcase_add_test(tc_guid, test_seq_token_between);
   tcase_add_test(tc_guid, test_seq_token_between_no_space);
-  tcase_add_test(tc_guid, test_seq_new_guid_between_siblings);
-  tcase_add_test(tc_guid, test_seq_new_guid_between_siblings_no_space);
-  tcase_add_test(tc_guid, test_seq_new_guid_between_parent_child);
-  tcase_add_test(tc_guid, test_seq_new_guid_between_uncle_nephew);
-  tcase_add_test(tc_guid, test_seq_new_guid_between_nephew_uncle);
-  tcase_add_test(tc_guid, test_seq_new_guid_between_same_key_different_uid);
+  tcase_add_test(tc_guid, test_seq_guid_between_siblings);
+  tcase_add_test(tc_guid, test_seq_guid_between_siblings_no_space);
+  tcase_add_test(tc_guid, test_seq_guid_between_parent_child);
+  tcase_add_test(tc_guid, test_seq_guid_between_uncle_nephew);
+  tcase_add_test(tc_guid, test_seq_guid_between_nephew_uncle);
+  tcase_add_test(tc_guid, test_seq_guid_between_same_key_different_uid);
   suite_add_tcase(s, tc_guid);
 
   tcase_add_test(tc_find, test_seq_index_of_even);

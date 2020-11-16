@@ -118,20 +118,27 @@ void _r_generate_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r
   }
 }
 
-Guid* seq_new_guid_between(Guid* l, Guid* r, char uid) {
+void seq_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
+  guid_init(buf);
   Guid l_guid;
   Guid r_guid;
   guid_copy_into(&l_guid, l);
   guid_copy_into(&r_guid, r);
-  Guid* new_guid = guid_new();
-  _r_generate_guid_between(new_guid, &l_guid, 1, &r_guid, 1, uid);
-  return new_guid;
+  _r_generate_guid_between(buf, &l_guid, 1, &r_guid, 1, uid);
 }
 
-Guid* seq_new_guid_at(Sequence* s, unsigned int index) {
+/**
+ * @brief Generate a new Guid at the specified index and store the result in
+ *        a buffer.
+ *
+ * @param buf   The Guid buffer to store the result in.
+ * @param s     The Sequence to generate the Guid on.
+ * @param index The index at which to generate the Guid.
+ */
+void seq_guid_at(Guid* buf, Sequence* s, unsigned int index) {
   Guid* before = &((Element*) s->elements.data[index - 1])->id;
   Guid* after = &((Element*) s->elements.data[index])->id;
-  return seq_new_guid_between(before, after, s->uid);
+  seq_guid_between(buf, before, after, s->uid);
 }
 
 bool _is_larger_than_max(Sequence* s, Element* target) {
@@ -161,5 +168,14 @@ unsigned int seq_index_of_element_or_after(Sequence* s, Element* target) {
     }
   } while (max_i - min_i >= 0);
   return i;
+}
+
+Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
+  s->version++;
+  if (index < 0 || index > s->elements.size - 2) {
+    return NULL;
+  }
+  Element* new = element_new();
+  al_add_at(&s->elements, to_insert, index + 1);
 }
 

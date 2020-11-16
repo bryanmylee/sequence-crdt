@@ -24,7 +24,7 @@ void seq_free(Sequence** s) {
 }
 
 void seq_free_internal(Sequence* s) {
-  al_free_internal(&s->elements);
+  al_free_internal_with_cleanup(&s->elements, (void (*)(void *)) &element_free_internal);
 }
 
 /**

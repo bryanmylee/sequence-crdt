@@ -5,10 +5,28 @@
 
 #define BOUNDARY 10
 
+Element* _new_header() {
+  Element* new = element_new();
+  new->id.depth = 1;
+  new->id.keys = keys_from_tokens(1, 0);
+  return new;
+}
+
+Element* _new_trailer() {
+  Element* new = element_new();
+  new->id.depth = 1;
+  new->id.keys = keys_from_tokens(1, 1);
+  return new;
+}
+
 void seq_init(Sequence* s) {
   s->uid = 0;
   s->version = 0;
   al_init(&s->elements);
+  Element* header = _new_header();
+  Element* trailer = _new_trailer();
+  al_add(&s->elements, header);
+  al_add(&s->elements, trailer);
 }
 
 Sequence* seq_new(void) {

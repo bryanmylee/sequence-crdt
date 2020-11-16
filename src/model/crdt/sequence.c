@@ -116,12 +116,32 @@ Guid* seq_new_guid_at(Sequence* s, unsigned int index) {
   return seq_new_guid_between(before, after, s->uid);
 }
 
-unsigned int seq_index_of_element_or_after(Sequence* s, Element* e) {
-  int i = 0;
-  while (i < s->elements.size
-      && guid_compare(&e->id, &((Element**) s->elements.data)[i]->id) > 0) {
-    i++;
+bool _is_larger_than_max(Sequence* s, Element* target) {
+  Element* last = ((Element**) s->elements.data)[s->elements.size - 1];
+  return guid_compare(&target->id, &last->id) > 0;
+}
+
+unsigned int seq_index_of_element_or_after(Sequence* s, Element* target) {
+  if (_is_larger_than_max(s, target)) {
+    return s->elements.size;
   }
+  unsigned int max_i = s->elements.size - 1;
+  unsigned int min_i = 0;
+  unsigned int i;
+  int compare;
+  do {
+    i = min_i + (max_i - min_i) / 2;
+    Element* next = ((Element**) s->elements.data)[i];
+    compare = guid_compare(&next->id, &target->id);
+    if (compare == 0 || max_i == min_i) {
+      return i;
+    }
+    if (compare < 0) {
+      min_i = i + 1;
+    } else if (compare > 0) {
+      max_i = i;
+    }
+  } while (max_i - min_i >= 0);
   return i;
 }
 

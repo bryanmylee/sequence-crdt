@@ -229,30 +229,50 @@ START_TEST(test_seq_index_of_odd) {
   seq_free(&s);
 } END_TEST
 
-START_TEST(test_seq_index_of_non_existent) {
+START_TEST(test_seq_index_of_even_non_existent) {
   Sequence* s = seq_new();
-  // insert 8 Element pointers.
+  // insert 8 Element pointers with even key tokens.
   for (int i = 0; i < 8; i++) {
     Element* e = element_new();
     e->value = malloc(sizeof(int));
     // give all elements a simple incremental guid.
-    // at depth 3, all 8 elements can fit under one node.
+    // at depth 4, there are 16 possible locations.
     e->id = (Guid) {
-      .depth = 3,
-      .keys = keys_from_tokens(3, 0, 0, i),
+      .depth = 4,
+      .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
     };
     *((int*) e->value) = i;
     al_add(&s->elements, (void*) e);
   }
 
-  // should be at the very end of the sequence.
+  // somewhere in the middle.
   Element to_find;
+  element_init(&to_find);
+  to_find.id = (Guid) {
+    .depth = 4,
+    .keys = keys_from_tokens(4, 0, 0, 0, 5),
+  };
+  int index_of_to_find = seq_index_of_element_or_after(s, &to_find);
+  // index of element with token 6 is 3.
+  ck_assert_int_eq(index_of_to_find, 3);
+
+  // at the start, before index 0.
+  element_init(&to_find);
+  to_find.id = (Guid) {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 0, 0),
+  };
+  index_of_to_find = seq_index_of_element_or_after(s, &to_find);
+  ck_assert_int_eq(index_of_to_find, 0);
+
+  // at the end.
   element_init(&to_find);
   to_find.id = (Guid) {
     .depth = 3,
     .keys = keys_from_tokens(3, 1, 0, 0),
   };
-  int index_of_to_find = seq_index_of_element_or_after(s, &to_find);
+  index_of_to_find = seq_index_of_element_or_after(s, &to_find);
+  // element will come after the last element.
   ck_assert_int_eq(index_of_to_find, 8);
 
   seq_free(&s);
@@ -275,11 +295,11 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_guid, test_seq_new_guid_between_uncle_nephew);
   tcase_add_test(tc_guid, test_seq_new_guid_between_nephew_uncle);
   tcase_add_test(tc_guid, test_seq_new_guid_between_same_key_different_uid);
-  /* suite_add_tcase(s, tc_guid); */
+  suite_add_tcase(s, tc_guid);
 
   tcase_add_test(tc_find, test_seq_index_of_even);
   tcase_add_test(tc_find, test_seq_index_of_odd);
-  // tcase_add_test(tc_core, test_seq_index_of_non_existent);
+  tcase_add_test(tc_find, test_seq_index_of_even_non_existent);
   suite_add_tcase(s, tc_find);
 
   return s;

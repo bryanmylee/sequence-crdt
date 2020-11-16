@@ -212,3 +212,13 @@ Element* seq_delete(Sequence* s, unsigned int index) {
   return al_remove_at(&s->elements, index + 1);
 }
 
+void seq_remote_insert(Sequence* s, Element* to_insert) {
+  s->version++;
+  unsigned int iindex = seq_iindex_of_element_or_after(s, to_insert);
+  Element* e = seq_get_element(s, iindex - 1);
+  if (guid_equal(&e->id, &to_insert->id)) {
+    return;
+  }
+  al_add_at(&s->elements, to_insert, iindex);
+}
+

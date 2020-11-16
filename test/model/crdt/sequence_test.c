@@ -388,6 +388,39 @@ START_TEST(test_seq_delete) {
   }
 }
 
+START_TEST(test_seq_remote_insert) {
+  Sequence* s = seq_new();
+  char* data = "this is a string";
+  int n = strlen(data);
+  Element* remote_inserts[n];
+  for (int i = 0; i < n; i++) {
+    remote_inserts[i] = seq_insert(s, data + i, i);
+  }
+
+  Sequence* s2 = seq_new();
+  // insert remote elements twice.
+  for (int i = 0; i < n; i++) {
+    seq_remote_insert(s2, remote_inserts[i]);
+  }
+  for (int i = 0; i < n; i++) {
+    seq_remote_insert(s2, remote_inserts[i]);
+  }
+
+  // check that all elements are stored properly.
+  for (int i = 0; i < n; i++) {
+    Element* e = seq_get_element(s, i);
+    char c = *((char*) e->value);
+    ck_assert_int_eq(c, data[i]);
+  }
+
+  // check that all elements are sorted by Guid.
+  for (int i = 1; i < s->elements.size; i++) {
+    Element* prev = ((Element**) s2->elements.data)[i - 1];
+    Element* curr = ((Element**) s2->elements.data)[i];
+    ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
+  }
+}
+
 Suite* sequence_suite(void) {
   Suite *s;
   TCase *tc_guid;
@@ -417,6 +450,7 @@ Suite* sequence_suite(void) {
 
   tcase_add_test(tc_insert_delete, test_seq_insert);
   tcase_add_test(tc_insert_delete, test_seq_delete);
+  tcase_add_test(tc_insert_delete, test_seq_remote_insert);
   suite_add_tcase(s, tc_insert_delete);
 
   return s;

@@ -25,11 +25,11 @@ START_TEST(test_guid_copy) {
     .keys = orig_keys,
     .uids = uids_from_tokens(3, 1, 2, 1),
   };
-  Guid* copy = guid_copy(&orig);
+  Guid copy;
+  guid_copy_into(&copy, &orig);
   orig.keys = keys_from_tokens(3, 0, 1, 4);
 
-  ck_assert_int_eq(copy->keys, orig_keys);
-  free(copy);
+  ck_assert_int_eq(copy.keys, orig_keys);
 } END_TEST
 
 START_TEST(test_keys_from_tokens) {

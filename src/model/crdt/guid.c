@@ -78,12 +78,13 @@ Guid* guid_new(void) {
   return new;
 }
 
-Guid* guid_copy(Guid* o) {
-  Guid* copy = malloc(sizeof(Guid));
-  copy->depth = o->depth;
-  copy->keys = o->keys;
-  copy->uids = o->uids;
-  return copy;
+void guid_copy_into(Guid* g, Guid* from) {
+  g->depth = from->depth;
+  g->keys = from->keys;
+  g->uids = from->uids;
+}
+
+void guid_free(Guid* g) {
 }
 
 int guid_compare(Guid* l, Guid* r) {

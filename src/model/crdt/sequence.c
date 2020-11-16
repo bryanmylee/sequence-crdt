@@ -90,12 +90,12 @@ void _r_generate_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r
 }
 
 Guid* seq_new_guid_between(Guid* l, Guid* r, char uid) {
-  Guid* l_guid = guid_copy(l);
-  Guid* r_guid = guid_copy(r);
+  Guid l_guid;
+  Guid r_guid;
+  guid_copy_into(&l_guid, l);
+  guid_copy_into(&r_guid, r);
   Guid* new_guid = guid_new();
-  _r_generate_guid_between(new_guid, l_guid, 1, r_guid, 1, uid);
-  free(l_guid);
-  free(r_guid);
+  _r_generate_guid_between(new_guid, &l_guid, 1, &r_guid, 1, uid);
   return new_guid;
 }
 

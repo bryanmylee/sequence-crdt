@@ -61,7 +61,7 @@ int _get_base(int depth) {
   return 1 << depth;
 }
 
-token seq_token_between(token* l, token* r, int depth, char uid) {
+token seq_gen_token_between(token* l, token* r, int depth, char uid) {
   int interval = r->key - l->key - 1;
   if (interval < 1) {
     // invalid token.
@@ -75,7 +75,7 @@ token seq_token_between(token* l, token* r, int depth, char uid) {
   return (token) { .key = r->key - rand_step, .uid = uid };
 }
 
-void _r_generate_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int curr_r_depth, char uid) {
+void _r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int curr_r_depth, char uid) {
   int new_depth = new_guid->depth + 1;
 
   bool l_has_next = curr_l_depth <= l->depth;
@@ -92,7 +92,7 @@ void _r_generate_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r
 
   int interval = r_token.key - l_token.key;
   if (interval > 1) {
-    token new_token = seq_token_between(&l_token, &r_token, new_depth, uid);
+    token new_token = seq_gen_token_between(&l_token, &r_token, new_depth, uid);
     return guid_add_token(new_guid, new_token);
   }
   if (interval == 1) {
@@ -118,13 +118,13 @@ void _r_generate_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r
   }
 }
 
-void seq_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
+void seq_gen_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
   guid_init(buf);
   Guid l_guid;
   Guid r_guid;
   guid_copy_into(&l_guid, l);
   guid_copy_into(&r_guid, r);
-  _r_generate_guid_between(buf, &l_guid, 1, &r_guid, 1, uid);
+  _r_gen_guid_between(buf, &l_guid, 1, &r_guid, 1, uid);
 }
 
 /**
@@ -135,10 +135,10 @@ void seq_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
  * @param buf   The Guid buffer to store the result in.
  * @param index The index at which to generate the Guid.
  */
-void seq_guid_at(Sequence* s, Guid* buf, unsigned int index) {
+void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int index) {
   Guid* before = &((Element*) s->elements.data[index - 1])->id;
   Guid* after = &((Element*) s->elements.data[index])->id;
-  seq_guid_between(buf, before, after, s->uid);
+  seq_gen_guid_between(buf, before, after, s->uid);
 }
 
 bool _is_larger_than_max(Sequence* s, Element* target) {
@@ -178,7 +178,7 @@ Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
   Element* new = element_new();
   new->value = to_insert;
   // account for header index.
-  seq_guid_at(s, &new->id, index + 1);
+  seq_gen_guid_at(s, &new->id, index + 1);
   al_add_at(&s->elements, new, index + 1);
   return new;
 }

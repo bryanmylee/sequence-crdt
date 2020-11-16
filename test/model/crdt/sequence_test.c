@@ -345,10 +345,46 @@ START_TEST(test_seq_insert) {
 
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
-    // avoid the null value
-    Element* e = ((Element**) s->elements.data)[i + 1];
+    Element* e = seq_get_element(s, i);
     char c = *((char*) e->value);
     ck_assert_int_eq(c, data[i]);
+  }
+
+  // check that all elements are sorted by Guid.
+  for (int i = 1; i < s->elements.size; i++) {
+    Element* prev = ((Element**) s->elements.data)[i - 1];
+    Element* curr = ((Element**) s->elements.data)[i];
+    ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
+  }
+}
+
+START_TEST(test_seq_delete) {
+  Sequence* s = seq_new();
+  char* data = "this is a string";
+  int n = strlen(data);
+  for (int i = 0; i < n; i++) {
+    seq_insert(s, data + i, i);
+  }
+
+  // delete 'h', then delete 'is'
+  seq_delete(s, 1);
+  seq_delete(s, 4);
+  seq_delete(s, 4);
+
+  char* expected = "tis  a string";
+  n = strlen(expected);
+  // check that all elements are stored properly.
+  for (int i = 0; i < n; i++) {
+    Element* e = seq_get_element(s, i);
+    char c = *((char*) e->value);
+    ck_assert_int_eq(c, expected[i]);
+  }
+
+  // check that all elements are sorted by Guid.
+  for (int i = 1; i < s->elements.size; i++) {
+    Element* prev = ((Element**) s->elements.data)[i - 1];
+    Element* curr = ((Element**) s->elements.data)[i];
+    ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 }
 
@@ -380,6 +416,7 @@ Suite* sequence_suite(void) {
   suite_add_tcase(s, tc_find);
 
   tcase_add_test(tc_insert_delete, test_seq_insert);
+  tcase_add_test(tc_insert_delete, test_seq_delete);
   suite_add_tcase(s, tc_insert_delete);
 
   return s;

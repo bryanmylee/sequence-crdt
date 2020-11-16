@@ -59,7 +59,8 @@ void _al_expand_to_min(ArrayList* al, unsigned int min) {
 }
 
 /**
- * @brief Add an element to the ArrayList at a specified index.
+ * @brief Add an element that is not allocated to heap to the ArrayList at a
+ * specified index.
  *
  * @param al    A pointer to the ArrayList to add to.
  * @param e     A pointer to the element to add.
@@ -68,7 +69,7 @@ void _al_expand_to_min(ArrayList* al, unsigned int min) {
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_at(ArrayList* al, void* e, size_t esize, unsigned int index) {
+bool al_add_at_static(ArrayList* al, void* e, size_t esize, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
@@ -86,6 +87,45 @@ bool al_add_at(ArrayList* al, void* e, size_t esize, unsigned int index) {
 }
 
 /**
+ * @brief Add an element that is not allocated to heap to the end of the
+ * ArrayList.
+ *
+ * @param al    A pointer to the ArrayList to add to.
+ * @param e     A pointer to the element to add.
+ * @param esize The size of the element to add.
+ *
+ * @return If the add was successful, returns true.
+ */
+bool al_add_static(ArrayList* al, void* e, size_t esize) {
+  return al_add_at_static(al, e, esize, al->size);
+}
+
+/**
+ * @brief Add an element to the ArrayList at a specified index.
+ *
+ * @param al    A pointer to the ArrayList to add to.
+ * @param e     A pointer to the alloc-ed element to add.
+ * @param index The index at which to add the element.
+ *
+ * @return If the add was successful, returns true.
+ */
+bool al_add_at(ArrayList* al, void* e, unsigned int index) {
+  if (index < 0 || index > al->size) {
+    return false;
+  }
+  if (al->size == al->cap) {
+    _al_expand(al);
+  }
+  // shift right elements.
+  for (unsigned int i = al->size; i > index; i--) {
+    al->data[i] = al->data[i - 1];
+  }
+  al->data[index] = e;
+  al->size++;
+  return true;
+}
+
+/**
  * @brief Add an element to the end of the ArrayList.
  *
  * @param al    A pointer to the ArrayList to add to.
@@ -94,8 +134,8 @@ bool al_add_at(ArrayList* al, void* e, size_t esize, unsigned int index) {
  *
  * @return If the add was successful, returns true.
  */
-bool al_add(ArrayList* al, void* e, size_t esize) {
-  return al_add_at(al, e, esize, al->size);
+bool al_add(ArrayList* al, void* e) {
+  return al_add_at(al, e, al->size);
 }
 
 /**

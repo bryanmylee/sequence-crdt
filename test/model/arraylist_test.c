@@ -23,7 +23,7 @@ START_TEST(test_al_add_at_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    al_add_at(&al, &i, sizeof(int), 0);
+    al_add_at_static(&al, &i, sizeof(int), 0);
   }
 
   ck_assert_int_eq(al.cap, 32);
@@ -39,7 +39,7 @@ START_TEST(test_al_add_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    al_add(&al, &i, sizeof(int));
+    al_add_static(&al, &i, sizeof(int));
   }
 
   ck_assert_int_eq(al.cap, 32);
@@ -55,7 +55,7 @@ START_TEST(test_al_add_all_at_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    al_add(&al, &i, sizeof(int));
+    al_add_static(&al, &i, sizeof(int));
   }
 
   // insert 20 zeros at index 10.
@@ -111,7 +111,7 @@ START_TEST(test_al_add_all_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    al_add(&al, &i, sizeof(int));
+    al_add_static(&al, &i, sizeof(int));
   }
 
   // insert 20 zeros.
@@ -195,10 +195,10 @@ START_TEST(test_al_add_at_outofbounds) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    al_add_at(&al, &i, sizeof(int), 0);
+    al_add_at_static(&al, &i, sizeof(int), 0);
   }
   int e = 20;
-  bool result = al_add_at(&al, &e, sizeof(int), 21);
+  bool result = al_add_at_static(&al, &e, sizeof(int), 21);
   ck_assert_int_eq(result, false);
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 20);
@@ -213,7 +213,7 @@ START_TEST(test_al_add_all_at_outofbounds) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    al_add(&al, &i, sizeof(int));
+    al_add_static(&al, &i, sizeof(int));
   }
 
   // insert 20 zeros out of bounds.

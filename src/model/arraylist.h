@@ -11,6 +11,8 @@ typedef struct {
 
 void al_init(ArrayList* al);
 ArrayList* al_new(void);
+void al_free(ArrayList** al);
+void al_free_internal(ArrayList* al);
 bool al_add_at(ArrayList* al, void* e, unsigned int index);
 bool al_add(ArrayList* al, void* e);
 bool al_add_all_at(ArrayList* al, void** es, unsigned int n, unsigned int index);

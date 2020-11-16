@@ -4,6 +4,36 @@
 #define EXPAND_FACTOR 2
 
 /**
+ * @brief Initialize an ArrayList.
+ *
+ * @param al A pointer to the ArrayList to initialize.
+ */
+void al_init(ArrayList* al) {
+  al->cap = INITIAL_CAPACITY;
+  al->size = 0;
+  al->data = malloc(al->cap * sizeof(void*));
+}
+
+ArrayList* al_new(void) {
+  ArrayList* new = malloc(sizeof(ArrayList));
+  al_init(new);
+  return new;
+}
+
+void al_free(ArrayList** al) {
+  al_free_internal(*al);
+  free(*al);
+  *al = NULL;
+}
+
+void al_free_internal(ArrayList* al) {
+  for (unsigned int i = 0; i < al->size; i++) {
+    free(al->data[i]);
+    *(al->data + i) = NULL;
+  }
+}
+
+/**
  * @brief Increase the capacity of an existing ArrayList.
  *
  * @param al A pointer to the ArrayList to expand.
@@ -25,23 +55,6 @@ void _al_expand_to_min(ArrayList* al, unsigned int min) {
     al->cap *= EXPAND_FACTOR;
   }
   al->data = realloc(al->data, al->cap * sizeof(void*));
-}
-
-/**
- * @brief Initialize an ArrayList.
- *
- * @param al A pointer to the ArrayList to initialize.
- */
-void al_init(ArrayList* al) {
-  al->cap = INITIAL_CAPACITY;
-  al->size = 0;
-  al->data = malloc(al->cap * sizeof(void*));
-}
-
-ArrayList* al_new(void) {
-  ArrayList* new = malloc(sizeof(ArrayList));
-  al_init(new);
-  return new;
 }
 
 /**

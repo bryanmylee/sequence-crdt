@@ -14,6 +14,8 @@ typedef struct {
 
 void seq_init(Sequence* s);
 Sequence* seq_new(void);
+void seq_free(Sequence** s);
+void seq_free_internal(Sequence* s);
 token seq_token_between(token* l, token* r, int depth, char uid);
 Guid* seq_new_guid_between(Guid* l, Guid* r, char uid);
 Guid* seq_new_guid_at(Sequence* s, unsigned int index);

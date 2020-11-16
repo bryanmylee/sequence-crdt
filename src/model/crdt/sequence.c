@@ -1,4 +1,5 @@
 #include <util/bit.h>
+#include <model/arraylist.h>
 #include "guid.h"
 #include "sequence.h"
 
@@ -14,6 +15,16 @@ Sequence* seq_new(void) {
   Sequence* new = malloc(sizeof(Sequence));
   seq_init(new);
   return new;
+}
+
+void seq_free(Sequence** s) {
+  seq_free_internal(*s);
+  free(*s);
+  *s = NULL;
+}
+
+void seq_free_internal(Sequence* s) {
+  al_free_internal(&s->elements);
 }
 
 /**

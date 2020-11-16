@@ -141,6 +141,7 @@ START_TEST(test_seq_guid_between_same_key_different_uid) {
 
 START_TEST(test_seq_index_of_even) {
   Sequence* s = seq_new();
+  // remove header and trailer elements for the purpose of this test.
   al_init(&s->elements);
   // insert 8 Element pointers.
   for (int i = 0; i < 8; i++) {
@@ -187,6 +188,7 @@ START_TEST(test_seq_index_of_even) {
 
 START_TEST(test_seq_index_of_odd) {
   Sequence* s = seq_new();
+  // remove header and trailer elements for the purpose of this test.
   al_init(&s->elements);
   // insert 7 Element pointers.
   for (int i = 0; i < 7; i++) {
@@ -233,6 +235,7 @@ START_TEST(test_seq_index_of_odd) {
 
 START_TEST(test_seq_index_of_even_non_existent) {
   Sequence* s = seq_new();
+  // remove header and trailer elements for the purpose of this test.
   al_init(&s->elements);
   // insert 8 Element pointers with even key tokens.
   for (int i = 0; i < 8; i++) {
@@ -281,6 +284,57 @@ START_TEST(test_seq_index_of_even_non_existent) {
   seq_free(&s);
 } END_TEST
 
+START_TEST(test_seq_index_of_odd_non_existent) {
+  Sequence* s = seq_new();
+  // remove header and trailer elements for the purpose of this test.
+  al_init(&s->elements);
+  // insert 7 Element pointers with even key tokens.
+  for (int i = 0; i < 7; i++) {
+    Element* e = element_new();
+    e->value = malloc(sizeof(int));
+    // give all elements a simple incremental guid.
+    // at depth 4, there are 16 possible locations.
+    e->id = (Guid) {
+      .depth = 4,
+      .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
+    };
+    *((int*) e->value) = i;
+    al_add(&s->elements, (void*) e);
+  }
+
+  // somewhere in the middle.
+  Element to_find;
+  element_init(&to_find);
+  to_find.id = (Guid) {
+    .depth = 4,
+    .keys = keys_from_tokens(4, 0, 0, 0, 5),
+  };
+  int index_of_to_find = seq_index_of_element_or_after(s, &to_find);
+  // index of element with token 6 is 3.
+  ck_assert_int_eq(index_of_to_find, 3);
+
+  // at the start, before index 0.
+  element_init(&to_find);
+  to_find.id = (Guid) {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 0, 0),
+  };
+  index_of_to_find = seq_index_of_element_or_after(s, &to_find);
+  ck_assert_int_eq(index_of_to_find, 0);
+
+  // at the end.
+  element_init(&to_find);
+  to_find.id = (Guid) {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 1, 0, 0),
+  };
+  index_of_to_find = seq_index_of_element_or_after(s, &to_find);
+  // element will come after the last element.
+  ck_assert_int_eq(index_of_to_find, 7);
+
+  seq_free(&s);
+} END_TEST
+
 Suite* sequence_suite(void) {
   Suite *s;
   TCase *tc_guid;
@@ -303,6 +357,7 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_find, test_seq_index_of_even);
   tcase_add_test(tc_find, test_seq_index_of_odd);
   tcase_add_test(tc_find, test_seq_index_of_even_non_existent);
+  tcase_add_test(tc_find, test_seq_index_of_odd_non_existent);
   suite_add_tcase(s, tc_find);
 
   return s;

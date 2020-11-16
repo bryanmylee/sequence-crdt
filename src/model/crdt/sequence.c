@@ -1,5 +1,5 @@
 #include <util/bit.h>
-#include "element.h"
+#include "guid.h"
 #include "sequence.h"
 
 #define BOUNDARY 10
@@ -91,5 +91,14 @@ Guid* seq_new_guid_at(Sequence* s, unsigned int index) {
   Guid* before = &((Element*) s->elements.data[index - 1])->id;
   Guid* after = &((Element*) s->elements.data[index])->id;
   return seq_new_guid_between(before, after, s->uid);
+}
+
+unsigned int seq_index_of_element_or_after(Sequence* s, Element* e) {
+  int i = 0;
+  while (i < s->elements.size
+      && guid_compare(&e->id, &((Element**) s->elements.data)[i]->id) > 0) {
+    i++;
+  }
+  return i;
 }
 

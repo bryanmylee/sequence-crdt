@@ -84,7 +84,9 @@ void guid_copy_into(Guid* g, Guid* from) {
   g->uids = from->uids;
 }
 
-void guid_free(Guid* g) {
+void guid_free(Guid** g) {
+  free(*g);
+  *g = NULL;
 }
 
 int guid_compare(Guid* l, Guid* r) {

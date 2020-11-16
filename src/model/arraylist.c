@@ -34,6 +34,20 @@ void al_free_internal(ArrayList* al) {
   }
 }
 
+void al_free_with_cleanup(ArrayList** al, void (*fn)(void* e)) {
+  al_free_internal_with_cleanup(*al, fn);
+  free(*al);
+  *al = NULL;
+}
+
+void al_free_internal_with_cleanup(ArrayList* al, void (*fn)(void* e)) {
+  for (unsigned int i = 0; i < al->size; i++) {
+    (*fn)(al->data[i]);
+    free(al->data[i]);
+    *(al->data + i) = NULL;
+  }
+}
+
 /**
  * @brief Increase the capacity of an existing ArrayList.
  *

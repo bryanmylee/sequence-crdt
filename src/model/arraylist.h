@@ -13,6 +13,8 @@ void al_init(ArrayList* al);
 ArrayList* al_new(void);
 void al_free(ArrayList** al);
 void al_free_internal(ArrayList* al);
+void al_free_with_cleanup(ArrayList** al, void (*fn)(void* e));
+void al_free_internal_with_cleanup(ArrayList* al, void (*fn)(void* e));
 bool al_add_at_static(ArrayList* al, void* e, size_t esize, unsigned int index);
 bool al_add_static(ArrayList* al, void* e, size_t esize);
 bool al_add_at(ArrayList* al, void* e, unsigned int index);

@@ -40,6 +40,19 @@ void al_free_with_cleanup(ArrayList** al, void (*fn)(void* e)) {
   *al = NULL;
 }
 
+/**
+ * @brief Free all elements after performing some cleanup function. This is
+ *        especially useful if each element requires a custom cleanup function.
+ *
+ *        For example, the Element struct requires a custom cleanup function to
+ *        ensure that its value member is also freed. By passing the
+ *        element_free_internal function as a parameter, the ArrayList will be
+ *        able to ensure that no elements are left un-freed.
+ *
+ * @param al A pointer to the ArrayList to free.
+ * @param fn A pointer to the cleanup function for an element, which should take
+ *           a pointer to the element to cleanup.
+ */
 void al_free_internal_with_cleanup(ArrayList* al, void (*fn)(void* e)) {
   for (unsigned int i = 0; i < al->size; i++) {
     (*fn)(al->data[i]);

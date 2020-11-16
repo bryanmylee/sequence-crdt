@@ -131,11 +131,11 @@ void seq_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
  * @brief Generate a new Guid at the specified index and store the result in
  *        a buffer.
  *
- * @param buf   The Guid buffer to store the result in.
  * @param s     The Sequence to generate the Guid on.
+ * @param buf   The Guid buffer to store the result in.
  * @param index The index at which to generate the Guid.
  */
-void seq_guid_at(Guid* buf, Sequence* s, unsigned int index) {
+void seq_guid_at(Sequence* s, Guid* buf, unsigned int index) {
   Guid* before = &((Element*) s->elements.data[index - 1])->id;
   Guid* after = &((Element*) s->elements.data[index])->id;
   seq_guid_between(buf, before, after, s->uid);
@@ -171,11 +171,24 @@ unsigned int seq_index_of_element_or_after(Sequence* s, Element* target) {
 }
 
 Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
-  s->version++;
   if (index < 0 || index > s->elements.size - 2) {
     return NULL;
   }
+  s->version++;
   Element* new = element_new();
-  al_add_at(&s->elements, to_insert, index + 1);
+  new->value = to_insert;
+  // account for header index.
+  seq_guid_at(s, &new->id, index + 1);
+  al_add_at(&s->elements, new, index + 1);
+  return new;
+}
+
+Element* seq_delete(Sequence* s, unsigned int index) {
+  if (index < 0 || index > s->elements.size - 2) {
+    return NULL;
+  }
+  s->version++;
+  // account for header index.
+  return al_remove_at(&s->elements, index + 1);
 }
 

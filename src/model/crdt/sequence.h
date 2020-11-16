@@ -19,7 +19,7 @@ void seq_free_internal(Sequence* s);
 token seq_gen_token_between(token* l, token* r, int depth, char uid);
 void seq_gen_guid_between(Guid* buf, Guid* l, Guid* r, char uid);
 void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int index);
-unsigned int seq_index_of_element_or_after(Sequence* s, Element* e);
+unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* e);
 Element* seq_get_element(Sequence* s, unsigned int index);
 Element* seq_insert(Sequence* s, void* to_insert, unsigned int index);
 Element* seq_delete(Sequence* s, unsigned int index);

@@ -99,21 +99,21 @@ void _r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int
     guid_add_token(new_guid, l_token);
     l->keys >>= curr_l_depth;
     l->uids >>= 6;
-    return _r_generate_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
+    return _r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
   }
   if (interval == 0) {
     guid_add_token(new_guid, l_token);
     if (l_token.uid < r_token.uid) {
       l->keys >>= curr_l_depth;
       l->uids >>= 6;
-      return _r_generate_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
+      return _r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
     }
     if (l_token.uid == r_token.uid) {
       l->keys >>= curr_l_depth;
       l->uids >>= 6;
       r->keys >>= curr_r_depth;
       r->uids >>= 6;
-      return _r_generate_guid_between(new_guid, l, curr_l_depth + 1, r, curr_r_depth + 1, uid);
+      return _r_gen_guid_between(new_guid, l, curr_l_depth + 1, r, curr_r_depth + 1, uid);
     }
   }
 }
@@ -128,16 +128,16 @@ void seq_gen_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
 }
 
 /**
- * @brief Generate a new Guid at the specified index and store the result in
- *        a buffer.
+ * @brief Generate a new Guid at the specified internal index and store the
+ *        result in a buffer.
  *
- * @param s     The Sequence to generate the Guid on.
- * @param buf   The Guid buffer to store the result in.
- * @param index The index at which to generate the Guid.
+ * @param s      A pointer to the Sequence to generate the Guid on.
+ * @param buf    A pointer to the Guid buffer to store the result in.
+ * @param iindex The internal index at which to generate the Guid.
  */
-void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int index) {
-  Guid* before = &((Element*) s->elements.data[index - 1])->id;
-  Guid* after = &((Element*) s->elements.data[index])->id;
+void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int iindex) {
+  Guid* before = &((Element*) s->elements.data[iindex - 1])->id;
+  Guid* after = &((Element*) s->elements.data[iindex])->id;
   seq_gen_guid_between(buf, before, after, s->uid);
 }
 
@@ -146,7 +146,16 @@ bool _is_larger_than_max(Sequence* s, Element* target) {
   return guid_compare(&target->id, &last->id) > 0;
 }
 
-unsigned int seq_index_of_element_or_after(Sequence* s, Element* target) {
+/**
+ * @brief Find the internal index of a given element, or its supposed position
+ *        if it were inserted into the sequence.
+ *
+ * @param s      A pointer to the Sequence to search.
+ * @param target A pointer to the target Element to find.
+ *
+ * @return The internal index of an element.
+ */
+unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* target) {
   if (_is_larger_than_max(s, target)) {
     return s->elements.size;
   }

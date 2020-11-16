@@ -179,15 +179,19 @@ unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* target) {
   return i;
 }
 
+unsigned int seq_size(Sequence* s) {
+  return s->elements.size - 2;
+}
+
 Element* seq_get_element(Sequence* s, unsigned int index) {
-  if (index < 0 || index > s->elements.size - 2) {
+  if (index < 0 || index > seq_size(s)) {
     return NULL;
   }
   return ((Element**) s->elements.data)[index + 1];
 }
 
 Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
-  if (index < 0 || index > s->elements.size - 2) {
+  if (index < 0 || index > seq_size(s)) {
     return NULL;
   }
   s->version++;
@@ -200,7 +204,7 @@ Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
 }
 
 Element* seq_delete(Sequence* s, unsigned int index) {
-  if (index < 0 || index > s->elements.size - 2) {
+  if (index < 0 || index > seq_size(s)) {
     return NULL;
   }
   s->version++;

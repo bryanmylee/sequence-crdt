@@ -8,6 +8,7 @@ START_TEST(test_al_init) {
   al_init(&al);
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 0);
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_new) {
@@ -22,9 +23,7 @@ START_TEST(test_al_add_at_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    int* e = malloc(sizeof(int));
-    *e = i;
-    al_add_at(&al, e, 0);
+    al_add_at(&al, &i, sizeof(int), 0);
   }
 
   ck_assert_int_eq(al.cap, 32);
@@ -32,6 +31,7 @@ START_TEST(test_al_add_at_expand) {
   for (int i = 0; i < al.size; i++) {
     ck_assert_int_eq(*((int*) al.data[al.size - 1 - i]), i);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_add_expand) {
@@ -39,9 +39,7 @@ START_TEST(test_al_add_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    int* e = malloc(sizeof(int));
-    *e = i;
-    al_add(&al, e);
+    al_add(&al, &i, sizeof(int));
   }
 
   ck_assert_int_eq(al.cap, 32);
@@ -49,6 +47,7 @@ START_TEST(test_al_add_expand) {
   for (int i = 0; i < al.size; i++) {
     ck_assert_int_eq(*((int*) al.data[i]), i);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_add_all_at_expand) {
@@ -56,10 +55,9 @@ START_TEST(test_al_add_all_at_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    int* e = malloc(sizeof(int));
-    *e = i;
-    al_add(&al, e);
+    al_add(&al, &i, sizeof(int));
   }
+
   // insert 20 zeros at index 10.
   int* es[20];
   for (int i = 0; i < 20; i++) {
@@ -80,6 +78,7 @@ START_TEST(test_al_add_all_at_expand) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_add_all_at_empty) {
@@ -104,6 +103,7 @@ START_TEST(test_al_add_all_at_empty) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_add_all_expand) {
@@ -111,10 +111,9 @@ START_TEST(test_al_add_all_expand) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    int* e = malloc(sizeof(int));
-    *e = i;
-    al_add(&al, e);
+    al_add(&al, &i, sizeof(int));
   }
+
   // insert 20 zeros.
   int* es[20];
   for (int i = 0; i < 20; i++) {
@@ -135,6 +134,7 @@ START_TEST(test_al_add_all_expand) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_remove_at) {
@@ -159,6 +159,7 @@ START_TEST(test_al_remove_at) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_remove_all_at) {
@@ -186,6 +187,7 @@ START_TEST(test_al_remove_all_at) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected_remaining[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_add_at_outofbounds) {
@@ -193,20 +195,17 @@ START_TEST(test_al_add_at_outofbounds) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    int* e = malloc(sizeof(int));
-    *e = i;
-    al_add_at(&al, e, 0);
+    al_add_at(&al, &i, sizeof(int), 0);
   }
-  // add out of bounds
-  int* e = malloc(sizeof(int));
-  *e = 20;
-  bool result = al_add_at(&al, e, 21);
+  int e = 20;
+  bool result = al_add_at(&al, &e, sizeof(int), 21);
   ck_assert_int_eq(result, false);
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 20);
   for (int i = 0; i < al.size; i++) {
     ck_assert_int_eq(*((int*) al.data[al.size - 1 - i]), i);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_add_all_at_outofbounds) {
@@ -214,10 +213,9 @@ START_TEST(test_al_add_all_at_outofbounds) {
   al_init(&al);
 
   for (int i = 0; i < 20; i++) {
-    int* e = malloc(sizeof(int));
-    *e = i;
-    al_add(&al, e);
+    al_add(&al, &i, sizeof(int));
   }
+
   // insert 20 zeros out of bounds.
   int* es[20];
   for (int i = 0; i < 20; i++) {
@@ -237,6 +235,7 @@ START_TEST(test_al_add_all_at_outofbounds) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_remove_at_outofbounds) {
@@ -261,6 +260,7 @@ START_TEST(test_al_remove_at_outofbounds) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_remove_all_at_outofbounds) {
@@ -287,6 +287,7 @@ START_TEST(test_al_remove_all_at_outofbounds) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected_remaining[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 START_TEST(test_al_remove_all_at_invalid_from_to) {
@@ -313,6 +314,7 @@ START_TEST(test_al_remove_all_at_invalid_from_to) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected_remaining[i]);
   }
+  al_free_internal(&al);
 } END_TEST
 
 Suite* arraylist_suite(void) {

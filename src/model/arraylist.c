@@ -1,3 +1,4 @@
+#include <string.h>
 #include "arraylist.h"
 
 #define INITIAL_CAPACITY 16
@@ -61,12 +62,13 @@ void _al_expand_to_min(ArrayList* al, unsigned int min) {
  * @brief Add an element to the ArrayList at a specified index.
  *
  * @param al    A pointer to the ArrayList to add to.
- * @param e     A pointer to the element to add. The element must be alloc-ed.
+ * @param e     A pointer to the element to add.
+ * @param esize The size of the element to add.
  * @param index The index at which to add the element.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_at(ArrayList* al, void* e, unsigned int index) {
+bool al_add_at(ArrayList* al, void* e, size_t esize, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
@@ -77,7 +79,8 @@ bool al_add_at(ArrayList* al, void* e, unsigned int index) {
   for (unsigned int i = al->size; i > index; i--) {
     al->data[i] = al->data[i - 1];
   }
-  al->data[index] = e;
+  al->data[index] = malloc(esize);
+  memcpy(al->data[index], e, esize);
   al->size++;
   return true;
 }
@@ -85,13 +88,14 @@ bool al_add_at(ArrayList* al, void* e, unsigned int index) {
 /**
  * @brief Add an element to the end of the ArrayList.
  *
- * @param al A pointer to the ArrayList to add to.
- * @param e  A pointer to the element to add. The element must be alloc-ed.
+ * @param al    A pointer to the ArrayList to add to.
+ * @param e     A pointer to the element to add.
+ * @param esize The size of the element to add.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add(ArrayList* al, void* e) {
-  return al_add_at(al, e, al->size);
+bool al_add(ArrayList* al, void* e, size_t esize) {
+  return al_add_at(al, e, esize, al->size);
 }
 
 /**

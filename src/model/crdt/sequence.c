@@ -4,6 +4,18 @@
 
 #define BOUNDARY 10
 
+void seq_init(Sequence* s) {
+  s->uid = 0;
+  s->version = 0;
+  al_init(&s->elements);
+}
+
+Sequence* seq_new(void) {
+  Sequence* new = malloc(sizeof(Sequence));
+  seq_init(new);
+  return new;
+}
+
 /**
  * @brief Get the boundary strategy at the given depth as defined by LSEQ.
  *

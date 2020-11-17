@@ -22,10 +22,12 @@ void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int index);
 unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* e);
 unsigned int seq_size(Sequence* s);
 Element* seq_get_element(Sequence* s, unsigned int index);
-Element* seq_insert(Sequence* s, void* to_insert, unsigned int index);
-Element* seq_delete(Sequence* s, unsigned int index);
-void seq_remote_insert(Sequence* s, Element* to_insert);
-Element* seq_remote_delete(Sequence* s, Element* to_delete);
+bool seq_insert(Sequence* s, void* to_insert, unsigned int index);
+bool seq_insert_save(Sequence* s, void* to_insert, unsigned int index, Element* buf);
+bool seq_delete(Sequence* s, unsigned int index);
+bool seq_delete_save(Sequence* s, unsigned int index, Element* buf);
+bool seq_remote_insert(Sequence* s, Element* to_insert);
+bool seq_remote_delete(Sequence* s, Element* to_delete);
 
 #endif
 

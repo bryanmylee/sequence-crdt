@@ -1,3 +1,4 @@
+#include <string.h>
 #include <util/bit.h>
 #include <model/arraylist.h>
 #include "guid.h"
@@ -5,17 +6,19 @@
 
 #define BOUNDARY 10
 
-Element* _new_header() {
-  Element* new = element_new();
-  new->id.depth = 1;
-  new->id.keys = keys_from_tokens(1, 0);
+Element _new_header() {
+  Element new;
+  element_init(&new);
+  new.id.depth = 1;
+  new.id.keys = keys_from_tokens(1, 0);
   return new;
 }
 
-Element* _new_trailer() {
-  Element* new = element_new();
-  new->id.depth = 1;
-  new->id.keys = keys_from_tokens(1, 1);
+Element _new_trailer() {
+  Element new;
+  element_init(&new);
+  new.id.depth = 1;
+  new.id.keys = keys_from_tokens(1, 1);
   return new;
 }
 
@@ -23,10 +26,10 @@ void seq_init(Sequence* s) {
   s->uid = 0;
   s->version = 0;
   al_init(&s->elements, sizeof(Element));
-  Element* header = _new_header();
-  Element* trailer = _new_trailer();
-  al_add(&s->elements, header);
-  al_add(&s->elements, trailer);
+  Element header = _new_header();
+  Element trailer = _new_trailer();
+  al_add(&s->elements, &header);
+  al_add(&s->elements, &trailer);
 }
 
 Sequence* seq_new(void) {
@@ -187,49 +190,76 @@ Element* seq_get_element(Sequence* s, unsigned int index) {
   if (index < 0 || index > seq_size(s)) {
     return NULL;
   }
-  return ((Element**) s->elements.data)[index + 1];
+  return al_get(&s->elements, index + 1);
 }
 
-Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
+bool _seq_insert(Sequence* s, void* to_insert, unsigned int index, Element* buf) {
   if (index < 0 || index > seq_size(s)) {
-    return NULL;
+    return false;
   }
   s->version++;
-  // TODO how to handle initialization of new elements?
-  Element* new = element_new();
-  new->value = to_insert;
+  Element new = {
+    .version = s->version,
+    .value = to_insert,
+  };
   // account for header index.
-  seq_gen_guid_at(s, &new->id, index + 1);
-  al_add_at(&s->elements, new, index + 1);
-  return new;
+  seq_gen_guid_at(s, &new.id, index + 1);
+  al_add_at(&s->elements, &new, index + 1);
+  if (buf != NULL) {
+    memcpy(buf, &new, sizeof(Element));
+  }
+  return true;
 }
 
-Element* seq_delete(Sequence* s, unsigned int index) {
+bool seq_insert(Sequence* s, void* to_insert, unsigned int index) {
+  return _seq_insert(s, to_insert, index, NULL);
+}
+
+bool seq_insert_save(Sequence* s, void* to_insert, unsigned int index, Element* buf) {
+  return _seq_insert(s, to_insert, index, buf);
+}
+
+bool _seq_delete(Sequence* s, unsigned int index, Element* buf) {
   if (index < 0 || index > seq_size(s)) {
-    return NULL;
+    return false;
   }
   s->version++;
   // account for header index.
-  return al_remove_at(&s->elements, index + 1);
+  if (buf != NULL) {
+    al_remove_at_save(&s->elements, index + 1, buf);
+  } else {
+    al_remove_at(&s->elements, index + 1);
+  }
+  return true;
 }
 
-void seq_remote_insert(Sequence* s, Element* to_insert) {
+bool seq_delete(Sequence* s, unsigned int index) {
+  return _seq_delete(s, index, NULL);
+}
+
+bool seq_delete_save(Sequence* s, unsigned int index, Element* buf) {
+  return _seq_delete(s, index, buf);
+}
+
+bool seq_remote_insert(Sequence* s, Element* to_insert) {
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_insert);
   Element* e = seq_get_element(s, iindex - 1);
   if (guid_equal(&e->id, &to_insert->id)) {
-    return;
+    return false;
   }
   s->version++;
   al_add_at(&s->elements, to_insert, iindex);
+  return true;
 }
 
-Element* seq_remote_delete(Sequence* s, Element* to_delete) {
+bool seq_remote_delete(Sequence* s, Element* to_delete) {
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_delete);
   Element* e = seq_get_element(s, iindex - 1);
   if (!guid_equal(&e->id, &to_delete->id)) {
-    return NULL;
+    return false;
   }
   s->version++;
-  return al_remove_at(&s->elements, iindex);
+  al_remove_at(&s->elements, iindex);
+  return true;
 }
 

@@ -9,15 +9,15 @@
  *
  * @param al A pointer to the ArrayList to initialize.
  */
-void al_init(ArrayList* al) {
+void al_init(ArrayList* al, size_t esize) {
   al->cap = INITIAL_CAPACITY;
   al->size = 0;
-  al->data = malloc(al->cap * sizeof(void*));
+  al->data = malloc(al->cap * esize);
 }
 
-ArrayList* al_new(void) {
+ArrayList* al_new(size_t esize) {
   ArrayList* new = malloc(sizeof(ArrayList));
-  al_init(new);
+  al_init(new, esize);
   return new;
 }
 
@@ -28,37 +28,23 @@ void al_free(ArrayList** al) {
 }
 
 void al_free_internal(ArrayList* al) {
-  for (unsigned int i = 0; i < al->size; i++) {
-    free(al->data[i]);
-    *(al->data + i) = NULL;
-  }
+  free(al->data);
+  al->data = NULL;
 }
 
-void al_free_with_cleanup(ArrayList** al, void (*fn)(void* e)) {
-  al_free_internal_with_cleanup(*al, fn);
-  free(*al);
-  *al = NULL;
+void* al_get(ArrayList* al, unsigned int index) {
+  if (index < 0 || index >= al->size) {
+    return NULL;
+  }
+  return al->data + index * al->esize;
 }
 
-/**
- * @brief Free all elements after performing some cleanup function. This is
- *        especially useful if each element requires a custom cleanup function.
- *
- *        For example, the Element struct requires a custom cleanup function to
- *        ensure that its value member is also freed. By passing the
- *        element_free_internal function as a parameter, the ArrayList will be
- *        able to ensure that no elements are left un-freed.
- *
- * @param al A pointer to the ArrayList to free.
- * @param fn A pointer to the cleanup function for an element, which should take
- *           a pointer to the element to cleanup.
- */
-void al_free_internal_with_cleanup(ArrayList* al, void (*fn)(void* e)) {
-  for (unsigned int i = 0; i < al->size; i++) {
-    (*fn)(al->data[i]);
-    free(al->data[i]);
-    *(al->data + i) = NULL;
+void al_set(ArrayList* al, unsigned int index, void* new_value) {
+  if (index < 0 || index >= al->size) {
+    return;
   }
+  char* dst = al->data + index * al->esize;
+  memcpy(dst, new_value, al->esize);
 }
 
 /**
@@ -68,7 +54,7 @@ void al_free_internal_with_cleanup(ArrayList* al, void (*fn)(void* e)) {
  */
 void _al_expand(ArrayList* al) {
   al->cap *= EXPAND_FACTOR;
-  al->data = realloc(al->data, al->cap * sizeof(void*));
+  al->data = realloc(al->data, al->cap * al->esize);
 }
 
 /**
@@ -82,56 +68,14 @@ void _al_expand_to_min(ArrayList* al, unsigned int min) {
   while (al->cap < min) {
     al->cap *= EXPAND_FACTOR;
   }
-  al->data = realloc(al->data, al->cap * sizeof(void*));
-}
-
-/**
- * @brief Add an element that is not allocated to heap to the ArrayList at a
- * specified index.
- *
- * @param al    A pointer to the ArrayList to add to.
- * @param e     A pointer to the element to add.
- * @param esize The size of the element to add.
- * @param index The index at which to add the element.
- *
- * @return If the add was successful, returns true.
- */
-bool al_add_at_static(ArrayList* al, void* e, size_t esize, unsigned int index) {
-  if (index < 0 || index > al->size) {
-    return false;
-  }
-  if (al->size == al->cap) {
-    _al_expand(al);
-  }
-  // shift right elements.
-  for (unsigned int i = al->size; i > index; i--) {
-    al->data[i] = al->data[i - 1];
-  }
-  al->data[index] = malloc(esize);
-  memcpy(al->data[index], e, esize);
-  al->size++;
-  return true;
-}
-
-/**
- * @brief Add an element that is not allocated to heap to the end of the
- * ArrayList.
- *
- * @param al    A pointer to the ArrayList to add to.
- * @param e     A pointer to the element to add.
- * @param esize The size of the element to add.
- *
- * @return If the add was successful, returns true.
- */
-bool al_add_static(ArrayList* al, void* e, size_t esize) {
-  return al_add_at_static(al, e, esize, al->size);
+  al->data = realloc(al->data, al->cap * al->esize);
 }
 
 /**
  * @brief Add an element to the ArrayList at a specified index.
  *
  * @param al    A pointer to the ArrayList to add to.
- * @param e     A pointer to the alloc-ed element to add.
+ * @param e     A pointer to the element to add.
  * @param index The index at which to add the element.
  *
  * @return If the add was successful, returns true.
@@ -143,11 +87,14 @@ bool al_add_at(ArrayList* al, void* e, unsigned int index) {
   if (al->size == al->cap) {
     _al_expand(al);
   }
+  // TODO use a single memmove operation.
   // shift right elements.
   for (unsigned int i = al->size; i > index; i--) {
-    al->data[i] = al->data[i - 1];
+    char* dst = al->data + i * al->esize;
+    char* src = al->data + (i - 1) * al->esize;
+    memmove(dst, src, al->esize);
   }
-  al->data[index] = e;
+  memcpy(al->data + (index * al->esize), e, al->esize);
   al->size++;
   return true;
 }
@@ -172,25 +119,30 @@ bool al_add(ArrayList* al, void* e) {
  *        as it swaps each shifted element only once.
  *
  * @param al    A pointer to the ArrayList to add to.
- * @param es    A pointer to the array of elements to add. The elements must
- *              each be alloc-ed.
+ * @param es    A pointer to the array of elements to add.
  * @param n     The size of the elements.
  * @param index The index at which to add the element.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all_at(ArrayList* al, void** es, unsigned int n, unsigned int index) {
+bool al_add_all_at(ArrayList* al, void* es, unsigned int n, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
   _al_expand_to_min(al, al->size + n);
+  // TODO use a single memmove operation.
   // shift right elements.
   for (unsigned int i = al->size; i > index; i--) {
-    al->data[i - 1 + n] = al->data[i - 1];
+    char* dst = al->data + (i - 1 + n) * al->esize;
+    char* src = al->data + (i - 1) * al->esize;
+    memmove(dst, src, al->esize);
   }
+  // TODO use a single memcpy operation.
   // copy elements.
   for (unsigned int i = 0; i < n; i++) {
-    al->data[index + i] = es[i];
+    char* dst = al->data + (index + i) * al->esize;
+    void* src = es + i * al->esize;
+    memcpy(dst, src, al->esize);
   }
   al->size += n;
   return true;
@@ -206,7 +158,7 @@ bool al_add_all_at(ArrayList* al, void** es, unsigned int n, unsigned int index)
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all(ArrayList* al, void** es, unsigned int n) {
+bool al_add_all(ArrayList* al, void* es, unsigned int n) {
   return al_add_all_at(al, es, n, al->size);
 }
 
@@ -223,10 +175,13 @@ void* al_remove_at(ArrayList* al, unsigned int index) {
   if (index < 0 || index >= al->size) {
     return NULL;
   }
-  void* to_return = al->data[index];
+  void* to_return = al->data + index * al->esize;
+  // TODO use a single memmove operation.
   // shift right elements.
   for (int i = index; i < al->size - 1; i++) {
-    al->data[i] = al->data[i + 1];
+    char* dst = al->data + i * al->esize;
+    char* src = al->data + (i + 1) * al->esize;
+    memmove(dst, src, al->esize);
   }
   al->size--;
   return to_return;
@@ -236,23 +191,29 @@ void* al_remove_at(ArrayList* al, unsigned int index) {
  * @brief Remove multiple consecutive elements from the ArrayList.
  *
  * @param al   A pointer to the ArrayList to remove from.
- * @param es   A pointer to an array to store the removed elements in. The
+ * @param buf  A pointer to an array to store the removed elements in. The
  *             array must be large enough to store all removed elements.
  * @param from The index of the first element to remove inclusive.
  * @param to   The index of the last element to remove exclusive.
  */
-void al_remove_all_at(ArrayList* al, void** es, unsigned int from, unsigned int to) {
+void al_remove_all_at(ArrayList* al, void* buf, unsigned int from, unsigned int to) {
   if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
     return;
   }
   int n = to - from;
+  // TODO use a single memcpy operation.
   // store deleted elements.
   for (int i = 0; i < n; i++) {
-    es[i] = al->data[from + i];
+    char* dst = buf + i * al->esize;
+    char* src = al->data + (from + i) * al->esize;
+    memcpy(dst, src, al->esize);
   }
+  // TODO use a single memmove operation.
   // shift right elements.
   for (int i = to; i < al->size; i++) {
-    al->data[i - n] = al->data[i];
+    char* dst = al->data + (i - n) * al->esize;
+    char* src = al->data + i * al->esize;
+    memmove(dst, src, al->esize);
   }
   al->size -= n;
 }

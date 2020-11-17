@@ -22,7 +22,7 @@ Element* _new_trailer() {
 void seq_init(Sequence* s) {
   s->uid = 0;
   s->version = 0;
-  al_init(&s->elements);
+  al_init(&s->elements, sizeof(Element));
   Element* header = _new_header();
   Element* trailer = _new_trailer();
   al_add(&s->elements, header);
@@ -42,7 +42,7 @@ void seq_free(Sequence** s) {
 }
 
 void seq_free_internal(Sequence* s) {
-  al_free_internal_with_cleanup(&s->elements, (void (*)(void *)) &element_free_internal);
+  al_free_internal(&s->elements);
 }
 
 /**
@@ -136,8 +136,8 @@ void seq_gen_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
  * @param iindex The internal index at which to generate the Guid.
  */
 void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int iindex) {
-  Guid* before = &((Element*) s->elements.data[iindex - 1])->id;
-  Guid* after = &((Element*) s->elements.data[iindex])->id;
+  Guid* before = &((Element*) al_get(&s->elements, iindex - 1))->id;
+  Guid* after = &((Element*) al_get(&s->elements, iindex))->id;
   seq_gen_guid_between(buf, before, after, s->uid);
 }
 
@@ -195,6 +195,7 @@ Element* seq_insert(Sequence* s, void* to_insert, unsigned int index) {
     return NULL;
   }
   s->version++;
+  // TODO how to handle initialization of new elements?
   Element* new = element_new();
   new->value = to_insert;
   // account for header index.
@@ -213,22 +214,22 @@ Element* seq_delete(Sequence* s, unsigned int index) {
 }
 
 void seq_remote_insert(Sequence* s, Element* to_insert) {
-  s->version++;
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_insert);
   Element* e = seq_get_element(s, iindex - 1);
   if (guid_equal(&e->id, &to_insert->id)) {
     return;
   }
+  s->version++;
   al_add_at(&s->elements, to_insert, iindex);
 }
 
 Element* seq_remote_delete(Sequence* s, Element* to_delete) {
-  s->version++;
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_delete);
   Element* e = seq_get_element(s, iindex - 1);
   if (!guid_equal(&e->id, &to_delete->id)) {
     return NULL;
   }
+  s->version++;
   return al_remove_at(&s->elements, iindex);
 }
 

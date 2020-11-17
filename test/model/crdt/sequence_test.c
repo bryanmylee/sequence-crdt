@@ -142,7 +142,7 @@ START_TEST(test_seq_gen_guid_between_same_key_different_uid) {
 START_TEST(test_seq_iindex_of_even) {
   Sequence* s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements);
+  al_init(&s->elements, sizeof(Element));
   // insert 8 Element pointers.
   for (int i = 0; i < 8; i++) {
     Element* e = element_new();
@@ -154,7 +154,7 @@ START_TEST(test_seq_iindex_of_even) {
       .keys = keys_from_tokens(3, 0, 0, i),
     };
     *((int*) e->value) = i;
-    al_add(&s->elements, (void*) e);
+    al_add(&s->elements, e);
   }
 
   // somewhere in the middle.
@@ -189,7 +189,7 @@ START_TEST(test_seq_iindex_of_even) {
 START_TEST(test_seq_iindex_of_odd) {
   Sequence* s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements);
+  al_init(&s->elements, sizeof(Element));
   // insert 7 Element pointers.
   for (int i = 0; i < 7; i++) {
     Element* e = element_new();
@@ -201,7 +201,7 @@ START_TEST(test_seq_iindex_of_odd) {
       .keys = keys_from_tokens(3, 0, 0, i),
     };
     *((int*) e->value) = i;
-    al_add(&s->elements, (void*) e);
+    al_add(&s->elements, e);
   }
 
   // somewhere in the middle.
@@ -236,7 +236,7 @@ START_TEST(test_seq_iindex_of_odd) {
 START_TEST(test_seq_iindex_of_even_non_existent) {
   Sequence* s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements);
+  al_init(&s->elements, sizeof(Element));
   // insert 8 Element pointers with even key tokens.
   for (int i = 0; i < 8; i++) {
     Element* e = element_new();
@@ -248,7 +248,7 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
       .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
     };
     *((int*) e->value) = i;
-    al_add(&s->elements, (void*) e);
+    al_add(&s->elements, e);
   }
 
   // somewhere in the middle.
@@ -287,7 +287,7 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
 START_TEST(test_seq_iindex_of_odd_non_existent) {
   Sequence* s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements);
+  al_init(&s->elements, sizeof(Element));
   // insert 7 Element pointers with even key tokens.
   for (int i = 0; i < 7; i++) {
     Element* e = element_new();
@@ -299,7 +299,7 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
       .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
     };
     *((int*) e->value) = i;
-    al_add(&s->elements, (void*) e);
+    al_add(&s->elements, e);
   }
 
   // somewhere in the middle.

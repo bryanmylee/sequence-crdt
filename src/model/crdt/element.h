@@ -5,7 +5,7 @@
 #include "guid.h"
 
 typedef union {
-  char value;
+  long value;
   void* ptr;
 } EData;
 

@@ -6,22 +6,23 @@
 typedef struct {
   unsigned int cap;
   unsigned int size;
-  void** data;
+  char* data;
+  size_t esize;
 } ArrayList;
 
-void al_init(ArrayList* al);
-ArrayList* al_new(void);
+void al_init(ArrayList* al, size_t esize);
+ArrayList* al_new(size_t esize);
 void al_free(ArrayList** al);
 void al_free_internal(ArrayList* al);
-void al_free_with_cleanup(ArrayList** al, void (*fn)(void* e));
-void al_free_internal_with_cleanup(ArrayList* al, void (*fn)(void* e));
-bool al_add_at_static(ArrayList* al, void* e, size_t esize, unsigned int index);
-bool al_add_static(ArrayList* al, void* e, size_t esize);
-bool al_add_at(ArrayList* al, void* e, unsigned int index);
-bool al_add(ArrayList* al, void* e);
-bool al_add_all_at(ArrayList* al, void** es, unsigned int n, unsigned int index);
-bool al_add_all(ArrayList* al, void** es, unsigned int n);
-void* al_remove_at(ArrayList* al, unsigned int index);
-void al_remove_all_at(ArrayList* al, void** es, unsigned int from, unsigned int to);
+void* al_get(ArrayList* al, unsigned int index);
+void al_set(ArrayList* al, unsigned int index, void* new_value);
+bool al_add_at(ArrayList* al, void* to_add, unsigned int index);
+bool al_add(ArrayList* al, void* to_add);
+bool al_add_all_at(ArrayList* al, void* to_adds, unsigned int n, unsigned int index);
+bool al_add_all(ArrayList* al, void* to_adds, unsigned int n);
+bool al_remove_at(ArrayList* al, unsigned int index);
+bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf);
+bool al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to);
+bool al_remove_all_at_save(ArrayList* al, unsigned int from, unsigned int to, void* buf);
 
 #endif

@@ -75,13 +75,13 @@ void _al_expand_to_min(ArrayList* al, unsigned int min) {
 /**
  * @brief Add an element to the ArrayList at a specified index.
  *
- * @param al    A pointer to the ArrayList to add to.
- * @param e     A pointer to the element to add.
- * @param index The index at which to add the element.
+ * @param al     A pointer to the ArrayList to add to.
+ * @param to_add A pointer to the element to add.
+ * @param index  The index at which to add the element.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_at(ArrayList* al, void* e, unsigned int index) {
+bool al_add_at(ArrayList* al, void* to_add, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
@@ -95,7 +95,7 @@ bool al_add_at(ArrayList* al, void* e, unsigned int index) {
     char* src = al->data + (i - 1) * al->esize;
     memmove(dst, src, al->esize);
   }
-  memcpy(al->data + (index * al->esize), e, al->esize);
+  memcpy(al->data + (index * al->esize), to_add, al->esize);
   al->size++;
   return true;
 }
@@ -103,14 +103,13 @@ bool al_add_at(ArrayList* al, void* e, unsigned int index) {
 /**
  * @brief Add an element to the end of the ArrayList.
  *
- * @param al    A pointer to the ArrayList to add to.
- * @param e     A pointer to the element to add.
- * @param esize The size of the element to add.
+ * @param al     A pointer to the ArrayList to add to.
+ * @param to_add A pointer to the element to add.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add(ArrayList* al, void* e) {
-  return al_add_at(al, e, al->size);
+bool al_add(ArrayList* al, void* to_add) {
+  return al_add_at(al, to_add, al->size);
 }
 
 /**
@@ -119,14 +118,14 @@ bool al_add(ArrayList* al, void* e) {
  *        This method is more efficient than adding each element sequentially,
  *        as it swaps each shifted element only once.
  *
- * @param al    A pointer to the ArrayList to add to.
- * @param es    A pointer to the array of elements to add.
- * @param n     The size of the elements.
- * @param index The index at which to add the element.
+ * @param al      A pointer to the ArrayList to add to.
+ * @param to_adds A pointer to the array of elements to add.
+ * @param n       The size of the elements.
+ * @param index   The index at which to add the element.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all_at(ArrayList* al, void* es, unsigned int n, unsigned int index) {
+bool al_add_all_at(ArrayList* al, void* to_adds, unsigned int n, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
@@ -142,7 +141,7 @@ bool al_add_all_at(ArrayList* al, void* es, unsigned int n, unsigned int index) 
   // copy elements.
   for (unsigned int i = 0; i < n; i++) {
     char* dst = al->data + (index + i) * al->esize;
-    void* src = es + i * al->esize;
+    void* src = to_adds + i * al->esize;
     memcpy(dst, src, al->esize);
   }
   al->size += n;
@@ -152,31 +151,24 @@ bool al_add_all_at(ArrayList* al, void* es, unsigned int n, unsigned int index) 
 /**
  * @brief Add an array of elements to the end of the ArrayList.
  *
- * @param al A pointer to the ArrayList to add to.
- * @param es A pointer to the array of elements to add. The elements must each
- *           be alloc-ed.
- * @param n  The size of the elements.
+ * @param al      A pointer to the ArrayList to add to.
+ * @param to_adds A pointer to the array of elements to add. The elements must
+ *                each be alloc-ed.
+ * @param n       The size of the elements.
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all(ArrayList* al, void* es, unsigned int n) {
-  return al_add_all_at(al, es, n, al->size);
+bool al_add_all(ArrayList* al, void* to_adds, unsigned int n) {
+  return al_add_all_at(al, to_adds, n, al->size);
 }
 
-/**
- * @brief Remove an element from the ArrayList at a given index.
- *
- * @param al    A pointer to the ArrayList to remove from.
- * @param index The index to remove the element from.
- *
- * @return A pointer to the removed element, or NULL if the remove is
- *         unsuccessful.
- */
-void* al_remove_at(ArrayList* al, unsigned int index) {
+bool _al_remove_at(ArrayList* al, unsigned int index, void* buf) {
   if (index < 0 || index >= al->size) {
-    return NULL;
+    return false;
   }
-  void* to_return = al->data + index * al->esize;
+  if (buf != NULL) {
+    memcpy(buf, al->data + index * al->esize, al->esize);
+  }
   // TODO use a single memmove operation.
   // shift right elements.
   for (int i = index; i < al->size - 1; i++) {
@@ -185,29 +177,48 @@ void* al_remove_at(ArrayList* al, unsigned int index) {
     memmove(dst, src, al->esize);
   }
   al->size--;
-  return to_return;
+  return true;
 }
 
 /**
- * @brief Remove multiple consecutive elements from the ArrayList.
+ * @brief Remove an element from the ArrayList at a given index.
  *
- * @param al   A pointer to the ArrayList to remove from.
- * @param buf  A pointer to an array to store the removed elements in. The
- *             array must be large enough to store all removed elements.
- * @param from The index of the first element to remove inclusive.
- * @param to   The index of the last element to remove exclusive.
+ * @param al    A pointer to the ArrayList to remove from.
+ * @param index The index to remove the element from.
+ *
+ * @return If the remove was successful, returns true.
  */
-void al_remove_all_at(ArrayList* al, void* buf, unsigned int from, unsigned int to) {
+bool al_remove_at(ArrayList* al, unsigned int index) {
+  return _al_remove_at(al, index, NULL);
+}
+
+/**
+ * @brief Remove an element from the ArrayList at a given index, and store it
+ *        in a provided buffer.
+ *
+ * @param al    A pointer to the ArrayList to remove from.
+ * @param index The index to remove the element from.
+ * @param buf   A pointer to a buffer to store the removed element in.
+ *
+ * @return If the remove was successful, returns true.
+ */
+bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf) {
+  return _al_remove_at(al, index, buf);
+}
+
+bool _al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
   if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
-    return;
+    return false;
   }
   int n = to - from;
-  // TODO use a single memcpy operation.
-  // store deleted elements.
-  for (int i = 0; i < n; i++) {
-    char* dst = buf + i * al->esize;
-    char* src = al->data + (from + i) * al->esize;
-    memcpy(dst, src, al->esize);
+  if (buf != NULL) {
+    // TODO use a single memcpy operation.
+    // store deleted elements.
+    for (int i = 0; i < n; i++) {
+      char* dst = buf + i * al->esize;
+      char* src = al->data + (from + i) * al->esize;
+      memcpy(dst, src, al->esize);
+    }
   }
   // TODO use a single memmove operation.
   // shift right elements.
@@ -217,5 +228,34 @@ void al_remove_all_at(ArrayList* al, void* buf, unsigned int from, unsigned int 
     memmove(dst, src, al->esize);
   }
   al->size -= n;
+  return true;
+}
+
+/**
+ * @brief Remove multiple consecutive elements from the ArrayList.
+ *
+ * @param al   A pointer to the ArrayList to remove from.
+ * @param from The index of the first element to remove inclusive.
+ * @param to   The index of the last element to remove exclusive.
+ *
+ * @return If the remove is successful, returns true.
+ */
+bool al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to) {
+  return _al_remove_all_at(al, from, to, NULL);
+}
+
+/**
+ * @brief Remove multiple consecutive elements from the ArrayList.
+ *
+ * @param al   A pointer to the ArrayList to remove from.
+ * @param from The index of the first element to remove inclusive.
+ * @param to   The index of the last element to remove exclusive.
+ * @param buf  A pointer to an array to store the removed elements in. The
+ *             array must be large enough to store all removed elements.
+ *
+ * @return If the remove is successful, returns true.
+ */
+bool al_remove_all_at_save(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
+  return _al_remove_all_at(al, from, to, buf);
 }
 

@@ -6,7 +6,7 @@
 
 #define BOUNDARY 10
 
-Element _new_header() {
+Element _header() {
   Element new;
   element_init(&new);
   new.id.depth = 1;
@@ -14,7 +14,7 @@ Element _new_header() {
   return new;
 }
 
-Element _new_trailer() {
+Element _trailer() {
   Element new;
   element_init(&new);
   new.id.depth = 1;
@@ -26,8 +26,8 @@ void seq_init(Sequence* s) {
   s->uid = 0;
   s->version = 0;
   al_init(&s->elements, sizeof(Element));
-  Element header = _new_header();
-  Element trailer = _new_trailer();
+  Element header = _header();
+  Element trailer = _trailer();
   al_add(&s->elements, &header);
   al_add(&s->elements, &trailer);
 }
@@ -145,7 +145,7 @@ void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int iindex) {
 }
 
 bool _is_larger_than_max(Sequence* s, Element* target) {
-  Element* last = ((Element**) s->elements.data)[s->elements.size - 1];
+  Element* last = al_get(&s->elements, s->elements.size - 1);
   return guid_compare(&target->id, &last->id) > 0;
 }
 
@@ -168,7 +168,7 @@ unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* target) {
   int compare;
   do {
     i = min_i + (max_i - min_i) / 2;
-    Element* next = ((Element**) s->elements.data)[i];
+    Element* next = al_get(&s->elements, i);
     compare = guid_compare(&next->id, &target->id);
     if (compare == 0 || max_i == min_i) {
       return i;

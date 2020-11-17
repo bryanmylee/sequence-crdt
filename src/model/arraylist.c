@@ -88,14 +88,13 @@ bool al_add_at(ArrayList* al, void* to_add, unsigned int index) {
   if (al->size == al->cap) {
     _al_expand(al);
   }
-  // TODO use a single memmove operation.
-  // shift right elements.
-  for (unsigned int i = al->size; i > index; i--) {
-    char* dst = al->data + i * al->esize;
-    char* src = al->data + (i - 1) * al->esize;
-    memmove(dst, src, al->esize);
-  }
-  memcpy(al->data + (index * al->esize), to_add, al->esize);
+  // move right elements to the right.
+  char* move_dst = al->data + (index + 1) * al->esize;
+  char* move_src = al->data + index * al->esize;
+  int n_moved = al->size - index;
+  memmove(move_dst, move_src, n_moved * al->esize);
+  // copy element value into the arraylist.
+  memcpy(move_src, to_add, al->esize);
   al->size++;
   return true;
 }
@@ -130,20 +129,13 @@ bool al_add_all_at(ArrayList* al, void* to_adds, unsigned int n, unsigned int in
     return false;
   }
   _al_expand_to_min(al, al->size + n);
-  // TODO use a single memmove operation.
-  // shift right elements.
-  for (unsigned int i = al->size; i > index; i--) {
-    char* dst = al->data + (i - 1 + n) * al->esize;
-    char* src = al->data + (i - 1) * al->esize;
-    memmove(dst, src, al->esize);
-  }
-  // TODO use a single memcpy operation.
-  // copy elements.
-  for (unsigned int i = 0; i < n; i++) {
-    char* dst = al->data + (index + i) * al->esize;
-    void* src = to_adds + i * al->esize;
-    memcpy(dst, src, al->esize);
-  }
+  // move right elements to the right.
+  char* move_dst = al->data + (index + n) * al->esize;
+  char* move_src = al->data + index * al->esize;
+  int n_moved = al->size - index;
+  memmove(move_dst, move_src, n_moved * al->esize);
+  // copy element values into the arraylist.
+  memcpy(move_src, to_adds, n * al->esize);
   al->size += n;
   return true;
 }
@@ -169,13 +161,11 @@ bool _al_remove_at(ArrayList* al, unsigned int index, void* buf) {
   if (buf != NULL) {
     memcpy(buf, al->data + index * al->esize, al->esize);
   }
-  // TODO use a single memmove operation.
-  // shift right elements.
-  for (int i = index; i < al->size - 1; i++) {
-    char* dst = al->data + i * al->esize;
-    char* src = al->data + (i + 1) * al->esize;
-    memmove(dst, src, al->esize);
-  }
+  // move right elements to the left.
+  char* dst = al->data + index * al->esize;
+  char* src = al->data + (index + 1) * al->esize;
+  int n_moved = al->size - index - 1;
+  memmove(dst, src, n_moved * al->esize);
   al->size--;
   return true;
 }
@@ -210,24 +200,18 @@ bool _al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to, void* 
   if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
     return false;
   }
-  int n = to - from;
+  int n_remove = to - from;
   if (buf != NULL) {
-    // TODO use a single memcpy operation.
     // store deleted elements.
-    for (int i = 0; i < n; i++) {
-      char* dst = buf + i * al->esize;
-      char* src = al->data + (from + i) * al->esize;
-      memcpy(dst, src, al->esize);
-    }
+    char* copy_src = al->data + from * al->esize;
+    memcpy(buf, copy_src, n_remove * al->esize);
   }
-  // TODO use a single memmove operation.
-  // shift right elements.
-  for (int i = to; i < al->size; i++) {
-    char* dst = al->data + (i - n) * al->esize;
-    char* src = al->data + i * al->esize;
-    memmove(dst, src, al->esize);
-  }
-  al->size -= n;
+  // move right elements to the left.
+  char* move_dst = al->data + from * al->esize;
+  char* move_src = al->data + to * al->esize;
+  int n_moved = al->size - to;
+  memmove(move_dst, move_src, n_moved * al->esize);
+  al->size -= n_remove;
   return true;
 }
 

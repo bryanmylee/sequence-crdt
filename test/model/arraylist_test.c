@@ -58,14 +58,15 @@ START_TEST(test_al_add_all_at_expand) {
     al_add(&al, &i);
   }
 
-  // insert 20 zeros at index 10.
-  int es[20] = { 0 };
-  al_add_all_at(&al, es, 20, 10);
+  // insert 30 zeros at index 10.
+  int es[30] = { 0 };
+  al_add_all_at(&al, es, 30, 10);
 
   ck_assert_int_eq(al.cap, 64);
-  ck_assert_int_eq(al.size, 40);
+  ck_assert_int_eq(al.size, 50);
   int expected[] = {
      0,  1,  2,  3,  4,  5,  6,  7,  8,  9, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
     10, 11, 12, 13, 14, 15, 16, 17, 18, 19  \

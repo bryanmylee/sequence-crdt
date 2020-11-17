@@ -193,15 +193,17 @@ Element* seq_get_element(Sequence* s, unsigned int index) {
   return al_get(&s->elements, index + 1);
 }
 
-bool _seq_insert(Sequence* s, void* to_insert, unsigned int index, Element* buf) {
+bool _seq_insert(Sequence* s, void* insert_ptr, char insert_val, unsigned int index, Element* buf) {
   if (index < 0 || index > seq_size(s)) {
     return false;
   }
   s->version++;
-  Element new = {
-    .version = s->version,
-    .value = to_insert,
-  };
+  Element new = { .version = s->version };
+  if (insert_ptr == NULL) {
+    new.data.value = insert_val;
+  } else {
+    new.data.ptr = insert_ptr;
+  }
   // account for header index.
   seq_gen_guid_at(s, &new.id, index + 1);
   al_add_at(&s->elements, &new, index + 1);
@@ -212,11 +214,19 @@ bool _seq_insert(Sequence* s, void* to_insert, unsigned int index, Element* buf)
 }
 
 bool seq_insert(Sequence* s, void* to_insert, unsigned int index) {
-  return _seq_insert(s, to_insert, index, NULL);
+  return _seq_insert(s, to_insert, 0, index, NULL);
 }
 
 bool seq_insert_save(Sequence* s, void* to_insert, unsigned int index, Element* buf) {
-  return _seq_insert(s, to_insert, index, buf);
+  return _seq_insert(s, to_insert, 0, index, buf);
+}
+
+bool seq_insert_value(Sequence* s, char to_insert, unsigned int index) {
+  return _seq_insert(s, NULL, to_insert, index, NULL);
+}
+
+bool seq_insert_value_save(Sequence* s, char to_insert, unsigned int index, Element* buf) {
+  return _seq_insert(s, NULL, to_insert, index, buf);
 }
 
 bool _seq_delete(Sequence* s, unsigned int index, Element* buf) {

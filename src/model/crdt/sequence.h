@@ -24,6 +24,8 @@ unsigned int seq_size(Sequence* s);
 Element* seq_get_element(Sequence* s, unsigned int index);
 bool seq_insert(Sequence* s, void* to_insert, unsigned int index);
 bool seq_insert_save(Sequence* s, void* to_insert, unsigned int index, Element* buf);
+bool seq_insert_value(Sequence* s, char to_insert, unsigned int index);
+bool seq_insert_value_save(Sequence* s, char to_insert, unsigned int index, Element* buf);
 bool seq_delete(Sequence* s, unsigned int index);
 bool seq_delete_save(Sequence* s, unsigned int index, Element* buf);
 bool seq_remote_insert(Sequence* s, Element* to_insert);

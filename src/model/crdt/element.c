@@ -4,7 +4,7 @@
 void element_init(Element* e) {
   guid_init(&e->id);
   e->version = 0;
-  e->value = NULL;
+  e->data.ptr = NULL;
 }
 
 Element* element_new(void) {
@@ -14,12 +14,18 @@ Element* element_new(void) {
 }
 
 void element_free(Element** e) {
-  element_free_internal(*e);
   free(*e);
   *e = NULL;
 }
 
-void element_free_internal(Element* e) {
-  free(e->value);
+void element_free_ptr(Element** e) {
+  element_free_internal_ptr(*e);
+  free(*e);
+  *e = NULL;
+}
+
+void element_free_internal_ptr(Element* e) {
+  free(e->data.ptr);
+  e->data.ptr = NULL;
 }
 

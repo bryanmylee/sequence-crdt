@@ -151,10 +151,12 @@ START_TEST(test_al_remove_at) {
 
   int* removed = (int*) al_remove_at(&al, 5);
   ck_assert_int_eq(*removed, 5);
+  removed = (int*) al_remove_at(&al, 5);
+  ck_assert_int_eq(*removed, 6);
 
   ck_assert_int_eq(al.cap, 16);
-  ck_assert_int_eq(al.size, 9);
-  int expected[] = { 0, 1, 2, 3, 4, 6, 7, 8, 9 };
+  ck_assert_int_eq(al.size, 8);
+  int expected[] = { 0, 1, 2, 3, 4, 7, 8, 9 };
   for (int i = 0; i < al.size; i++) {
     int e = *((int*) al.data[i]);
     ck_assert_int_eq(e, expected[i]);
@@ -250,7 +252,7 @@ START_TEST(test_al_remove_at_outofbounds) {
   }
   al_add_all(&al, (void**) es, 10);
 
-  int* removed = (int*) al_remove_at(&al, 11);
+  int* removed = (int*) al_remove_at(&al, 10);
   ck_assert_ptr_null(removed);
 
   ck_assert_int_eq(al.cap, 16);

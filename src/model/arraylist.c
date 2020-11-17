@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 #include "arraylist.h"
 
@@ -220,12 +221,12 @@ bool al_add_all(ArrayList* al, void** es, unsigned int n) {
  *         unsuccessful.
  */
 void* al_remove_at(ArrayList* al, unsigned int index) {
-  if (index < 0 || index > al->size) {
+  if (index < 0 || index >= al->size) {
     return NULL;
   }
   void* to_return = al->data[index];
   // shift right elements.
-  for (int i = index; i < al->size; i++) {
+  for (int i = index; i < al->size - 1; i++) {
     al->data[i] = al->data[i + 1];
   }
   al->size--;

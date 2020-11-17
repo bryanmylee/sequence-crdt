@@ -1,7 +1,7 @@
 #ifndef CRDT_SEQUENCE_H
 #define CRDT_SEQUENCE_H
 #include <stdbool.h>
-#include <model/arraylist.h>
+#include "arraylist.h"
 #include "element.h"
 #include "guid.h"
 #include "token.h"

@@ -1,6 +1,6 @@
 #include <string.h>
-#include <util/bit.h>
-#include <model/arraylist.h>
+#include "../util/bit.h"
+#include "arraylist.h"
 #include "guid.h"
 #include "sequence.h"
 

@@ -1,9 +1,9 @@
 #include <check.h>
-#include <stdlib.h>
 #include <model/arraylist.h>
-#include <model/crdt/element.h>
-#include <model/crdt/guid.h>
-#include <model/crdt/sequence.h>
+#include <model/element.h>
+#include <model/guid.h>
+#include <model/sequence.h>
+#include <stdlib.h>
 
 START_TEST(test_seq_gen_token_between) {
   token l = { .key = 4, .uid = 1 };

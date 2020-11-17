@@ -1,6 +1,6 @@
 #include <check.h>
-#include <stdlib.h>
 #include <model/arraylist.h>
+#include <stdlib.h>
 
 START_TEST(test_al_init) {
   ArrayList al;

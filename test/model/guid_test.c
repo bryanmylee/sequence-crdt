@@ -1,6 +1,6 @@
 #include <check.h>
+#include <model/guid.h>
 #include <stdlib.h>
-#include <model/crdt/guid.h>
 
 START_TEST(test_guid_init) {
   Guid g;

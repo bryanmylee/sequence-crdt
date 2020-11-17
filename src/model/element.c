@@ -1,5 +1,5 @@
-#include "guid.h"
 #include "element.h"
+#include "guid.h"
 
 void element_init(Element* e) {
   guid_init(&e->id);

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <util/bit.h>
 #include <model/arraylist.h>
 #include "guid.h"

@@ -145,16 +145,17 @@ START_TEST(test_seq_iindex_of_even) {
   al_init(&s->elements, sizeof(Element));
   // insert 8 Element pointers.
   for (int i = 0; i < 8; i++) {
-    Element* e = element_new();
-    e->value = malloc(sizeof(int));
     // give all elements a simple incremental guid.
     // at depth 3, all 8 elements can fit under one node.
-    e->id = (Guid) {
-      .depth = 3,
-      .keys = keys_from_tokens(3, 0, 0, i),
+    Element e = {
+      .id = (Guid) {
+        .depth = 3,
+        .keys = keys_from_tokens(3, 0, 0, i),
+      },
+      .value = malloc(sizeof(int)),
     };
-    *((int*) e->value) = i;
-    al_add(&s->elements, e);
+    *(int*) e.value = i;
+    al_add(&s->elements, &e);
   }
 
   // somewhere in the middle.
@@ -192,16 +193,15 @@ START_TEST(test_seq_iindex_of_odd) {
   al_init(&s->elements, sizeof(Element));
   // insert 7 Element pointers.
   for (int i = 0; i < 7; i++) {
-    Element* e = element_new();
-    e->value = malloc(sizeof(int));
-    // give all elements a simple incremental guid.
-    // at depth 3, all 8 elements can fit under one node.
-    e->id = (Guid) {
-      .depth = 3,
-      .keys = keys_from_tokens(3, 0, 0, i),
+    Element e = {
+      .id = (Guid) {
+        .depth = 3,
+        .keys = keys_from_tokens(3, 0, 0, i),
+      },
+      .value = malloc(sizeof(int)),
     };
-    *((int*) e->value) = i;
-    al_add(&s->elements, e);
+    *(int*) e.value = i;
+    al_add(&s->elements, &e);
   }
 
   // somewhere in the middle.
@@ -239,16 +239,17 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
   al_init(&s->elements, sizeof(Element));
   // insert 8 Element pointers with even key tokens.
   for (int i = 0; i < 8; i++) {
-    Element* e = element_new();
-    e->value = malloc(sizeof(int));
     // give all elements a simple incremental guid.
     // at depth 4, there are 16 possible locations.
-    e->id = (Guid) {
-      .depth = 4,
-      .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
+    Element e = {
+      .id = (Guid) {
+        .depth = 4,
+        .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
+      },
+      .value = malloc(sizeof(int)),
     };
-    *((int*) e->value) = i;
-    al_add(&s->elements, e);
+    *(int*) e.value = i;
+    al_add(&s->elements, &e);
   }
 
   // somewhere in the middle.
@@ -290,16 +291,17 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
   al_init(&s->elements, sizeof(Element));
   // insert 7 Element pointers with even key tokens.
   for (int i = 0; i < 7; i++) {
-    Element* e = element_new();
-    e->value = malloc(sizeof(int));
     // give all elements a simple incremental guid.
     // at depth 4, there are 16 possible locations.
-    e->id = (Guid) {
-      .depth = 4,
-      .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
+    Element e = {
+      .id = (Guid) {
+        .depth = 4,
+        .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
+      },
+      .value = malloc(sizeof(int)),
     };
-    *((int*) e->value) = i;
-    al_add(&s->elements, e);
+    *(int*) e.value = i;
+    al_add(&s->elements, &e);
   }
 
   // somewhere in the middle.
@@ -352,8 +354,8 @@ START_TEST(test_seq_insert) {
 
   // check that all elements are sorted by Guid.
   for (int i = 1; i < s->elements.size; i++) {
-    Element* prev = ((Element**) s->elements.data)[i - 1];
-    Element* curr = ((Element**) s->elements.data)[i];
+    Element* prev = al_get(&s->elements, i - 1);
+    Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 }
@@ -382,8 +384,8 @@ START_TEST(test_seq_delete) {
 
   // check that all elements are sorted by Guid.
   for (int i = 1; i < s->elements.size; i++) {
-    Element* prev = ((Element**) s->elements.data)[i - 1];
-    Element* curr = ((Element**) s->elements.data)[i];
+    Element* prev = al_get(&s->elements, i - 1);
+    Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 }
@@ -392,18 +394,18 @@ START_TEST(test_seq_remote_insert) {
   Sequence* s = seq_new();
   char* data = "this is a string";
   int n = strlen(data);
-  Element* remote_inserts[n];
+  Element remote_inserts[n];
   for (int i = 0; i < n; i++) {
-    remote_inserts[i] = seq_insert(s, data + i, i);
+    seq_insert_save(s, data + i, i, &remote_inserts[i]);
   }
 
   Sequence* s2 = seq_new();
   // insert remote elements twice.
   for (int i = 0; i < n; i++) {
-    seq_remote_insert(s2, remote_inserts[i]);
+    seq_remote_insert(s2, &remote_inserts[i]);
   }
   for (int i = 0; i < n; i++) {
-    seq_remote_insert(s2, remote_inserts[i]);
+    seq_remote_insert(s2, &remote_inserts[i]);
   }
 
   // check that all elements are stored properly.
@@ -415,8 +417,8 @@ START_TEST(test_seq_remote_insert) {
 
   // check that all elements are sorted by Guid.
   for (int i = 1; i < s2->elements.size; i++) {
-    Element* prev = ((Element**) s2->elements.data)[i - 1];
-    Element* curr = ((Element**) s2->elements.data)[i];
+    Element* prev = al_get(&s->elements, i - 1);
+    Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 }
@@ -428,18 +430,20 @@ START_TEST(test_seq_remote_delete) {
   char* data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
-    seq_remote_insert(s2, seq_insert(s, data + i, i));
+    Element buf;
+    seq_insert_save(s, data + i, i, &buf);
+    seq_remote_insert(s2, &buf);
   }
 
-  Element* remote_deletes[3];
+  Element remote_deletes[3];
   // delete 'h', then delete 'is'
-  remote_deletes[0] = seq_delete(s, 1);
-  remote_deletes[1] = seq_delete(s, 4);
-  remote_deletes[2] = seq_delete(s, 4);
+  seq_delete_save(s, 1, &remote_deletes[0]);
+  seq_delete_save(s, 4, &remote_deletes[1]);
+  seq_delete_save(s, 4, &remote_deletes[2]);
 
   // apply remote deletes not in order.
   for (int i = 2; i >= 0; i--) {
-    seq_remote_delete(s2, remote_deletes[i]);
+    seq_remote_delete(s2, &remote_deletes[i]);
   }
 
   char* expected = "tis  a string";
@@ -453,8 +457,8 @@ START_TEST(test_seq_remote_delete) {
 
   // check that all elements are sorted by Guid.
   for (int i = 1; i < s2->elements.size; i++) {
-    Element* prev = ((Element**) s2->elements.data)[i - 1];
-    Element* curr = ((Element**) s2->elements.data)[i];
+    Element* prev = al_get(&s->elements, i - 1);
+    Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 }
@@ -484,13 +488,13 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_find, test_seq_iindex_of_odd);
   tcase_add_test(tc_find, test_seq_iindex_of_even_non_existent);
   tcase_add_test(tc_find, test_seq_iindex_of_odd_non_existent);
-  // suite_add_tcase(s, tc_find);
+  suite_add_tcase(s, tc_find);
 
   tcase_add_test(tc_insert_delete, test_seq_insert);
   tcase_add_test(tc_insert_delete, test_seq_delete);
   tcase_add_test(tc_insert_delete, test_seq_remote_insert);
   tcase_add_test(tc_insert_delete, test_seq_remote_delete);
-  // suite_add_tcase(s, tc_insert_delete);
+  suite_add_tcase(s, tc_insert_delete);
 
   return s;
 }

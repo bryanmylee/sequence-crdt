@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <util/bit.h>
 #include <model/arraylist.h>
 #include "guid.h"
@@ -220,5 +221,15 @@ void seq_remote_insert(Sequence* s, Element* to_insert) {
     return;
   }
   al_add_at(&s->elements, to_insert, iindex);
+}
+
+Element* seq_remote_delete(Sequence* s, Element* to_delete) {
+  s->version++;
+  unsigned int iindex = seq_iindex_of_element_or_after(s, to_delete);
+  Element* e = seq_get_element(s, iindex - 1);
+  if (!guid_equal(&e->id, &to_delete->id)) {
+    return NULL;
+  }
+  return al_remove_at(&s->elements, iindex);
 }
 

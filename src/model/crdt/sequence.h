@@ -25,6 +25,7 @@ Element* seq_get_element(Sequence* s, unsigned int index);
 Element* seq_insert(Sequence* s, void* to_insert, unsigned int index);
 Element* seq_delete(Sequence* s, unsigned int index);
 void seq_remote_insert(Sequence* s, Element* to_insert);
+Element* seq_remote_delete(Sequence* s, Element* to_delete);
 
 #endif
 

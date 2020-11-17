@@ -414,7 +414,45 @@ START_TEST(test_seq_remote_insert) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s->elements.size; i++) {
+  for (int i = 1; i < s2->elements.size; i++) {
+    Element* prev = ((Element**) s2->elements.data)[i - 1];
+    Element* curr = ((Element**) s2->elements.data)[i];
+    ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
+  }
+}
+
+START_TEST(test_seq_remote_delete) {
+  Sequence* s = seq_new();
+  Sequence* s2 = seq_new();
+
+  char* data = "this is a string";
+  int n = strlen(data);
+  for (int i = 0; i < n; i++) {
+    seq_remote_insert(s2, seq_insert(s, data + i, i));
+  }
+
+  Element* remote_deletes[3];
+  // delete 'h', then delete 'is'
+  remote_deletes[0] = seq_delete(s, 1);
+  remote_deletes[1] = seq_delete(s, 4);
+  remote_deletes[2] = seq_delete(s, 4);
+
+  // apply remote deletes not in order.
+  for (int i = 2; i >= 0; i--) {
+    seq_remote_delete(s2, remote_deletes[i]);
+  }
+
+  char* expected = "tis  a string";
+  n = strlen(expected);
+  // check that all elements are stored properly.
+  for (int i = 0; i < n; i++) {
+    Element* e = seq_get_element(s2, i);
+    char c = *((char*) e->value);
+    ck_assert_int_eq(c, expected[i]);
+  }
+
+  // check that all elements are sorted by Guid.
+  for (int i = 1; i < s2->elements.size; i++) {
     Element* prev = ((Element**) s2->elements.data)[i - 1];
     Element* curr = ((Element**) s2->elements.data)[i];
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -451,6 +489,7 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_insert_delete, test_seq_insert);
   tcase_add_test(tc_insert_delete, test_seq_delete);
   tcase_add_test(tc_insert_delete, test_seq_remote_insert);
+  tcase_add_test(tc_insert_delete, test_seq_remote_delete);
   suite_add_tcase(s, tc_insert_delete);
 
   return s;

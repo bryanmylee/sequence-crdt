@@ -4,7 +4,7 @@ TESTDIR    := test
 INCDIR     := inc
 OBJDIR     := obj
 BINDIR     := bin
-TESTBINDIR := bin_test
+TESTBINDIR := bin/test
 
 # Flags, Libraries, and Includes
 CFLAGS  := -Wall

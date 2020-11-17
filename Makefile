@@ -31,7 +31,7 @@ directories:
 link: $(SRCOBJS)
 	@echo linking main binary
 	@mkdir -p $(dir $@)
-	@$(CC) -o $(patsubst $(OBJDIR)/%,$(BINDIR)/%,$(<:.o=)) $^ $(LIB)
+	@$(CC) -o $(BINDIR)/main $^ $(LIB)
 
 # Pull in dependency info for existing source files
 -include $(SRCOBJS:.o=.d)

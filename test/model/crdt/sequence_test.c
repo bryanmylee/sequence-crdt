@@ -354,7 +354,7 @@ START_TEST(test_seq_insert_value) {
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
-}
+} END_TEST
 
 START_TEST(test_seq_insert) {
   Sequence* s = seq_new();
@@ -377,7 +377,7 @@ START_TEST(test_seq_insert) {
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
-}
+} END_TEST
 
 START_TEST(test_seq_delete) {
   Sequence* s = seq_new();
@@ -407,7 +407,7 @@ START_TEST(test_seq_delete) {
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
-}
+} END_TEST
 
 START_TEST(test_seq_remote_insert) {
   Sequence* s = seq_new();
@@ -440,7 +440,7 @@ START_TEST(test_seq_remote_insert) {
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
-}
+} END_TEST
 
 START_TEST(test_seq_remote_delete) {
   Sequence* s = seq_new();
@@ -480,6 +480,36 @@ START_TEST(test_seq_remote_delete) {
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
+} END_TEST
+
+START_TEST(test_seq_gen_char) {
+  Sequence* s1 = seq_new();
+  char* data = "oof this is going to be a doozy...";
+  int n = strlen(data);
+  Element inserted[40];
+  // Stage one arrange
+  for (int i = 0; i < n; i++) {
+    seq_insert_value_save(s1, data[i], i, inserted + i);
+  }
+  // Act
+  char result1[40] = { 0 };
+  seq_gen_chars(s1, result1);
+  // Assert
+  ck_assert_str_eq(result1, data);
+
+  // Stage two arrange
+  Sequence* s2 = seq_new();
+  // Act
+  for (int i = 0; i < n; i++) {
+    seq_remote_insert(s2, &inserted[i]);
+  }
+  char result2[40] = { 0 };
+  seq_gen_chars(s2, result2);
+  // Assert
+  ck_assert_str_eq(result2, data);
+
+  seq_free(&s1);
+  seq_free(&s2);
 }
 
 Suite* sequence_suite(void) {
@@ -487,11 +517,13 @@ Suite* sequence_suite(void) {
   TCase *tc_guid;
   TCase *tc_find;
   TCase *tc_insert_delete;
+  TCase *tc_display;
 
   s = suite_create("sequence_suite");
   tc_guid = tcase_create("guid");
   tc_find = tcase_create("find");
   tc_insert_delete = tcase_create("insert delete");
+  tc_display = tcase_create("display");
 
   tcase_add_test(tc_guid, test_seq_gen_token_between);
   tcase_add_test(tc_guid, test_seq_gen_token_between_no_space);
@@ -515,6 +547,9 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_insert_delete, test_seq_remote_insert);
   tcase_add_test(tc_insert_delete, test_seq_remote_delete);
   suite_add_tcase(s, tc_insert_delete);
+
+  tcase_add_test(tc_display, test_seq_gen_char);
+  suite_add_tcase(s, tc_display);
 
   return s;
 }

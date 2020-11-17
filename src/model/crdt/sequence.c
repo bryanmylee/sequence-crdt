@@ -193,7 +193,7 @@ Element* seq_get_element(Sequence* s, unsigned int index) {
   return al_get(&s->elements, index + 1);
 }
 
-bool _seq_insert(Sequence* s, void* insert_ptr, char insert_val, unsigned int index, Element* buf) {
+bool _seq_insert(Sequence* s, void* insert_ptr, long insert_val, unsigned int index, Element* buf) {
   if (index < 0 || index > seq_size(s)) {
     return false;
   }
@@ -221,11 +221,11 @@ bool seq_insert_save(Sequence* s, void* to_insert, unsigned int index, Element* 
   return _seq_insert(s, to_insert, 0, index, buf);
 }
 
-bool seq_insert_value(Sequence* s, char to_insert, unsigned int index) {
+bool seq_insert_value(Sequence* s, long to_insert, unsigned int index) {
   return _seq_insert(s, NULL, to_insert, index, NULL);
 }
 
-bool seq_insert_value_save(Sequence* s, char to_insert, unsigned int index, Element* buf) {
+bool seq_insert_value_save(Sequence* s, long to_insert, unsigned int index, Element* buf) {
   return _seq_insert(s, NULL, to_insert, index, buf);
 }
 
@@ -271,5 +271,12 @@ bool seq_remote_delete(Sequence* s, Element* to_delete) {
   s->version++;
   al_remove_at(&s->elements, iindex);
   return true;
+}
+
+void seq_gen_chars(Sequence* s, char* buf) {
+  unsigned int n = seq_size(s);
+  for (int i = 0; i < n; i++) {
+    buf[i] = seq_get_element(s, i)->data.value;
+  }
 }
 

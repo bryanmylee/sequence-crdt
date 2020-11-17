@@ -4,16 +4,22 @@
 #include <stdlib.h>
 #include "guid.h"
 
+typedef union {
+  long value;
+  void* ptr;
+} EData;
+
 typedef struct {
   Guid id;
   unsigned int version;
-  void* value;
+  EData data;
 } Element;
 
 void element_init(Element* e);
 Element* element_new(void);
 void element_free(Element** e);
-void element_free_internal(Element* e);
+void element_free_ptr(Element** e);
+void element_free_internal_ptr(Element* e);
 
 #endif
 

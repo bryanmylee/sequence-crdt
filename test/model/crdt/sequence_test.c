@@ -152,9 +152,8 @@ START_TEST(test_seq_iindex_of_even) {
         .depth = 3,
         .keys = keys_from_tokens(3, 0, 0, i),
       },
-      .value = malloc(sizeof(int)),
     };
-    *(int*) e.value = i;
+    e.data.value = i;
     al_add(&s->elements, &e);
   }
 
@@ -198,9 +197,8 @@ START_TEST(test_seq_iindex_of_odd) {
         .depth = 3,
         .keys = keys_from_tokens(3, 0, 0, i),
       },
-      .value = malloc(sizeof(int)),
     };
-    *(int*) e.value = i;
+    e.data.value = i;
     al_add(&s->elements, &e);
   }
 
@@ -246,9 +244,8 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
         .depth = 4,
         .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
       },
-      .value = malloc(sizeof(int)),
     };
-    *(int*) e.value = i;
+    e.data.value = i;
     al_add(&s->elements, &e);
   }
 
@@ -298,9 +295,8 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
         .depth = 4,
         .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
       },
-      .value = malloc(sizeof(int)),
     };
-    *(int*) e.value = i;
+    e.data.value = i;
     al_add(&s->elements, &e);
   }
 
@@ -337,6 +333,29 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
   seq_free(&s);
 } END_TEST
 
+START_TEST(test_seq_insert_value) {
+  Sequence* s = seq_new();
+  char* data = "this is a string";
+  int n = strlen(data);
+  for (int i = 0; i < n; i++) {
+    seq_insert_value(s, data[i], i);
+  }
+
+  // check that all elements are stored properly.
+  for (int i = 0; i < n; i++) {
+    Element* e = seq_get_element(s, i);
+    char c = e->data.value;
+    ck_assert_int_eq(c, data[i]);
+  }
+
+  // check that all elements are sorted by Guid.
+  for (int i = 1; i < s->elements.size; i++) {
+    Element* prev = al_get(&s->elements, i - 1);
+    Element* curr = al_get(&s->elements, i);
+    ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
+  }
+}
+
 START_TEST(test_seq_insert) {
   Sequence* s = seq_new();
   char* data = "this is a string";
@@ -348,7 +367,7 @@ START_TEST(test_seq_insert) {
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
     Element* e = seq_get_element(s, i);
-    char c = *((char*) e->value);
+    char c = *((char*) e->data.ptr);
     ck_assert_int_eq(c, data[i]);
   }
 
@@ -365,7 +384,7 @@ START_TEST(test_seq_delete) {
   char* data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
-    seq_insert(s, data + i, i);
+    seq_insert_value(s, data[i], i);
   }
 
   // delete 'h', then delete 'is'
@@ -378,7 +397,7 @@ START_TEST(test_seq_delete) {
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
     Element* e = seq_get_element(s, i);
-    char c = *((char*) e->value);
+    char c = e->data.value;
     ck_assert_int_eq(c, expected[i]);
   }
 
@@ -396,7 +415,7 @@ START_TEST(test_seq_remote_insert) {
   int n = strlen(data);
   Element remote_inserts[n];
   for (int i = 0; i < n; i++) {
-    seq_insert_save(s, data + i, i, &remote_inserts[i]);
+    seq_insert_value_save(s, data[i], i, &remote_inserts[i]);
   }
 
   Sequence* s2 = seq_new();
@@ -411,7 +430,7 @@ START_TEST(test_seq_remote_insert) {
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
     Element* e = seq_get_element(s, i);
-    char c = *((char*) e->value);
+    char c = e->data.value;
     ck_assert_int_eq(c, data[i]);
   }
 
@@ -431,7 +450,7 @@ START_TEST(test_seq_remote_delete) {
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
     Element buf;
-    seq_insert_save(s, data + i, i, &buf);
+    seq_insert_value_save(s, data[i], i, &buf);
     seq_remote_insert(s2, &buf);
   }
 
@@ -451,7 +470,7 @@ START_TEST(test_seq_remote_delete) {
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
     Element* e = seq_get_element(s2, i);
-    char c = *((char*) e->value);
+    char c = e->data.value;
     ck_assert_int_eq(c, expected[i]);
   }
 
@@ -490,6 +509,7 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_find, test_seq_iindex_of_odd_non_existent);
   suite_add_tcase(s, tc_find);
 
+  tcase_add_test(tc_insert_delete, test_seq_insert_value);
   tcase_add_test(tc_insert_delete, test_seq_insert);
   tcase_add_test(tc_insert_delete, test_seq_delete);
   tcase_add_test(tc_insert_delete, test_seq_remote_insert);

@@ -45,7 +45,7 @@ START_TEST(test_al_add_expand) {
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 20);
   for (int i = 0; i < al.size; i++) {
-    int* e = al_get(&al, al.size - 1 - i);
+    int* e = al_get(&al, i);
     ck_assert_int_eq(*e, i);
   }
   al_free_internal(&al);
@@ -130,10 +130,11 @@ START_TEST(test_al_remove_at) {
   int es[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
   al_add_all(&al, es, 10);
 
-  int* removed = (int*) al_remove_at(&al, 5);
-  ck_assert_int_eq(*removed, 5);
-  removed = (int*) al_remove_at(&al, 5);
-  ck_assert_int_eq(*removed, 6);
+  int removed;
+  al_remove_at_save(&al, 5, &removed);
+  ck_assert_int_eq(removed, 5);
+  al_remove_at_save(&al, 5, &removed);
+  ck_assert_int_eq(removed, 6);
 
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 8);
@@ -153,7 +154,7 @@ START_TEST(test_al_remove_all_at) {
   al_add_all(&al, es, 10);
 
   int removed[5];
-  al_remove_all_at(&al, removed, 3, 8);
+  al_remove_all_at_save(&al, 3, 8, removed);
 
   int expected_removed[] = { 3, 4, 5, 6, 7 };
   for (int i = 0; i < 5; i++) {
@@ -264,8 +265,9 @@ START_TEST(test_al_remove_at_boundary) {
   int es[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
   al_add_all(&al, es, 10);
 
-  int* removed = al_remove_at(&al, 10);
-  ck_assert_ptr_null(removed);
+  int removed = 0;
+  al_remove_at_save(&al, 10, &removed);
+  ck_assert_int_eq(removed, 0);
 
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 10);
@@ -283,8 +285,9 @@ START_TEST(test_al_remove_past_boundary) {
   int es[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
   al_add_all(&al, es, 10);
 
-  int* removed = (int*) al_remove_at(&al, 11);
-  ck_assert_ptr_null(removed);
+  int removed = 0;
+  al_remove_at_save(&al, 11, &removed);
+  ck_assert_int_eq(removed, 0);
 
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 10);
@@ -303,7 +306,7 @@ START_TEST(test_al_remove_all_at_boundary) {
   al_add_all(&al, es, 10);
 
   int removed[8] = { 0 };
-  al_remove_all_at(&al, removed, 2, 10);
+  al_remove_all_at_save(&al, 2, 10, removed);
 
   for (int i = 0; i < 8; i++) {
     ck_assert_int_eq(removed[i], 2 + i);
@@ -323,7 +326,7 @@ START_TEST(test_al_remove_all_past_boundary) {
   al_add_all(&al, es, 10);
 
   int removed[5] = { 0 };
-  al_remove_all_at(&al, removed, 3, 11);
+  al_remove_all_at_save(&al, 3, 11, removed);
 
   for (int i = 0; i < 5; i++) {
     ck_assert_int_eq(removed[i], 0);
@@ -344,7 +347,7 @@ START_TEST(test_al_remove_all_at_invalid_from_to) {
   al_add_all(&al, es, 10);
 
   int removed[5] = { 0 };
-  al_remove_all_at(&al, removed, 8, 3);
+  al_remove_all_at_save(&al, 8, 3, removed);
 
   for (int i = 0; i < 5; i++) {
     ck_assert_int_eq(removed[i], 0);

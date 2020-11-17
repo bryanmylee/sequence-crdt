@@ -484,13 +484,13 @@ Suite* sequence_suite(void) {
   tcase_add_test(tc_find, test_seq_iindex_of_odd);
   tcase_add_test(tc_find, test_seq_iindex_of_even_non_existent);
   tcase_add_test(tc_find, test_seq_iindex_of_odd_non_existent);
-  suite_add_tcase(s, tc_find);
+  // suite_add_tcase(s, tc_find);
 
   tcase_add_test(tc_insert_delete, test_seq_insert);
   tcase_add_test(tc_insert_delete, test_seq_delete);
   tcase_add_test(tc_insert_delete, test_seq_remote_insert);
   tcase_add_test(tc_insert_delete, test_seq_remote_delete);
-  suite_add_tcase(s, tc_insert_delete);
+  // suite_add_tcase(s, tc_insert_delete);
 
   return s;
 }

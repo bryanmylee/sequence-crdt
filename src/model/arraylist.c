@@ -13,6 +13,7 @@ void al_init(ArrayList* al, size_t esize) {
   al->cap = INITIAL_CAPACITY;
   al->size = 0;
   al->data = malloc(al->cap * esize);
+  al->esize = esize;
 }
 
 ArrayList* al_new(size_t esize) {

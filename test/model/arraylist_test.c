@@ -191,32 +191,50 @@ START_TEST(test_al_remove_all_at) {
   al_free_internal(&al);
 } END_TEST
 
-START_TEST(test_al_add_at_outofbounds) {
+START_TEST(test_al_add_at_boundary) {
   ArrayList al;
   al_init(&al);
-
-  for (int i = 0; i < 20; i++) {
+  for (int i = 19; i >= 0; i--) {
     al_add_at_static(&al, &i, sizeof(int), 0);
   }
+
   int e = 20;
-  bool result = al_add_at_static(&al, &e, sizeof(int), 21);
-  ck_assert_int_eq(result, false);
+  bool result = al_add_at_static(&al, &e, sizeof(int), 20);
+
+  ck_assert_int_eq(result, true);
   ck_assert_int_eq(al.cap, 32);
-  ck_assert_int_eq(al.size, 20);
+  ck_assert_int_eq(al.size, 21);
   for (int i = 0; i < al.size; i++) {
-    ck_assert_int_eq(*((int*) al.data[al.size - 1 - i]), i);
+    ck_assert_int_eq(*((int*) al.data[i]), i);
   }
   al_free_internal(&al);
 } END_TEST
 
-START_TEST(test_al_add_all_at_outofbounds) {
+START_TEST(test_al_add_past_boundary) {
   ArrayList al;
   al_init(&al);
+  for (int i = 19; i >= 0; i--) {
+    al_add_at_static(&al, &i, sizeof(int), 0);
+  }
 
+  int e = 20;
+  bool result = al_add_at_static(&al, &e, sizeof(int), 21);
+
+  ck_assert_int_eq(result, false);
+  ck_assert_int_eq(al.cap, 32);
+  ck_assert_int_eq(al.size, 20);
+  for (int i = 0; i < al.size; i++) {
+    ck_assert_int_eq(*((int*) al.data[i]), i);
+  }
+  al_free_internal(&al);
+} END_TEST
+
+START_TEST(test_al_add_all_at_boundary) {
+  ArrayList al;
+  al_init(&al);
   for (int i = 0; i < 20; i++) {
     al_add_static(&al, &i, sizeof(int));
   }
-
   // insert 20 zeros out of bounds.
   int* es[20];
   for (int i = 0; i < 20; i++) {
@@ -224,7 +242,41 @@ START_TEST(test_al_add_all_at_outofbounds) {
     *e = 0;
     es[i] = e;
   }
+
+  bool result = al_add_all_at(&al, (void**) es, 20, 20);
+
+  ck_assert_int_eq(result, true);
+  ck_assert_int_eq(al.cap, 64);
+  ck_assert_int_eq(al.size, 40);
+  int expected[] = {
+     0,  1,  2,  3,  4,  5,  6,  7,  8,  9, \
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
+  };
+  for (int i = 0; i < al.size; i++) {
+    int e = *((int*) al.data[i]);
+    ck_assert_int_eq(e, expected[i]);
+  }
+  al_free_internal(&al);
+} END_TEST
+
+START_TEST(test_al_add_all_past_boundary) {
+  ArrayList al;
+  al_init(&al);
+  for (int i = 0; i < 20; i++) {
+    al_add_static(&al, &i, sizeof(int));
+  }
+  // insert 20 zeros out of bounds.
+  int* es[20];
+  for (int i = 0; i < 20; i++) {
+    int* e = malloc(sizeof(int));
+    *e = 0;
+    es[i] = e;
+  }
+
   bool result = al_add_all_at(&al, (void**) es, 20, 21);
+
   ck_assert_int_eq(result, false);
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 20);
@@ -239,10 +291,9 @@ START_TEST(test_al_add_all_at_outofbounds) {
   al_free_internal(&al);
 } END_TEST
 
-START_TEST(test_al_remove_at_outofbounds) {
+START_TEST(test_al_remove_at_boundary) {
   ArrayList al;
   al_init(&al);
-
   int* es[10];
   for (int i = 0; i < 10; i++) {
     int* e = malloc(sizeof(int));
@@ -264,10 +315,58 @@ START_TEST(test_al_remove_at_outofbounds) {
   al_free_internal(&al);
 } END_TEST
 
-START_TEST(test_al_remove_all_at_outofbounds) {
+START_TEST(test_al_remove_past_boundary) {
   ArrayList al;
   al_init(&al);
+  int* es[10];
+  for (int i = 0; i < 10; i++) {
+    int* e = malloc(sizeof(int));
+    *e = i;
+    es[i] = e;
+  }
+  al_add_all(&al, (void**) es, 10);
 
+  int* removed = (int*) al_remove_at(&al, 11);
+  ck_assert_ptr_null(removed);
+
+  ck_assert_int_eq(al.cap, 16);
+  ck_assert_int_eq(al.size, 10);
+  int expected[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+  for (int i = 0; i < al.size; i++) {
+    int e = *((int*) al.data[i]);
+    ck_assert_int_eq(e, expected[i]);
+  }
+  al_free_internal(&al);
+} END_TEST
+
+START_TEST(test_al_remove_all_at_boundary) {
+  ArrayList al;
+  al_init(&al);
+  int* es[10];
+  for (int i = 0; i < 10; i++) {
+    int* e = malloc(sizeof(int));
+    *e = i;
+    es[i] = e;
+  }
+  al_add_all(&al, (void**) es, 10);
+
+  int* removed[8] = { NULL };
+  al_remove_all_at(&al, (void**) &removed, 2, 10);
+
+  for (int i = 0; i < 8; i++) {
+    ck_assert_int_eq(*removed[i], 2 + i);
+  }
+  int expected_remaining[] = { 0, 1 };
+  for (int i = 0; i < 2; i++) {
+    int e = *((int*) al.data[i]);
+    ck_assert_int_eq(e, expected_remaining[i]);
+  }
+  al_free_internal(&al);
+} END_TEST
+
+START_TEST(test_al_remove_all_past_boundary) {
+  ArrayList al;
+  al_init(&al);
   int* es[10];
   for (int i = 0; i < 10; i++) {
     int* e = malloc(sizeof(int));
@@ -282,7 +381,6 @@ START_TEST(test_al_remove_all_at_outofbounds) {
   for (int i = 0; i < 5; i++) {
     ck_assert_ptr_null(removed[i]);
   }
-
   int expected_remaining[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
   for (int i = 0; i < 10; i++) {
     int e = *((int*) al.data[i]);
@@ -322,12 +420,12 @@ Suite* arraylist_suite(void) {
   Suite *s;
   TCase *tc_add;
   TCase *tc_remove;
-  TCase *tc_outofbounds;
+  TCase *tc_boundary;
 
   s = suite_create("arraylist_suite");
   tc_add = tcase_create("add");
   tc_remove = tcase_create("remove");
-  tc_outofbounds = tcase_create("outofbounds");
+  tc_boundary = tcase_create("boundary");
 
   tcase_add_test(tc_add, test_al_init);
   tcase_add_test(tc_add, test_al_new);
@@ -342,12 +440,16 @@ Suite* arraylist_suite(void) {
   tcase_add_test(tc_remove, test_al_remove_all_at);
   suite_add_tcase(s, tc_remove);
 
-  tcase_add_test(tc_outofbounds, test_al_add_at_outofbounds);
-  tcase_add_test(tc_outofbounds, test_al_add_all_at_outofbounds);
-  tcase_add_test(tc_outofbounds, test_al_remove_at_outofbounds);
-  tcase_add_test(tc_outofbounds, test_al_remove_all_at_outofbounds);
-  tcase_add_test(tc_outofbounds, test_al_remove_all_at_invalid_from_to);
-  suite_add_tcase(s, tc_outofbounds);
+  tcase_add_test(tc_boundary, test_al_add_at_boundary);
+  tcase_add_test(tc_boundary, test_al_add_past_boundary);
+  tcase_add_test(tc_boundary, test_al_add_all_at_boundary);
+  tcase_add_test(tc_boundary, test_al_add_all_past_boundary);
+  tcase_add_test(tc_boundary, test_al_remove_at_boundary);
+  tcase_add_test(tc_boundary, test_al_remove_past_boundary);
+  tcase_add_test(tc_boundary, test_al_remove_all_at_boundary);
+  tcase_add_test(tc_boundary, test_al_remove_all_past_boundary);
+  tcase_add_test(tc_boundary, test_al_remove_all_at_invalid_from_to);
+  suite_add_tcase(s, tc_boundary);
 
   return s;
 }

@@ -7,7 +7,8 @@
 /**
  * @brief Initialize an ArrayList.
  *
- * @param al A pointer to the ArrayList to initialize.
+ * @param al    A pointer to the ArrayList to initialize.
+ * @param esize The size of each element.
  */
 void al_init(ArrayList* al, size_t esize) {
   al->cap = INITIAL_CAPACITY;
@@ -16,23 +17,48 @@ void al_init(ArrayList* al, size_t esize) {
   al->esize = esize;
 }
 
+/**
+ * @brief Initialize and allocate a new ArrayList to memory.
+ *
+ * @param esize The size of each element.
+ *
+ * @return A pointer to the allocated ArrayList.
+ */
 ArrayList* al_new(size_t esize) {
   ArrayList* new = malloc(sizeof(ArrayList));
   al_init(new, esize);
   return new;
 }
 
+/**
+ * @brief Free an allocated ArrayList while also cleaning up any internal data.
+ *
+ * @param al A pointer to a pointer to the allocated ArrayList.
+ */
 void al_free(ArrayList** al) {
   al_free_internal(*al);
   free(*al);
   *al = NULL;
 }
 
+/**
+ * @brief Free up any internal data of the ArrayList.
+ *
+ * @param al A pointer to the ArrayList.
+ */
 void al_free_internal(ArrayList* al) {
   free(al->data);
   al->data = NULL;
 }
 
+/**
+ * @brief Get a pointer to an element from the ArrayList in heap.
+ *
+ * @param al    A pointer to the ArrayList.
+ * @param index The index of the element to get.
+ *
+ * @return A pointer to the element in heap.
+ */
 void* al_get(ArrayList* al, unsigned int index) {
   if (index < 0 || index >= al->size) {
     return NULL;
@@ -40,6 +66,13 @@ void* al_get(ArrayList* al, unsigned int index) {
   return al->data + index * al->esize;
 }
 
+/**
+ * @brief Set the value of an element in the ArrayList in heap.
+ *
+ * @param al        A pointer to the ArrayList.
+ * @param index     The index of the element in heap to set.
+ * @param new_value A pointer to the new value to assign.
+ */
 void al_set(ArrayList* al, unsigned int index, void* new_value) {
   if (index < 0 || index >= al->size) {
     return;
@@ -154,6 +187,17 @@ bool al_add_all(ArrayList* al, void* to_adds, unsigned int n) {
   return al_add_all_at(al, to_adds, n, al->size);
 }
 
+/**
+ * @brief An internal method to remove an element at a specified index. If buf
+ *        is null, then no saving of the element will be performed. This is a
+ *        small optimization to reduce the amount of memory copying.
+ *
+ * @param al    A pointer to the ArrayList.
+ * @param index The index of the element to remove.
+ * @param buf   A pointer to a buffer to store the removed element in.
+ *
+ * @return if the remove was successful, returns true.
+ */
 bool _al_remove_at(ArrayList* al, unsigned int index, void* buf) {
   if (index < 0 || index >= al->size) {
     return false;
@@ -196,6 +240,19 @@ bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf) {
   return _al_remove_at(al, index, buf);
 }
 
+/**
+ * @brief An internal method to remove all elements from a starting index
+ *        inclusive to an ending index exclusive. If buf is null, then no
+ *        saving of the element will be performed. This is a small optimization
+ *        to reduce the amount of memory copying.
+ *
+ * @param al   A pointer to the ArrayList.
+ * @param from The index of the first element to remove inclusive.
+ * @param to   The index of the last element to remove exclusive.
+ * @param buf  A pointer to a buffer to store the removed element in.
+ *
+ * @return if the remove was successful, returns true.
+ */
 bool _al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
   if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
     return false;
@@ -229,7 +286,8 @@ bool al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to) {
 }
 
 /**
- * @brief Remove multiple consecutive elements from the ArrayList.
+ * @brief Remove multiple consecutive elements from the ArrayList and store them
+ *        in a buffer.
  *
  * @param al   A pointer to the ArrayList to remove from.
  * @param from The index of the first element to remove inclusive.

@@ -10,9 +10,9 @@ typedef union {
 } EData;
 
 typedef struct {
-  Guid id;
-  unsigned int version;
-  EData data;
+  Guid id;              // the globally unique id of the element.
+  unsigned int version; // the version of the Sequence which created the element.
+  EData data;           // the data stored, which could be a value or a pointer.
 } Element;
 
 void element_init(Element* e);

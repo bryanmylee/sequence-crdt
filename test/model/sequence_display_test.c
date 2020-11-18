@@ -37,13 +37,13 @@ START_TEST(test_seq_gen_char) {
 
 Suite* sequence_display_suite(void) {
   Suite *s;
-  TCase *tc_display;
+  TCase *tc_core;
 
   s = suite_create("sequence_display_suite");
-  tc_display = tcase_create("display");
+  tc_core = tcase_create("core");
 
-  tcase_add_test(tc_display, test_seq_gen_char);
-  suite_add_tcase(s, tc_display);
+  tcase_add_test(tc_core, test_seq_gen_char);
+  suite_add_tcase(s, tc_core);
 
   return s;
 }

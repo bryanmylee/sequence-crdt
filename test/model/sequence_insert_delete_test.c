@@ -156,17 +156,17 @@ START_TEST(test_seq_remote_delete) {
 
 Suite* sequence_insert_delete_suite(void) {
   Suite *s;
-  TCase *tc_insert_delete;
+  TCase *tc_core;
 
   s = suite_create("sequence_insert_delete_suite");
-  tc_insert_delete = tcase_create("insert_delete");
+  tc_core = tcase_create("core");
 
-  tcase_add_test(tc_insert_delete, test_seq_insert_value);
-  tcase_add_test(tc_insert_delete, test_seq_insert);
-  tcase_add_test(tc_insert_delete, test_seq_delete);
-  tcase_add_test(tc_insert_delete, test_seq_remote_insert);
-  tcase_add_test(tc_insert_delete, test_seq_remote_delete);
-  suite_add_tcase(s, tc_insert_delete);
+  tcase_add_test(tc_core, test_seq_insert_value);
+  tcase_add_test(tc_core, test_seq_insert);
+  tcase_add_test(tc_core, test_seq_delete);
+  tcase_add_test(tc_core, test_seq_remote_insert);
+  tcase_add_test(tc_core, test_seq_remote_delete);
+  suite_add_tcase(s, tc_core);
 
   return s;
 }

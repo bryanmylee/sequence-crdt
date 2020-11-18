@@ -139,20 +139,20 @@ START_TEST(test_seq_gen_guid_between_same_key_different_uid) {
 
 Suite* sequence_guid_suite(void) {
   Suite *s;
-  TCase *tc_guid;
+  TCase *tc_core;
 
   s = suite_create("sequence_guid_suite");
-  tc_guid = tcase_create("guid");
+  tc_core = tcase_create("core");
 
-  tcase_add_test(tc_guid, test_seq_gen_token_between);
-  tcase_add_test(tc_guid, test_seq_gen_token_between_no_space);
-  tcase_add_test(tc_guid, test_seq_gen_guid_between_siblings);
-  tcase_add_test(tc_guid, test_seq_gen_guid_between_siblings_no_space);
-  tcase_add_test(tc_guid, test_seq_gen_guid_between_parent_child);
-  tcase_add_test(tc_guid, test_seq_gen_guid_between_uncle_nephew);
-  tcase_add_test(tc_guid, test_seq_gen_guid_between_nephew_uncle);
-  tcase_add_test(tc_guid, test_seq_gen_guid_between_same_key_different_uid);
-  suite_add_tcase(s, tc_guid);
+  tcase_add_test(tc_core, test_seq_gen_token_between);
+  tcase_add_test(tc_core, test_seq_gen_token_between_no_space);
+  tcase_add_test(tc_core, test_seq_gen_guid_between_siblings);
+  tcase_add_test(tc_core, test_seq_gen_guid_between_siblings_no_space);
+  tcase_add_test(tc_core, test_seq_gen_guid_between_parent_child);
+  tcase_add_test(tc_core, test_seq_gen_guid_between_uncle_nephew);
+  tcase_add_test(tc_core, test_seq_gen_guid_between_nephew_uncle);
+  tcase_add_test(tc_core, test_seq_gen_guid_between_same_key_different_uid);
+  suite_add_tcase(s, tc_core);
 
   return s;
 }

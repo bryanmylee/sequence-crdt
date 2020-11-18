@@ -201,16 +201,16 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
 
 Suite* sequence_indexing_suite(void) {
   Suite *s;
-  TCase *tc_find;
+  TCase *tc_core;
 
   s = suite_create("sequence_indexing_suite");
-  tc_find = tcase_create("indexing");
+  tc_core = tcase_create("core");
 
-  tcase_add_test(tc_find, test_seq_iindex_of_even);
-  tcase_add_test(tc_find, test_seq_iindex_of_odd);
-  tcase_add_test(tc_find, test_seq_iindex_of_even_non_existent);
-  tcase_add_test(tc_find, test_seq_iindex_of_odd_non_existent);
-  suite_add_tcase(s, tc_find);
+  tcase_add_test(tc_core, test_seq_iindex_of_even);
+  tcase_add_test(tc_core, test_seq_iindex_of_odd);
+  tcase_add_test(tc_core, test_seq_iindex_of_even_non_existent);
+  tcase_add_test(tc_core, test_seq_iindex_of_odd_non_existent);
+  suite_add_tcase(s, tc_core);
 
   return s;
 }

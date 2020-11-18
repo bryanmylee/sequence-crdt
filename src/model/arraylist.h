@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 typedef struct {
-  unsigned int cap;
-  unsigned int size;
-  char* data;
-  size_t esize;
+  unsigned int cap;  // the maximum capacity at the current allocation size.
+  unsigned int size; // the current number of elements.
+  char* data;        // a pointer to the backing array of bytes.
+  size_t esize;      // the size of each element.
 } ArrayList;
 
 void al_init(ArrayList* al, size_t esize);

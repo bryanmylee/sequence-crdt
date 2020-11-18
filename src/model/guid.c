@@ -14,7 +14,9 @@ unsigned long _vkeys_from_tokens(int depth, va_list valist) {
 }
 
 /**
- * @brief Given a key comprising k tokens, each token doubling in base size
+ * @brief Get the encoded data for a given list of keys.
+ *
+ * Given a key comprising k tokens, each token doubling in base size
  * in comparison to the previous, we can represent the key as a single
  * unsigned integer value.
  *
@@ -29,7 +31,7 @@ unsigned long _vkeys_from_tokens(int depth, va_list valist) {
  * @param depth The number of tokens in the key.
  * @param ... The integer tokens of the key.
  *
- * @return An unsigned integer representation of the key.
+ * @return An unsigned long representation of the keys.
  */
 unsigned long keys_from_tokens(int depth, ...) {
   va_list valist;
@@ -49,14 +51,18 @@ unsigned long _vuids_from_tokens(int depth, va_list valist) {
 }
 
 /**
- * @brief Given a key comprising k tokens, we need to store k attached user ids.
+ * @brief Get the encoded data for a given list of uids.
+ *
+ * Given a key comprising k tokens, we need to store k attached user ids.
  * To match the key tokens and fit 10 user ids in an unsigned long (64 bits),
  * we can use 6-bit user ids for a total size of 6 * 10 = 60 bits < 64 bits.
+ *
+ * This means that we can have up to 2^6 = 64 concurrent users using the sequence.
  *
  * @param depth The number of tokens in the key.
  * @param ... The integer tokens of the key.
  *
- * @return An unsigned integer representation of the key.
+ * @return An unsigned long representation of the uids.
  */
 unsigned long uids_from_tokens(int depth, ...) {
   va_list valist;
@@ -66,29 +72,67 @@ unsigned long uids_from_tokens(int depth, ...) {
   return uids;
 }
 
+/**
+ * @brief Initialize a Guid.
+ *
+ * @param g A pointer to the Guid to initialize.
+ */
 void guid_init(Guid* g) {
   g->keys = 0;
   g->uids = 0;
   g->depth = 0;
 }
 
+/**
+ * @brief Initialize and allocate a new Guid to memory.
+ *
+ * @return A pointer to the allocated Guid.
+ */
 Guid* guid_new(void) {
   Guid* new = malloc(sizeof(Guid));
   guid_init(new);
   return new;
 }
 
+/**
+ * @brief Copy the values of one Guid into another.
+ *
+ * @param g    A pointer to the Guid receiving the copied data.
+ * @param from A pointer to the Guid being copied from.
+ */
 void guid_copy_into(Guid* g, Guid* from) {
   g->depth = from->depth;
   g->keys = from->keys;
   g->uids = from->uids;
 }
 
+/**
+ * @brief Free an allocated Guid while also cleaning up any internal data.
+ *
+ * @param g A pointer to a pointer to the allocated Guid.
+ */
 void guid_free(Guid** g) {
   free(*g);
   *g = NULL;
 }
 
+/**
+ * @brief Compare the order of two Guids.
+ *
+ * Order is first determined by each token in the keys. If the tokens match,
+ * order is then determined by the token in the uids.
+ *
+ * If two Guids have the same keys and uids, then order is solely dependent on
+ * the depth of the Guid.
+ *
+ * @param l A pointer to the Guid on the left of the comparison.
+ * @param r A pointer to the Guid on the right of the comparison.
+ *
+ * @return The order of the Guids.
+ *         - If l < r, returns a negative number.
+ *         - If l > r, returns a positive number.
+ *         - Otherwise, if l == r, returns 0.
+ */
 int guid_compare(Guid* l, Guid* r) {
   int min_depth = l->depth < r->depth ? l->depth : r->depth;
   unsigned long l_keys = l->keys;
@@ -118,10 +162,24 @@ int guid_compare(Guid* l, Guid* r) {
   return l->depth - r->depth;
 }
 
+/**
+ * @brief Check equality of two Guids.
+ *
+ * @param l A pointer to the Guid on the left of the comparison.
+ * @param r A pointer to the Guid on the right of the comparison.
+ *
+ * @return If both Guids are equal, returns true.
+ */
 bool guid_equal(Guid* l, Guid* r) {
   return l->depth == r->depth && l->keys == r->keys && l->uids == r->uids;
 }
 
+/**
+ * @brief Modify a Guid to include an additional token in its encoding.
+ *
+ * @param g A pointer to the Guid.
+ * @param t The token to add to the Guid.
+ */
 void guid_add_token(Guid* g, token t) {
   int key_base = g->depth * (g->depth + 1) / 2;
   g->keys += ((unsigned long) t.key) << key_base;

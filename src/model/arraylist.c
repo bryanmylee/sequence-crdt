@@ -147,8 +147,8 @@ bool al_add(ArrayList* al, void* to_add) {
 /**
  * @brief Add an array of elements to the ArrayList at a specified index.
  *
- *        This method is more efficient than adding each element sequentially,
- *        as it swaps each shifted element only once.
+ * This method is more efficient than adding each element sequentially, as it
+ * swaps each shifted element only once.
  *
  * @param al      A pointer to the ArrayList to add to.
  * @param to_adds A pointer to the array of elements to add.
@@ -188,9 +188,10 @@ bool al_add_all(ArrayList* al, void* to_adds, unsigned int n) {
 }
 
 /**
- * @brief An internal method to remove an element at a specified index. If buf
- *        is null, then no saving of the element will be performed. This is a
- *        small optimization to reduce the amount of memory copying.
+ * @brief An internal method to remove an element at a specified index.
+ *
+ * If buf is null, then no saving of the element will be performed. This is a
+ * small optimization to reduce the amount of memory copying.
  *
  * @param al    A pointer to the ArrayList.
  * @param index The index of the element to remove.
@@ -242,9 +243,10 @@ bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf) {
 
 /**
  * @brief An internal method to remove all elements from a starting index
- *        inclusive to an ending index exclusive. If buf is null, then no
- *        saving of the element will be performed. This is a small optimization
- *        to reduce the amount of memory copying.
+ *        inclusive to an ending index exclusive.
+ *
+ * If buf is null, then no saving of the element will be performed. This is a
+ * small optimization to reduce the amount of memory copying.
  *
  * @param al   A pointer to the ArrayList.
  * @param from The index of the first element to remove inclusive.

@@ -6,44 +6,63 @@
 
 #define BOUNDARY 10
 
-Element _header() {
+/**
+ * @brief Get the sequence header or trailer markers.
+ *
+ * @param is_trailer Whether the marker should be a trailer or header marker.
+ *
+ * @return A sequence marker.
+ */
+Element _seq_marker(bool is_trailer) {
   Element new;
   element_init(&new);
   new.id.depth = 1;
-  new.id.keys = keys_from_tokens(1, 0);
+  new.id.keys = keys_from_tokens(1, is_trailer ? 1 : 0);
   return new;
 }
 
-Element _trailer() {
-  Element new;
-  element_init(&new);
-  new.id.depth = 1;
-  new.id.keys = keys_from_tokens(1, 1);
-  return new;
-}
-
+/**
+ * @brief Initialize a Sequence.
+ *
+ * @param s A pointer to the Sequence to initialize.
+ */
 void seq_init(Sequence* s) {
   s->uid = 0;
   s->version = 0;
   al_init(&s->elements, sizeof(Element));
-  Element header = _header();
-  Element trailer = _trailer();
+  Element header = _seq_marker(false);
+  Element trailer = _seq_marker(true);
   al_add(&s->elements, &header);
   al_add(&s->elements, &trailer);
 }
 
+/**
+ * @brief Initialize and allocate a new Sequence to memory.
+ *
+ * @return A pointr to the allocated Sequence.
+ */
 Sequence* seq_new(void) {
   Sequence* new = malloc(sizeof(Sequence));
   seq_init(new);
   return new;
 }
 
+/**
+ * @brief Free an allocated Sequence while also cleaning up any internal data.
+ *
+ * @param s A pointer to a pointer to the allocated ArrayList.
+ */
 void seq_free(Sequence** s) {
   seq_free_internal(*s);
   free(*s);
   *s = NULL;
 }
 
+/**
+ * @brief Free up any internal data of the Sequence.
+ *
+ * @param s A pointer to the Sequence.
+ */
 void seq_free_internal(Sequence* s) {
   al_free_internal(&s->elements);
 }
@@ -60,10 +79,31 @@ bool _is_boundary_plus(int depth) {
   return depth % 2 == 0;
 }
 
+/**
+ * @brief Get the number of potential nodes at a given depth.
+ *
+ * @param depth The given depth.
+ *
+ * @return The number of potential nodes.
+ */
 int _get_base(int depth) {
   return 1 << depth;
 }
 
+/**
+ * @brief Generate a token between two tokens with at least one empty space
+ *        between using LSEQ.
+ *
+ * The token is set at a random offset from the left or right token, depending
+ * on the boundary strategy at the given depth.
+ *
+ * @param l     A pointer to the token on the left.
+ * @param r     A pointer to the token on the right.
+ * @param depth The depth at which the token is being generated.
+ * @param uid   The uid of the sequence generating the token.
+ *
+ * @return The generated token.
+ */
 token seq_gen_token_between(token* l, token* r, int depth, char uid) {
   int interval = r->key - l->key - 1;
   if (interval < 1) {

@@ -199,11 +199,11 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
   seq_free(&s);
 } END_TEST
 
-Suite* sequence_suite(void) {
+Suite* sequence_indexing_suite(void) {
   Suite *s;
   TCase *tc_find;
 
-  s = suite_create("sequence_suite");
+  s = suite_create("sequence_indexing_suite");
   tc_find = tcase_create("indexing");
 
   tcase_add_test(tc_find, test_seq_iindex_of_even);
@@ -220,7 +220,7 @@ int main(void) {
   Suite *s;
   SRunner *runner;
 
-  s = sequence_suite();
+  s = sequence_indexing_suite();
   runner = srunner_create(s);
 
   srunner_run_all(runner, CK_NORMAL);

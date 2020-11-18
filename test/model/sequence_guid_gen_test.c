@@ -137,11 +137,11 @@ START_TEST(test_seq_gen_guid_between_same_key_different_uid) {
   ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST
 
-Suite* sequence_suite(void) {
+Suite* sequence_guid_suite(void) {
   Suite *s;
   TCase *tc_guid;
 
-  s = suite_create("sequence_suite");
+  s = suite_create("sequence_guid_suite");
   tc_guid = tcase_create("guid");
 
   tcase_add_test(tc_guid, test_seq_gen_token_between);
@@ -162,7 +162,7 @@ int main(void) {
   Suite *s;
   SRunner *runner;
 
-  s = sequence_suite();
+  s = sequence_guid_suite();
   runner = srunner_create(s);
 
   srunner_run_all(runner, CK_NORMAL);

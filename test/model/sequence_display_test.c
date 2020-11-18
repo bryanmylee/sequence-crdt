@@ -35,11 +35,11 @@ START_TEST(test_seq_gen_char) {
   seq_free(&s2);
 }
 
-Suite* sequence_suite(void) {
+Suite* sequence_display_suite(void) {
   Suite *s;
   TCase *tc_display;
 
-  s = suite_create("sequence_suite");
+  s = suite_create("sequence_display_suite");
   tc_display = tcase_create("display");
 
   tcase_add_test(tc_display, test_seq_gen_char);
@@ -53,7 +53,7 @@ int main(void) {
   Suite *s;
   SRunner *runner;
 
-  s = sequence_suite();
+  s = sequence_display_suite();
   runner = srunner_create(s);
 
   srunner_run_all(runner, CK_NORMAL);

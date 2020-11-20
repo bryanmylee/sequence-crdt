@@ -5,10 +5,10 @@
 
 unsigned long _vkeys_from_tokens(int depth, va_list valist) {
   unsigned long key = 0;
-  int base = 1;
+  int base = 0;
   for (int i = 0; i < depth; i++) {
-    base <<= i;
-    key += va_arg(valist, unsigned long) * base;
+    key += va_arg(valist, unsigned long) << base;
+    base += i + 1;
   }
   return key;
 }

@@ -123,13 +123,13 @@ void _r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int
 
   bool l_has_next = curr_l_depth <= l->depth;
   token l_token = {
-    .key = l_has_next ? l->keys & bit_n_ones(curr_l_depth) : 0,
+    .key = l_has_next ? l->keys & bit_n_ones_i(curr_l_depth) : 0,
     .uid = l_has_next ? l->uids & 63 : uid,
   };
 
   bool r_has_next = r != NULL && curr_r_depth <= r->depth;
   token r_token = {
-    .key = r_has_next ? r->keys & bit_n_ones(curr_r_depth) : _get_base(new_depth),
+    .key = r_has_next ? r->keys & bit_n_ones_i(curr_r_depth) : _get_base(new_depth),
     .uid = r_has_next ? r->uids & 63 : uid,
   };
 

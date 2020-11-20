@@ -69,6 +69,30 @@ START_TEST(test_seq_gen_guid_between_siblings_no_space) {
   ck_assert_int_eq(result.uids, expected.uids);
 } END_TEST
 
+START_TEST(test_seq_gen_guid_between_siblings_deep) {
+  Guid l = {
+    .depth = 10,
+    // 000000000 1111111100 111100000 00001101 1010000 110101 00011 1110 110 01 0
+    .keys = keys_from_tokens(10, 0, 1, 6, 14, 3, 53, 80, 13, 480, 1020),
+    .uids = uids_from_tokens(10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+  };
+  Guid r = {
+    .depth = 10,
+    .keys = keys_from_tokens(10, 0, 1, 6, 14, 3, 53, 80, 13, 480, 1022),
+    .uids = uids_from_tokens(10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+  };
+  Guid expected = {
+    .depth = 10,
+    .keys = keys_from_tokens(10, 0, 1, 6, 14, 3, 53, 80, 13, 480, 1021),
+    .uids = uids_from_tokens(10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2),
+  };
+  Guid result;
+  seq_gen_guid_between(&result, &l, &r, 2);
+  ck_assert_int_eq(result.depth, expected.depth);
+  ck_assert_uint_eq(result.keys, expected.keys);
+  ck_assert_uint_eq(result.uids, expected.uids);
+} END_TEST
+
 START_TEST(test_seq_gen_guid_between_parent_child) {
   Guid l = {
     .depth = 3,
@@ -148,6 +172,7 @@ Suite* sequence_guid_suite(void) {
   tcase_add_test(tc_core, test_seq_gen_token_between_no_space);
   tcase_add_test(tc_core, test_seq_gen_guid_between_siblings);
   tcase_add_test(tc_core, test_seq_gen_guid_between_siblings_no_space);
+  tcase_add_test(tc_core, test_seq_gen_guid_between_siblings_deep);
   tcase_add_test(tc_core, test_seq_gen_guid_between_parent_child);
   tcase_add_test(tc_core, test_seq_gen_guid_between_uncle_nephew);
   tcase_add_test(tc_core, test_seq_gen_guid_between_nephew_uncle);

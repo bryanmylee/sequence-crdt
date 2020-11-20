@@ -4,7 +4,8 @@
 
 void sprint_bits(char* str, size_t const size, void const * const ptr);
 void print_bits(size_t const size, void const * const ptr);
-unsigned char bit_n_ones(int n);
+unsigned char bit_n_ones_c(int n);
+unsigned int bit_n_ones_i(int n);
 
 #endif
 

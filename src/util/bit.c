@@ -33,7 +33,11 @@ void print_bits(size_t const size, void const * const ptr) {
   printf("%s\n", str);
 }
 
-unsigned char bit_n_ones(int n) {
+unsigned char bit_n_ones_c(int n) {
+  return (1 << n) - 1;
+}
+
+unsigned int bit_n_ones_i(int n) {
   return (1 << n) - 1;
 }
 

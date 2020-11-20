@@ -42,15 +42,23 @@ START_TEST(test_guid_free) {
 } END_TEST
 
 START_TEST(test_keys_from_tokens) {
-  int result;
+  unsigned long result;
   result = keys_from_tokens(3, 0, 2, 7);
   ck_assert_uint_eq(result, 60);
   result = keys_from_tokens(3, 0, 1, 2);
   ck_assert_uint_eq(result, 18);
 } END_TEST
 
+START_TEST(test_keys_from_tokens_deep) {
+  unsigned long result;
+  result = keys_from_tokens(10, 0, 2, 7, 1, 30, 4, 118, 40, 506, 1018);
+  // 000000000 1111111010 111111010 00101000 1110110 000100 11110 0001 111 10 0
+  ck_assert_uint_eq(result, 0b1111111010111111010001010001110110000100111100001111100);
+} END_TEST
+
+
 START_TEST(test_uids_from_tokens) {
-  int result;
+  unsigned long result;
   result = uids_from_tokens(3, 1, 1, 2);
   ck_assert_uint_eq(result, 8257);
   result = uids_from_tokens(4, 1, 1, 1, 1);
@@ -108,6 +116,7 @@ Suite* guid_gen_suite(void) {
   tcase_add_test(tc_core, test_guid_copy_into);
   tcase_add_test(tc_core, test_guid_free);
   tcase_add_test(tc_core, test_keys_from_tokens);
+  tcase_add_test(tc_core, test_keys_from_tokens_deep);
   tcase_add_test(tc_core, test_uids_from_tokens);
   tcase_add_test(tc_core, test_guid_add_token);
   tcase_add_test(tc_core, test_guid_add_token_second_uid);

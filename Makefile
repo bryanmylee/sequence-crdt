@@ -7,7 +7,7 @@ BINDIR     := bin
 TESTBINDIR := bin/test
 
 # Flags, Libraries, and Includes
-CFLAGS  := -Wall
+CFLAGS  := -Wall -O3
 INC     := -I$(INCDIR) -I$(SRCDIR)
 TESTLIB := -lcheck -lm -lpthread
 

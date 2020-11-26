@@ -34,7 +34,7 @@ START_TEST(test_seq_gen_char) {
 
   seq_free(&s1);
   seq_free(&s2);
-}
+} END_TEST
 
 Suite* sequence_display_suite(void) {
   Suite *s;

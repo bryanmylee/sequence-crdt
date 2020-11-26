@@ -9,7 +9,7 @@ START_TEST(test_guid_init) {
   ck_assert_int_eq(g.keys, 0);
   ck_assert_int_eq(g.uids, 0);
   ck_assert_int_eq(g.depth, 0);
-}
+} END_TEST
 
 START_TEST(test_guid_new) {
   Guid* g = guid_new();
@@ -17,7 +17,7 @@ START_TEST(test_guid_new) {
   ck_assert_int_eq(g->uids, 0);
   ck_assert_int_eq(g->depth, 0);
   free(g);
-}
+} END_TEST
 
 START_TEST(test_guid_copy_into) {
   unsigned long orig_keys = keys_from_tokens(3, 0, 1, 3);

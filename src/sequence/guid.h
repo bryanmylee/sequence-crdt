@@ -1,6 +1,7 @@
 #ifndef CRDT_GUID_H
 #define CRDT_GUID_H
 #include <stdbool.h>
+#include "bit.h"
 #include "token.h"
 
 typedef struct {

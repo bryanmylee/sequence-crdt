@@ -2,6 +2,7 @@
 #define ARRAYLIST_H
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   unsigned int cap;  // the maximum capacity at the current allocation size.

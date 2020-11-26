@@ -2,6 +2,7 @@
 #define CRDT_SEQUENCE_H
 #include <stdbool.h>
 #include "arraylist.h"
+#include "bit.h"
 #include "element.h"
 #include "guid.h"
 #include "token.h"

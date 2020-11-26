@@ -1,0 +1,4 @@
+// When CMake configures this header file, the values for
+// @Tutorial_VERSION_MAJOR@ and @Tutorial_VERSION_MINOR@ will be replaced.
+#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
+#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@

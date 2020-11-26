@@ -1,5 +1,4 @@
 #include "element.h"
-#include "guid.h"
 
 /**
  * @brief Initialize an Element.

@@ -36,7 +36,26 @@ unsigned char bit_n_ones_c(int n) {
   return (1 << n) - 1;
 }
 
+/**
+ * @brief Generate bitmasks of up to 32 bits in length.
+ *
+ * @param n The length of the bitmask.
+ *
+ * @return The bitmask.
+ */
 unsigned int bit_n_ones_i(int n) {
-  return (1 << n) - 1;
+  return n >= 32 ? 0xffffffffUL : (1 << n) - 1;
+}
+
+
+/**
+ * @brief Generate bitmasks of up to 64 bits in length.
+ *
+ * @param n The length of the bitmask.
+ *
+ * @return The bitmask.
+ */
+unsigned long bit_n_ones_l(int n) {
+  return n >= 64 ? 0xffffffffffffffffUL : (1UL << n) - 1;
 }
 

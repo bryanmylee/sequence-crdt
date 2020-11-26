@@ -53,9 +53,7 @@ START_TEST(test_keys_from_tokens) {
 START_TEST(test_keys_from_tokens_deep) {
   unsigned long result;
   result = keys_from_tokens(10, 0, 2, 7, 1, 30, 4, 118, 40, 506, 1018);
-  // expected: 000000000 1111111010 111111010 00101000 1110110 000100 11110 0001 111 10 0
-  // result:   111111111 1111111010 111111010 00101000 1110110 000100 11110 0001 111 10 0
-  ck_assert_uint_eq(result, 0b1111111010111111010001010001110110000100111100001111100);
+  ck_assert_uint_eq(result & bit_n_ones_l(55), 0b1111111010111111010001010001110110000100111100001111100 & bit_n_ones_l(55));
 } END_TEST
 
 

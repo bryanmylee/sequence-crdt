@@ -2,15 +2,15 @@
 #include <stdlib.h>
 #include "guid.h"
 
-unsigned long _vkeys_from_tokens(int depth, va_list valist) {
+static unsigned long vkeys_from_tokens(int depth, va_list valist) {
   unsigned long key = 0;
   int base = 0;
   for (int i = 0; i < depth; i++) {
-    key |= va_arg(valist, unsigned long) << base;
+    unsigned long token = va_arg(valist, int);
+    key |= token << base;
     base += i + 1;
   }
-  // 55 bits
-  return key & bit_n_ones_l(55);
+  return key;
 }
 
 /**
@@ -36,18 +36,19 @@ unsigned long _vkeys_from_tokens(int depth, va_list valist) {
 unsigned long keys_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  unsigned long key = _vkeys_from_tokens(depth, valist);
+  unsigned long key = vkeys_from_tokens(depth, valist);
   va_end(valist);
   return key;
 }
 
-unsigned long _vuids_from_tokens(int depth, va_list valist) {
+static unsigned long vuids_from_tokens(int depth, va_list valist) {
   unsigned long uids = 0;
   for (int i = 0; i < depth; i++) {
     // shift by 6 bits per user id.
-    uids |= va_arg(valist, unsigned long) << (i * 6);
+    unsigned long token = va_arg(valist, int);
+    uids |= token << (i * 6);
   }
-  return uids & bit_n_ones_l(60);
+  return uids;
 }
 
 /**
@@ -67,7 +68,7 @@ unsigned long _vuids_from_tokens(int depth, va_list valist) {
 unsigned long uids_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  unsigned long uids = _vuids_from_tokens(depth, valist);
+  unsigned long uids = vuids_from_tokens(depth, valist);
   va_end(valist);
   return uids;
 }

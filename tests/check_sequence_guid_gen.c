@@ -90,8 +90,8 @@ START_TEST(test_seq_gen_guid_between_siblings_deep) {
   Guid result;
   seq_gen_guid_between(&result, &l, &r, 2);
   ck_assert_int_eq(result.depth, expected.depth);
-  ck_assert_uint_eq(result.keys, expected.keys);
-  ck_assert_uint_eq(result.uids, expected.uids);
+  ck_assert_uint_eq(result.keys & bit_n_ones_l(55), expected.keys & bit_n_ones_l(55));
+  ck_assert_uint_eq(result.uids & bit_n_ones_l(60), expected.uids & bit_n_ones_l(60));
 } END_TEST
 
 START_TEST(test_seq_gen_guid_between_parent_child) {

@@ -1,4 +1,4 @@
-#include "bit.h"
+#include "../bit.h"
 
 /**
  * @brief Compose a string with the same text that would be printed by print_bits.

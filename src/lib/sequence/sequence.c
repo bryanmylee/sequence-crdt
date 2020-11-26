@@ -312,7 +312,7 @@ bool seq_remote_delete(Sequence* s, Element* to_delete) {
 
 void seq_gen_chars(Sequence* s, char* buf) {
   unsigned int n = seq_size(s);
-  for (int i = 0; i < n; i++) {
+  for (unsigned int i = 0; i < n; i++) {
     buf[i] = seq_get_element(s, i)->data.value;
   }
 }

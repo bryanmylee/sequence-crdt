@@ -1,7 +1,7 @@
 # Configure header file to pass CMake settings to source code.
 configure_file(config.h.in config.h)
 
-add_subdirectory(lib)
+add_subdirectory(sequence)
 
 # Add executables.
 add_executable(main main.c)

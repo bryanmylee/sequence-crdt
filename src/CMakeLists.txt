@@ -7,5 +7,5 @@ add_subdirectory(lib)
 add_executable(main main.c)
 
 # Link the libraries.
-target_link_libraries(main PUBLIC lib)
+target_link_libraries(main PUBLIC sequence)
 

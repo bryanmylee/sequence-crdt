@@ -1,6 +1,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
-#include "../guid.h"
+#include "guid.h"
 
 unsigned long _vkeys_from_tokens(int depth, va_list valist) {
   unsigned long key = 0;

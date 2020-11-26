@@ -1,5 +1,5 @@
 #include <string.h>
-#include "../sequence.h"
+#include "sequence.h"
 
 #define BOUNDARY 10
 

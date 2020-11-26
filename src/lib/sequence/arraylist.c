@@ -1,4 +1,4 @@
-#include "../arraylist.h"
+#include "arraylist.h"
 
 #define INITIAL_CAPACITY 16
 #define EXPAND_FACTOR 2

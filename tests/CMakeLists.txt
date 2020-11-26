@@ -26,7 +26,7 @@ set_tests_properties(main_test PROPERTIES TIMEOUT 30)
 # Additional Valgrind test to check for memory leaks.
 include(FindValgrind)
 
-add_custom_target(valgrind_test_sample
+add_custom_target(valgrind_main_test
     COMMAND ${VALGRIND_PROGRAM} --leak-check=full $<TARGET_FILE:main_test>
     DEPENDS main_test
 )

@@ -1,6 +1,7 @@
 #include <check.h>
-#include <model/guid.h>
 #include <stdlib.h>
+
+#include <guid.h>
 
 START_TEST(test_guid_init) {
   Guid g;
@@ -8,7 +9,7 @@ START_TEST(test_guid_init) {
   ck_assert_int_eq(g.keys, 0);
   ck_assert_int_eq(g.uids, 0);
   ck_assert_int_eq(g.depth, 0);
-}
+} END_TEST
 
 START_TEST(test_guid_new) {
   Guid* g = guid_new();
@@ -16,7 +17,7 @@ START_TEST(test_guid_new) {
   ck_assert_int_eq(g->uids, 0);
   ck_assert_int_eq(g->depth, 0);
   free(g);
-}
+} END_TEST
 
 START_TEST(test_guid_copy_into) {
   unsigned long orig_keys = keys_from_tokens(3, 0, 1, 3);
@@ -123,19 +124,5 @@ Suite* guid_gen_suite(void) {
   suite_add_tcase(s, tc_core);
 
   return s;
-}
-
-int main(void) {
-  int no_failed = 0;
-  Suite *s;
-  SRunner *runner;
-
-  s = guid_gen_suite();
-  runner = srunner_create(s);
-
-  srunner_run_all(runner, CK_NORMAL);
-  no_failed = srunner_ntests_failed(runner);
-  srunner_free(runner);
-  return (no_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

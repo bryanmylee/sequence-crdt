@@ -1,6 +1,7 @@
 #include <check.h>
-#include <model/guid.h>
 #include <stdlib.h>
+
+#include <guid.h>
 
 START_TEST(test_guid_compare_siblings) {
   Guid l = {
@@ -209,19 +210,5 @@ Suite* guid_compare_suite(void) {
   suite_add_tcase(s, tc_core);
 
   return s;
-}
-
-int main(void) {
-  int no_failed = 0;
-  Suite *s;
-  SRunner *runner;
-
-  s = guid_compare_suite();
-  runner = srunner_create(s);
-
-  srunner_run_all(runner, CK_NORMAL);
-  no_failed = srunner_ntests_failed(runner);
-  srunner_free(runner);
-  return (no_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

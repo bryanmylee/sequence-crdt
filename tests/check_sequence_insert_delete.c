@@ -1,9 +1,10 @@
 #include <check.h>
-#include <model/arraylist.h>
-#include <model/element.h>
-#include <model/guid.h>
-#include <model/sequence.h>
 #include <stdlib.h>
+
+#include <arraylist.h>
+#include <element.h>
+#include <guid.h>
+#include <sequence.h>
 
 START_TEST(test_seq_insert_value) {
   Sequence* s = seq_new();
@@ -21,7 +22,7 @@ START_TEST(test_seq_insert_value) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s->elements.size; i++) {
+  for (unsigned int i = 1; i < s->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -44,7 +45,7 @@ START_TEST(test_seq_insert) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s->elements.size; i++) {
+  for (unsigned int i = 1; i < s->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -74,7 +75,7 @@ START_TEST(test_seq_delete) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s->elements.size; i++) {
+  for (unsigned int i = 1; i < s->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -107,7 +108,7 @@ START_TEST(test_seq_remote_insert) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s2->elements.size; i++) {
+  for (unsigned int i = 1; i < s2->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -147,7 +148,7 @@ START_TEST(test_seq_remote_delete) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s2->elements.size; i++) {
+  for (unsigned int i = 1; i < s2->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -169,19 +170,5 @@ Suite* sequence_insert_delete_suite(void) {
   suite_add_tcase(s, tc_core);
 
   return s;
-}
-
-int main(void) {
-  int no_failed = 0;
-  Suite *s;
-  SRunner *runner;
-
-  s = sequence_insert_delete_suite();
-  runner = srunner_create(s);
-
-  srunner_run_all(runner, CK_NORMAL);
-  no_failed = srunner_ntests_failed(runner);
-  srunner_free(runner);
-  return (no_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

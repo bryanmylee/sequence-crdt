@@ -1,4 +1,3 @@
-#include <string.h>
 #include "arraylist.h"
 
 #define INITIAL_CAPACITY 16

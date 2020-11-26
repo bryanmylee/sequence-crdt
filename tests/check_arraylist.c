@@ -1,6 +1,7 @@
 #include <check.h>
-#include <model/arraylist.h>
 #include <stdlib.h>
+
+#include <arraylist.h>
 
 START_TEST(test_al_init) {
   ArrayList al;
@@ -397,19 +398,5 @@ Suite* arraylist_suite(void) {
   suite_add_tcase(s, tc_boundary);
 
   return s;
-}
-
-int main(void) {
-  int no_failed = 0;
-  Suite *s;
-  SRunner *runner;
-
-  s = arraylist_suite();
-  runner = srunner_create(s);
-
-  srunner_run_all(runner, CK_NORMAL);
-  no_failed = srunner_ntests_failed(runner);
-  srunner_free(runner);
-  return (no_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

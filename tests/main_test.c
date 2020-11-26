@@ -22,7 +22,7 @@ START_TEST(test_seq_insert_value) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s->elements.size; i++) {
+  for (unsigned int i = 1; i < s->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -45,7 +45,7 @@ START_TEST(test_seq_insert) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s->elements.size; i++) {
+  for (unsigned int i = 1; i < s->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -75,7 +75,7 @@ START_TEST(test_seq_delete) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s->elements.size; i++) {
+  for (unsigned int i = 1; i < s->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -108,7 +108,7 @@ START_TEST(test_seq_remote_insert) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s2->elements.size; i++) {
+  for (unsigned int i = 1; i < s2->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
@@ -148,7 +148,7 @@ START_TEST(test_seq_remote_delete) {
   }
 
   // check that all elements are sorted by Guid.
-  for (int i = 1; i < s2->elements.size; i++) {
+  for (unsigned int i = 1; i < s2->elements.size; i++) {
     Element* prev = al_get(&s->elements, i - 1);
     Element* curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);

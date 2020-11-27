@@ -10,7 +10,8 @@ static unsigned long vkeys_from_tokens(int depth, va_list valist) {
     key |= token << base;
     base += i + 1;
   }
-  return key;
+  // 55 bits
+  return key & bit_n_ones_l(55);
 }
 
 /**

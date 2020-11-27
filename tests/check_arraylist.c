@@ -28,7 +28,7 @@ START_TEST(test_al_add_at_expand) {
 
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 20);
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, al.size - 1 - i);
     ck_assert_int_eq(*e, i);
   }
@@ -45,7 +45,7 @@ START_TEST(test_al_add_expand) {
 
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 20);
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, i);
   }
@@ -72,7 +72,7 @@ START_TEST(test_al_add_all_at_expand) {
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
     10, 11, 12, 13, 14, 15, 16, 17, 18, 19  \
   };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }
@@ -93,7 +93,7 @@ START_TEST(test_al_add_all_at_empty) {
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0  \
   };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }
@@ -119,7 +119,7 @@ START_TEST(test_al_add_all_expand) {
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0  \
   };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }
@@ -141,7 +141,7 @@ START_TEST(test_al_remove_at) {
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 8);
   int expected[] = { 0, 1, 2, 3, 4, 7, 8, 9 };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }
@@ -184,7 +184,7 @@ START_TEST(test_al_add_at_boundary) {
   ck_assert_int_eq(result, true);
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 21);
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, i);
   }
@@ -204,7 +204,7 @@ START_TEST(test_al_add_past_boundary) {
   ck_assert_int_eq(result, false);
   ck_assert_int_eq(al.cap, 32);
   ck_assert_int_eq(al.size, 20);
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, i);
   }
@@ -230,7 +230,7 @@ START_TEST(test_al_add_all_at_boundary) {
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
      0,  0,  0,  0,  0,  0,  0,  0,  0,  0, \
   };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }
@@ -254,7 +254,7 @@ START_TEST(test_al_add_all_past_boundary) {
      0,  1,  2,  3,  4,  5,  6,  7,  8,  9, \
     10, 11, 12, 13, 14, 15, 16, 17, 18, 19  \
   };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }
@@ -274,7 +274,7 @@ START_TEST(test_al_remove_at_boundary) {
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 10);
   int expected[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }
@@ -294,7 +294,7 @@ START_TEST(test_al_remove_past_boundary) {
   ck_assert_int_eq(al.cap, 16);
   ck_assert_int_eq(al.size, 10);
   int expected[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-  for (int i = 0; i < al.size; i++) {
+  for (unsigned int i = 0; i < al.size; i++) {
     int* e = al_get(&al, i);
     ck_assert_int_eq(*e, expected[i]);
   }

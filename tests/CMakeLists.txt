@@ -23,6 +23,12 @@ target_include_directories(main_test PUBLIC ${CHECK_INCLUDE_DIR})
 add_test(NAME main_test COMMAND main_test WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Testing)
 set_tests_properties(main_test PROPERTIES TIMEOUT 30)
 
+# Create check target
+add_custom_target(check
+    COMMAND $<TARGET_FILE:main_test>
+    DEPENDS main_test
+)
+
 # Additional Valgrind test to check for memory leaks.
 include(FindValgrind)
 

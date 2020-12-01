@@ -98,18 +98,20 @@ START_TEST(test_seq_remote_insert) {
   }
 
   // check that all elements are stored properly.
+  ck_assert_int_eq(n, seq_size(s2));
   for (int i = 0; i < n; i++) {
-    Element *e = seq_get_element(s, i);
-    char c = e->data.value;
-    ck_assert_int_eq(c, data[i]);
+    Element *e2 = seq_get_element(s2, i);
+    char c2 = e2->data.value;
+    ck_assert_int_eq(c2, data[i]);
   }
 
   // check that all elements are sorted by Guid.
-  for (unsigned int i = 1; i < s2->elements.size; i++) {
-    Element *prev = al_get(&s->elements, i - 1);
-    Element *curr = al_get(&s->elements, i);
+  for (unsigned int i = 1; i < seq_size(s2); i++) {
+    Element *prev = seq_get_element(s2, i - 1);
+    Element *curr = seq_get_element(s2, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
+
 } END_TEST
 
 START_TEST(test_seq_remote_delete) {

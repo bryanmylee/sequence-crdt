@@ -207,6 +207,37 @@ START_TEST(test_seq_delete_out_of_bounds) {
   ck_assert(seq_delete(s, n - 1) == true);
 } END_TEST
 
+START_TEST(test_seq_remote_delete_non_existent) {
+  Sequence *s = seq_new();
+  Sequence *s2 = seq_new();
+
+  char *data = "this is a string";
+  int n = strlen(data);
+  for (int i = 0; i < n; i++) {
+    Element buf;
+    seq_insert_value_save(s, data[i], i, &buf);
+    seq_remote_insert(s2, &buf);
+  }
+
+  Element remote_deletes[3];
+  // delete 'h', then delete 'is'
+  seq_delete_save(s, 1, &remote_deletes[0]);
+  seq_delete_save(s, 4, &remote_deletes[1]);
+  seq_delete_save(s, 4, &remote_deletes[2]);
+
+  // apply remote deletes not in order.
+  for (int i = 2; i >= 0; i--) {
+    seq_remote_delete(s2, &remote_deletes[i]);
+  }
+
+  // apply remote deletes again, which should return false.
+  for (int i = 2; i >= 0; i--) {
+    ck_assert(seq_remote_delete(s, &remote_deletes[i]) == false);
+    ck_assert(seq_remote_delete(s2, &remote_deletes[i]) == false);
+  }
+} END_TEST
+
+
 Suite *sequence_insert_delete_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -226,6 +257,7 @@ Suite *sequence_insert_delete_suite(void) {
 
   tcase_add_test(tc_boundary, test_seq_insert_out_of_bounds);
   tcase_add_test(tc_boundary, test_seq_delete_out_of_bounds);
+  tcase_add_test(tc_core, test_seq_remote_delete_non_existent);
   suite_add_tcase(s, tc_boundary);
 
   return s;

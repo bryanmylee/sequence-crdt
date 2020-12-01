@@ -3,6 +3,7 @@
 
 #include "check_arraylist_init.c"
 #include "check_arraylist_insert_delete.c"
+#include "check_arraylist_get_set.c"
 #include "check_guid_compare.c"
 #include "check_guid_gen.c"
 #include "check_sequence_display.c"
@@ -16,6 +17,7 @@ int main(void) {
 
   runner = srunner_create(arraylist_init_suite());
   srunner_add_suite(runner, arraylist_insert_delete_suite());
+  srunner_add_suite(runner, arraylist_get_set_suite());
   srunner_add_suite(runner, guid_compare_suite());
   srunner_add_suite(runner, guid_gen_suite());
   srunner_add_suite(runner, sequence_display_suite());

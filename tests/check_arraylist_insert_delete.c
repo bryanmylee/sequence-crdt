@@ -140,6 +140,23 @@ START_TEST(test_al_remove_all_at) {
   int es[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
   al_add_all(&al, es, 10);
 
+  al_remove_all_at(&al, 3, 8);
+
+  int expected_remaining[] = { 0, 1, 2, 8, 9 };
+  for (int i = 0; i < 5; i++) {
+    int* e = al_get(&al, i);
+    ck_assert_int_eq(*e, expected_remaining[i]);
+  }
+  al_free_internal(&al);
+} END_TEST
+
+START_TEST(test_al_remove_all_at_save) {
+  ArrayList al;
+  al_init(&al, sizeof(int));
+
+  int es[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+  al_add_all(&al, es, 10);
+
   int removed[5];
   al_remove_all_at_save(&al, 3, 8, removed);
 
@@ -367,6 +384,7 @@ Suite* arraylist_insert_delete_suite(void) {
 
   tcase_add_test(tc_remove, test_al_remove_at);
   tcase_add_test(tc_remove, test_al_remove_all_at);
+  tcase_add_test(tc_remove, test_al_remove_all_at_save);
   suite_add_tcase(s, tc_remove);
 
   tcase_add_test(tc_boundary, test_al_add_at_boundary);

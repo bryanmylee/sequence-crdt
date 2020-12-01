@@ -208,14 +208,14 @@ unsigned int seq_iindex_of_element_or_after(Sequence *s, Element *target) {
     Element *next = al_get(&s->elements, i);
     compare = guid_compare(&next->id, &target->id);
     if (compare == 0 || max_i == min_i) {
-      return i;
+      break;
     }
     if (compare < 0) {
       min_i = i + 1;
     } else if (compare > 0) {
       max_i = i;
     }
-  } while (max_i - min_i >= 0);
+  } while (max_i >= min_i);
   return i;
 }
 

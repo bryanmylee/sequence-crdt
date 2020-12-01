@@ -107,7 +107,7 @@ Suite* guid_gen_suite(void) {
   Suite *s;
   TCase *tc_core;
 
-  s = suite_create("guid_gen_suite");
+  s = suite_create("check_guid_gen");
   tc_core = tcase_create("core");
 
   // Creation of key test case

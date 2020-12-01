@@ -204,7 +204,7 @@ Suite* sequence_indexing_suite(void) {
   Suite *s;
   TCase *tc_core;
 
-  s = suite_create("sequence_indexing_suite");
+  s = suite_create("check_sequence_indexing");
   tc_core = tcase_create("core");
 
   tcase_add_test(tc_core, test_seq_iindex_of_even);

@@ -192,7 +192,7 @@ Suite* guid_compare_suite(void) {
   Suite *s;
   TCase *tc_core;
 
-  s = suite_create("guid_compare_suite");
+  s = suite_create("check_guid_compare");
   tc_core = tcase_create("core");
 
   // Comparing keys test case

@@ -159,7 +159,7 @@ Suite* sequence_insert_delete_suite(void) {
   Suite *s;
   TCase *tc_core;
 
-  s = suite_create("sequence_insert_delete_suite");
+  s = suite_create("check_sequence_insert_delete");
   tc_core = tcase_create("core");
 
   tcase_add_test(tc_core, test_seq_insert_value);

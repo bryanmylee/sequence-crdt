@@ -166,7 +166,7 @@ Suite* sequence_guid_suite(void) {
   Suite *s;
   TCase *tc_core;
 
-  s = suite_create("sequence_guid_suite");
+  s = suite_create("check_sequence_guid_gen");
   tc_core = tcase_create("core");
 
   tcase_add_test(tc_core, test_seq_gen_token_between);

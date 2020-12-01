@@ -368,7 +368,7 @@ Suite* arraylist_suite(void) {
   TCase *tc_remove;
   TCase *tc_boundary;
 
-  s = suite_create("arraylist_suite");
+  s = suite_create("check_arraylist");
   tc_add = tcase_create("add");
   tc_remove = tcase_create("remove");
   tc_boundary = tcase_create("boundary");

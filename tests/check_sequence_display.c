@@ -40,7 +40,7 @@ Suite* sequence_display_suite(void) {
   Suite *s;
   TCase *tc_core;
 
-  s = suite_create("sequence_display_suite");
+  s = suite_create("check_sequence_display");
   tc_core = tcase_create("core");
 
   tcase_add_test(tc_core, test_seq_gen_char);

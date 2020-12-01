@@ -5,6 +5,7 @@
 #include "check_arraylist_insert_delete.c"
 #include "check_arraylist_get_set.c"
 #include "check_bit.c"
+#include "check_element.c"
 #include "check_guid_compare.c"
 #include "check_guid_gen.c"
 #include "check_sequence_display.c"
@@ -21,6 +22,7 @@ int main(void) {
   srunner_add_suite(runner, arraylist_insert_delete_suite());
   srunner_add_suite(runner, arraylist_get_set_suite());
   srunner_add_suite(runner, bit_suite());
+  srunner_add_suite(runner, element_suite());
   srunner_add_suite(runner, guid_compare_suite());
   srunner_add_suite(runner, guid_gen_suite());
   srunner_add_suite(runner, sequence_display_suite());

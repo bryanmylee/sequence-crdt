@@ -6,7 +6,7 @@
 
 typedef union {
   long value;
-  void* ptr;
+  void *ptr;
 } EData;
 
 typedef struct {
@@ -15,11 +15,11 @@ typedef struct {
   EData data;           // the data stored, which could be a value or a pointer.
 } Element;
 
-void element_init(Element* e);
-Element* element_new(void);
-void element_free(Element** e);
-void element_free_ptr(Element** e);
-void element_free_internal_ptr(Element* e);
+void element_init(Element *e);
+Element *element_new(void);
+void element_free(Element **e);
+void element_free_ptr(Element **e);
+void element_free_internal_ptr(Element *e);
 
 #endif
 

@@ -4,7 +4,7 @@
 #include <arraylist.h>
 
 START_TEST(test_al_get) {
-  ArrayList* al = al_new(sizeof(int));
+  ArrayList *al = al_new(sizeof(int));
   int elements[10] = { 4, 5, 12, 512, 23, 50, 123, 77, 23, 10812 };
   for (int i = 0; i < 10; i++) {
     al_add(al, &elements[i]);
@@ -16,7 +16,7 @@ START_TEST(test_al_get) {
 } END_TEST
 
 START_TEST(test_al_set) {
-  ArrayList* al = al_new(sizeof(int));
+  ArrayList *al = al_new(sizeof(int));
   int old_elements[10] = { 0 };
   for (int i = 0; i < 10; i++) {
     al_add(al, &old_elements[i]);
@@ -32,7 +32,7 @@ START_TEST(test_al_set) {
 } END_TEST
 
 START_TEST(test_al_get_out_of_bounds) {
-  ArrayList* al = al_new(sizeof(int));
+  ArrayList *al = al_new(sizeof(int));
   int elements[10] = { 4, 5, 12, 512, 23, 50, 123, 77, 23, 10812 };
   for (int i = 0; i < 10; i++) {
     al_add(al, &elements[i]);
@@ -43,7 +43,7 @@ START_TEST(test_al_get_out_of_bounds) {
 } END_TEST
 
 START_TEST(test_al_set_out_of_bounds) {
-  ArrayList* al = al_new(sizeof(int));
+  ArrayList *al = al_new(sizeof(int));
   int old_elements[10] = { 0 };
   for (int i = 0; i < 10; i++) {
     al_add(al, &old_elements[i]);
@@ -59,7 +59,7 @@ START_TEST(test_al_set_out_of_bounds) {
   al_free(&al);
 } END_TEST
 
-Suite* arraylist_get_set_suite(void) {
+Suite *arraylist_get_set_suite(void) {
   Suite *s;
   TCase *tc_core;
   TCase *tc_boundary;

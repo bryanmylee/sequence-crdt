@@ -9,7 +9,7 @@
  * @param al    A pointer to the ArrayList to initialize.
  * @param esize The size of each element.
  */
-void al_init(ArrayList* al, size_t esize) {
+void al_init(ArrayList *al, size_t esize) {
   al->cap = INITIAL_CAPACITY;
   al->size = 0;
   al->data = malloc(al->cap * esize);
@@ -23,8 +23,8 @@ void al_init(ArrayList* al, size_t esize) {
  *
  * @return A pointer to the allocated ArrayList.
  */
-ArrayList* al_new(size_t esize) {
-  ArrayList* new = malloc(sizeof(ArrayList));
+ArrayList *al_new(size_t esize) {
+  ArrayList *new = malloc(sizeof(ArrayList));
   al_init(new, esize);
   return new;
 }
@@ -34,7 +34,7 @@ ArrayList* al_new(size_t esize) {
  *
  * @param al A pointer to a pointer to the allocated ArrayList.
  */
-void al_free(ArrayList** al) {
+void al_free(ArrayList **al) {
   al_free_internal(*al);
   free(*al);
   *al = NULL;
@@ -45,7 +45,7 @@ void al_free(ArrayList** al) {
  *
  * @param al A pointer to the ArrayList.
  */
-void al_free_internal(ArrayList* al) {
+void al_free_internal(ArrayList *al) {
   free(al->data);
   al->data = NULL;
 }
@@ -58,7 +58,7 @@ void al_free_internal(ArrayList* al) {
  *
  * @return A pointer to the element in heap.
  */
-void* al_get(ArrayList* al, unsigned int index) {
+void *al_get(ArrayList *al, unsigned int index) {
   if (index < 0 || index >= al->size) {
     return NULL;
   }
@@ -72,11 +72,11 @@ void* al_get(ArrayList* al, unsigned int index) {
  * @param index     The index of the element in heap to set.
  * @param new_value A pointer to the new value to assign.
  */
-void al_set(ArrayList* al, unsigned int index, void* new_value) {
+void al_set(ArrayList *al, unsigned int index, void *new_value) {
   if (index < 0 || index >= al->size) {
     return;
   }
-  char* dst = al->data + index * al->esize;
+  char *dst = al->data + index * al->esize;
   memcpy(dst, new_value, al->esize);
 }
 
@@ -85,7 +85,7 @@ void al_set(ArrayList* al, unsigned int index, void* new_value) {
  *
  * @param al A pointer to the ArrayList to expand.
  */
-static void al_expand(ArrayList* al) {
+static void al_expand(ArrayList *al) {
   al->cap *= EXPAND_FACTOR;
   al->data = realloc(al->data, al->cap * al->esize);
 }
@@ -97,7 +97,7 @@ static void al_expand(ArrayList* al) {
  * @param al  A pointer to the ArrayList to expand.
  * @param min The minimum capacity to expand to.
  */
-static void al_expand_to_min(ArrayList* al, unsigned int min) {
+static void al_expand_to_min(ArrayList *al, unsigned int min) {
   while (al->cap < min) {
     al->cap *= EXPAND_FACTOR;
   }
@@ -113,7 +113,7 @@ static void al_expand_to_min(ArrayList* al, unsigned int min) {
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_at(ArrayList* al, void* to_add, unsigned int index) {
+bool al_add_at(ArrayList *al, void *to_add, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
@@ -121,8 +121,8 @@ bool al_add_at(ArrayList* al, void* to_add, unsigned int index) {
     al_expand(al);
   }
   // move right elements to the right.
-  char* move_dst = al->data + (index + 1) * al->esize;
-  char* move_src = al->data + index * al->esize;
+  char *move_dst = al->data + (index + 1) * al->esize;
+  char *move_src = al->data + index * al->esize;
   int n_moved = al->size - index;
   memmove(move_dst, move_src, n_moved * al->esize);
   // copy element value into the arraylist.
@@ -139,7 +139,7 @@ bool al_add_at(ArrayList* al, void* to_add, unsigned int index) {
  *
  * @return If the add was successful, returns true.
  */
-bool al_add(ArrayList* al, void* to_add) {
+bool al_add(ArrayList *al, void *to_add) {
   return al_add_at(al, to_add, al->size);
 }
 
@@ -156,14 +156,14 @@ bool al_add(ArrayList* al, void* to_add) {
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all_at(ArrayList* al, void* to_adds, unsigned int n, unsigned int index) {
+bool al_add_all_at(ArrayList *al, void *to_adds, unsigned int n, unsigned int index) {
   if (index < 0 || index > al->size) {
     return false;
   }
   al_expand_to_min(al, al->size + n);
   // move right elements to the right.
-  char* move_dst = al->data + (index + n) * al->esize;
-  char* move_src = al->data + index * al->esize;
+  char *move_dst = al->data + (index + n) * al->esize;
+  char *move_src = al->data + index * al->esize;
   int n_moved = al->size - index;
   memmove(move_dst, move_src, n_moved * al->esize);
   // copy element values into the arraylist.
@@ -182,7 +182,7 @@ bool al_add_all_at(ArrayList* al, void* to_adds, unsigned int n, unsigned int in
  *
  * @return If the add was successful, returns true.
  */
-bool al_add_all(ArrayList* al, void* to_adds, unsigned int n) {
+bool al_add_all(ArrayList *al, void *to_adds, unsigned int n) {
   return al_add_all_at(al, to_adds, n, al->size);
 }
 
@@ -198,7 +198,7 @@ bool al_add_all(ArrayList* al, void* to_adds, unsigned int n) {
  *
  * @return if the remove was successful, returns true.
  */
-static bool i_al_remove_at(ArrayList* al, unsigned int index, void* buf) {
+static bool i_al_remove_at(ArrayList *al, unsigned int index, void *buf) {
   if (index < 0 || index >= al->size) {
     return false;
   }
@@ -206,8 +206,8 @@ static bool i_al_remove_at(ArrayList* al, unsigned int index, void* buf) {
     memcpy(buf, al->data + index * al->esize, al->esize);
   }
   // move right elements to the left.
-  char* dst = al->data + index * al->esize;
-  char* src = al->data + (index + 1) * al->esize;
+  char *dst = al->data + index * al->esize;
+  char *src = al->data + (index + 1) * al->esize;
   int n_moved = al->size - index - 1;
   memmove(dst, src, n_moved * al->esize);
   al->size--;
@@ -222,7 +222,7 @@ static bool i_al_remove_at(ArrayList* al, unsigned int index, void* buf) {
  *
  * @return If the remove was successful, returns true.
  */
-bool al_remove_at(ArrayList* al, unsigned int index) {
+bool al_remove_at(ArrayList *al, unsigned int index) {
   return i_al_remove_at(al, index, NULL);
 }
 
@@ -236,7 +236,7 @@ bool al_remove_at(ArrayList* al, unsigned int index) {
  *
  * @return If the remove was successful, returns true.
  */
-bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf) {
+bool al_remove_at_save(ArrayList *al, unsigned int index, void *buf) {
   return i_al_remove_at(al, index, buf);
 }
 
@@ -254,19 +254,19 @@ bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf) {
  *
  * @return if the remove was successful, returns true.
  */
-static bool i_al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
+static bool i_al_remove_all_at(ArrayList *al, unsigned int from, unsigned int to, void *buf) {
   if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
     return false;
   }
   int n_remove = to - from;
   if (buf != NULL) {
     // store deleted elements.
-    char* copy_src = al->data + from * al->esize;
+    char *copy_src = al->data + from * al->esize;
     memcpy(buf, copy_src, n_remove * al->esize);
   }
   // move right elements to the left.
-  char* move_dst = al->data + from * al->esize;
-  char* move_src = al->data + to * al->esize;
+  char *move_dst = al->data + from * al->esize;
+  char *move_src = al->data + to * al->esize;
   int n_moved = al->size - to;
   memmove(move_dst, move_src, n_moved * al->esize);
   al->size -= n_remove;
@@ -282,7 +282,7 @@ static bool i_al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to
  *
  * @return If the remove is successful, returns true.
  */
-bool al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to) {
+bool al_remove_all_at(ArrayList *al, unsigned int from, unsigned int to) {
   return i_al_remove_all_at(al, from, to, NULL);
 }
 
@@ -298,7 +298,7 @@ bool al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to) {
  *
  * @return If the remove is successful, returns true.
  */
-bool al_remove_all_at_save(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
+bool al_remove_all_at_save(ArrayList *al, unsigned int from, unsigned int to, void *buf) {
   return i_al_remove_all_at(al, from, to, buf);
 }
 

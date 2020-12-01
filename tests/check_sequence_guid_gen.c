@@ -162,7 +162,7 @@ START_TEST(test_seq_gen_guid_between_same_key_different_uid) {
   ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST
 
-Suite* sequence_guid_suite(void) {
+Suite *sequence_guid_suite(void) {
   Suite *s;
   TCase *tc_core;
 

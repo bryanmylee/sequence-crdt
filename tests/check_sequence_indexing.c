@@ -7,7 +7,7 @@
 #include <sequence.h>
 
 START_TEST(test_seq_iindex_of_even) {
-  Sequence* s = seq_new();
+  Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
   al_init(&s->elements, sizeof(Element));
   // insert 8 Element pointers.
@@ -54,7 +54,7 @@ START_TEST(test_seq_iindex_of_even) {
 } END_TEST
 
 START_TEST(test_seq_iindex_of_odd) {
-  Sequence* s = seq_new();
+  Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
   al_init(&s->elements, sizeof(Element));
   // insert 7 Element pointers.
@@ -99,7 +99,7 @@ START_TEST(test_seq_iindex_of_odd) {
 } END_TEST
 
 START_TEST(test_seq_iindex_of_even_non_existent) {
-  Sequence* s = seq_new();
+  Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
   al_init(&s->elements, sizeof(Element));
   // insert 8 Element pointers with even key tokens.
@@ -150,7 +150,7 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
 } END_TEST
 
 START_TEST(test_seq_iindex_of_odd_non_existent) {
-  Sequence* s = seq_new();
+  Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
   al_init(&s->elements, sizeof(Element));
   // insert 7 Element pointers with even key tokens.
@@ -200,7 +200,7 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
   seq_free(&s);
 } END_TEST
 
-Suite* sequence_indexing_suite(void) {
+Suite *sequence_indexing_suite(void) {
   Suite *s;
   TCase *tc_core;
 

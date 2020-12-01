@@ -188,7 +188,7 @@ START_TEST(test_guid_equal) {
   ck_assert_int_eq(result, true);
 } END_TEST
 
-Suite* guid_compare_suite(void) {
+Suite *guid_compare_suite(void) {
   Suite *s;
   TCase *tc_core;
 

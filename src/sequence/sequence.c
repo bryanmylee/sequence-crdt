@@ -23,7 +23,7 @@ static Element seq_marker(bool is_trailer) {
  *
  * @param s A pointer to the Sequence to initialize.
  */
-void seq_init(Sequence* s) {
+void seq_init(Sequence *s) {
   s->uid = 0;
   s->version = 0;
   al_init(&s->elements, sizeof(Element));
@@ -38,8 +38,8 @@ void seq_init(Sequence* s) {
  *
  * @return A pointr to the allocated Sequence.
  */
-Sequence* seq_new(void) {
-  Sequence* new = malloc(sizeof(Sequence));
+Sequence *seq_new(void) {
+  Sequence *new = malloc(sizeof(Sequence));
   seq_init(new);
   return new;
 }
@@ -49,7 +49,7 @@ Sequence* seq_new(void) {
  *
  * @param s A pointer to a pointer to the allocated ArrayList.
  */
-void seq_free(Sequence** s) {
+void seq_free(Sequence **s) {
   seq_free_internal(*s);
   free(*s);
   *s = NULL;
@@ -60,7 +60,7 @@ void seq_free(Sequence** s) {
  *
  * @param s A pointer to the Sequence.
  */
-void seq_free_internal(Sequence* s) {
+void seq_free_internal(Sequence *s) {
   al_free_internal(&s->elements);
 }
 
@@ -101,7 +101,7 @@ static int get_base(int depth) {
  *
  * @return The generated token.
  */
-token seq_gen_token_between(token* l, token* r, int depth, char uid) {
+token seq_gen_token_between(token *l, token *r, int depth, char uid) {
   int interval = r->key - l->key - 1;
   if (interval < 1) {
     // invalid token.
@@ -115,7 +115,7 @@ token seq_gen_token_between(token* l, token* r, int depth, char uid) {
   return (token) { .key = r->key - rand_step, .uid = uid };
 }
 
-static void r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int curr_r_depth, char uid) {
+static void r_gen_guid_between(Guid *new_guid, Guid *l, int curr_l_depth, Guid *r, int curr_r_depth, char uid) {
   int new_depth = new_guid->depth + 1;
 
   bool l_has_next = curr_l_depth <= l->depth;
@@ -158,7 +158,7 @@ static void r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* 
   }
 }
 
-void seq_gen_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
+void seq_gen_guid_between(Guid *buf, Guid *l, Guid *r, char uid) {
   guid_init(buf);
   Guid l_guid;
   Guid r_guid;
@@ -175,14 +175,14 @@ void seq_gen_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
  * @param buf    A pointer to the Guid buffer to store the result in.
  * @param iindex The internal index at which to generate the Guid.
  */
-void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int iindex) {
-  Guid* before = &((Element*) al_get(&s->elements, iindex - 1))->id;
-  Guid* after = &((Element*) al_get(&s->elements, iindex))->id;
+void seq_gen_guid_at(Sequence *s, Guid *buf, unsigned int iindex) {
+  Guid *before = &((Element *) al_get(&s->elements, iindex - 1))->id;
+  Guid *after = &((Element *) al_get(&s->elements, iindex))->id;
   seq_gen_guid_between(buf, before, after, s->uid);
 }
 
-static bool is_larger_than_max(Sequence* s, Element* target) {
-  Element* last = al_get(&s->elements, s->elements.size - 1);
+static bool is_larger_than_max(Sequence *s, Element *target) {
+  Element *last = al_get(&s->elements, s->elements.size - 1);
   return guid_compare(&target->id, &last->id) > 0;
 }
 
@@ -195,7 +195,7 @@ static bool is_larger_than_max(Sequence* s, Element* target) {
  *
  * @return The internal index of an element.
  */
-unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* target) {
+unsigned int seq_iindex_of_element_or_after(Sequence *s, Element *target) {
   if (is_larger_than_max(s, target)) {
     return s->elements.size;
   }
@@ -205,7 +205,7 @@ unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* target) {
   int compare;
   do {
     i = min_i + (max_i - min_i) / 2;
-    Element* next = al_get(&s->elements, i);
+    Element *next = al_get(&s->elements, i);
     compare = guid_compare(&next->id, &target->id);
     if (compare == 0 || max_i == min_i) {
       return i;
@@ -219,18 +219,18 @@ unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* target) {
   return i;
 }
 
-unsigned int seq_size(Sequence* s) {
+unsigned int seq_size(Sequence *s) {
   return s->elements.size - 2;
 }
 
-Element* seq_get_element(Sequence* s, unsigned int index) {
+Element *seq_get_element(Sequence *s, unsigned int index) {
   if (index < 0 || index > seq_size(s)) {
     return NULL;
   }
   return al_get(&s->elements, index + 1);
 }
 
-static bool i_seq_insert(Sequence* s, void* insert_ptr, long insert_val, unsigned int index, Element* buf) {
+static bool i_seq_insert(Sequence *s, void *insert_ptr, long insert_val, unsigned int index, Element *buf) {
   if (index < 0 || index > seq_size(s)) {
     return false;
   }
@@ -250,23 +250,23 @@ static bool i_seq_insert(Sequence* s, void* insert_ptr, long insert_val, unsigne
   return true;
 }
 
-bool seq_insert(Sequence* s, void* to_insert, unsigned int index) {
+bool seq_insert(Sequence *s, void *to_insert, unsigned int index) {
   return i_seq_insert(s, to_insert, 0, index, NULL);
 }
 
-bool seq_insert_save(Sequence* s, void* to_insert, unsigned int index, Element* buf) {
+bool seq_insert_save(Sequence *s, void *to_insert, unsigned int index, Element *buf) {
   return i_seq_insert(s, to_insert, 0, index, buf);
 }
 
-bool seq_insert_value(Sequence* s, long to_insert, unsigned int index) {
+bool seq_insert_value(Sequence *s, long to_insert, unsigned int index) {
   return i_seq_insert(s, NULL, to_insert, index, NULL);
 }
 
-bool seq_insert_value_save(Sequence* s, long to_insert, unsigned int index, Element* buf) {
+bool seq_insert_value_save(Sequence *s, long to_insert, unsigned int index, Element *buf) {
   return i_seq_insert(s, NULL, to_insert, index, buf);
 }
 
-static bool i_seq_delete(Sequence* s, unsigned int index, Element* buf) {
+static bool i_seq_delete(Sequence *s, unsigned int index, Element *buf) {
   if (index < 0 || index > seq_size(s)) {
     return false;
   }
@@ -280,17 +280,17 @@ static bool i_seq_delete(Sequence* s, unsigned int index, Element* buf) {
   return true;
 }
 
-bool seq_delete(Sequence* s, unsigned int index) {
+bool seq_delete(Sequence *s, unsigned int index) {
   return i_seq_delete(s, index, NULL);
 }
 
-bool seq_delete_save(Sequence* s, unsigned int index, Element* buf) {
+bool seq_delete_save(Sequence *s, unsigned int index, Element *buf) {
   return i_seq_delete(s, index, buf);
 }
 
-bool seq_remote_insert(Sequence* s, Element* to_insert) {
+bool seq_remote_insert(Sequence *s, Element *to_insert) {
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_insert);
-  Element* e = seq_get_element(s, iindex - 1);
+  Element *e = seq_get_element(s, iindex - 1);
   if (guid_equal(&e->id, &to_insert->id)) {
     return false;
   }
@@ -299,9 +299,9 @@ bool seq_remote_insert(Sequence* s, Element* to_insert) {
   return true;
 }
 
-bool seq_remote_delete(Sequence* s, Element* to_delete) {
+bool seq_remote_delete(Sequence *s, Element *to_delete) {
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_delete);
-  Element* e = seq_get_element(s, iindex - 1);
+  Element *e = seq_get_element(s, iindex - 1);
   if (!guid_equal(&e->id, &to_delete->id)) {
     return false;
   }
@@ -310,7 +310,7 @@ bool seq_remote_delete(Sequence* s, Element* to_delete) {
   return true;
 }
 
-void seq_gen_chars(Sequence* s, char* buf) {
+void seq_gen_chars(Sequence *s, char *buf) {
   unsigned int n = seq_size(s);
   for (unsigned int i = 0; i < n; i++) {
     buf[i] = seq_get_element(s, i)->data.value;

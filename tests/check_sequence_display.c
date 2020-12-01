@@ -7,8 +7,8 @@
 #include <sequence.h>
 
 START_TEST(test_seq_gen_char) {
-  Sequence* s1 = seq_new();
-  char* data = "oof this is going to be a doozy...";
+  Sequence *s1 = seq_new();
+  char *data = "oof this is going to be a doozy...";
   int n = strlen(data);
   Element inserted[40];
   // Stage one arrange
@@ -22,7 +22,7 @@ START_TEST(test_seq_gen_char) {
   ck_assert_str_eq(result1, data);
 
   // Stage two arrange
-  Sequence* s2 = seq_new();
+  Sequence *s2 = seq_new();
   // Act
   for (int i = 0; i < n; i++) {
     seq_remote_insert(s2, &inserted[i]);
@@ -36,7 +36,7 @@ START_TEST(test_seq_gen_char) {
   seq_free(&s2);
 } END_TEST
 
-Suite* sequence_display_suite(void) {
+Suite *sequence_display_suite(void) {
   Suite *s;
   TCase *tc_core;
 

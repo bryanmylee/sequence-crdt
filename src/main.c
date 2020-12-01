@@ -2,8 +2,8 @@
 #include <sequence.h>
 
 int main(void) {
-  Sequence* s = seq_new();
-  char* data = "the sequence does not leak memory!";
+  Sequence *s = seq_new();
+  char *data = "the sequence does not leak memory!";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
     seq_insert_value(s, data[i], i);

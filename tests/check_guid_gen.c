@@ -12,7 +12,7 @@ START_TEST(test_guid_init) {
 } END_TEST
 
 START_TEST(test_guid_new) {
-  Guid* g = guid_new();
+  Guid *g = guid_new();
   ck_assert_int_eq(g->keys, 0);
   ck_assert_int_eq(g->uids, 0);
   ck_assert_int_eq(g->depth, 0);
@@ -34,7 +34,7 @@ START_TEST(test_guid_copy_into) {
 } END_TEST
 
 START_TEST(test_guid_free) {
-  Guid* g = guid_new();
+  Guid *g = guid_new();
   ck_assert_int_eq(g->depth, 0);
   ck_assert_uint_eq(g->keys, 0);
   ck_assert_uint_eq(g->uids, 0);
@@ -103,7 +103,7 @@ START_TEST(test_guid_add_token_second_uid) {
   ck_assert_int_eq(g.uids, expected.uids);
 } END_TEST
 
-Suite* guid_gen_suite(void) {
+Suite *guid_gen_suite(void) {
   Suite *s;
   TCase *tc_core;
 

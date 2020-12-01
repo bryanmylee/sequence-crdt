@@ -5,7 +5,7 @@
  *
  * @param e A pointer to the Element to initialize.
  */
-void element_init(Element* e) {
+void element_init(Element *e) {
   guid_init(&e->id);
   e->version = 0;
   e->data.ptr = NULL;
@@ -16,8 +16,8 @@ void element_init(Element* e) {
  *
  * @return A pointer to the allocated Element.
  */
-Element* element_new(void) {
-  Element* new = malloc(sizeof(Element));
+Element *element_new(void) {
+  Element *new = malloc(sizeof(Element));
   element_init(new);
   return new;
 }
@@ -27,7 +27,7 @@ Element* element_new(void) {
  *
  * @param e A pointer to a pointer to the allocated Element.
  */
-void element_free(Element** e) {
+void element_free(Element **e) {
   free(*e);
   *e = NULL;
 }
@@ -38,7 +38,7 @@ void element_free(Element** e) {
  *
  * @param e A pointer to a pointer to the allocated Element.
  */
-void element_free_ptr(Element** e) {
+void element_free_ptr(Element **e) {
   element_free_internal_ptr(*e);
   free(*e);
   *e = NULL;
@@ -50,7 +50,7 @@ void element_free_ptr(Element** e) {
  *
  * @param e A pointer to the Element.
  */
-void element_free_internal_ptr(Element* e) {
+void element_free_internal_ptr(Element *e) {
   free(e->data.ptr);
   e->data.ptr = NULL;
 }

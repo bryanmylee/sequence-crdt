@@ -79,7 +79,7 @@ unsigned long uids_from_tokens(int depth, ...) {
  *
  * @param g A pointer to the Guid to initialize.
  */
-void guid_init(Guid* g) {
+void guid_init(Guid *g) {
   g->keys = 0;
   g->uids = 0;
   g->depth = 0;
@@ -90,8 +90,8 @@ void guid_init(Guid* g) {
  *
  * @return A pointer to the allocated Guid.
  */
-Guid* guid_new(void) {
-  Guid* new = malloc(sizeof(Guid));
+Guid *guid_new(void) {
+  Guid *new = malloc(sizeof(Guid));
   guid_init(new);
   return new;
 }
@@ -102,7 +102,7 @@ Guid* guid_new(void) {
  * @param g    A pointer to the Guid receiving the copied data.
  * @param from A pointer to the Guid being copied from.
  */
-void guid_copy_into(Guid* g, Guid* from) {
+void guid_copy_into(Guid *g, Guid *from) {
   g->depth = from->depth;
   g->keys = from->keys;
   g->uids = from->uids;
@@ -113,7 +113,7 @@ void guid_copy_into(Guid* g, Guid* from) {
  *
  * @param g A pointer to a pointer to the allocated Guid.
  */
-void guid_free(Guid** g) {
+void guid_free(Guid **g) {
   free(*g);
   *g = NULL;
 }
@@ -135,7 +135,7 @@ void guid_free(Guid** g) {
  *         - If l > r, returns a positive number.
  *         - Otherwise, if l == r, returns 0.
  */
-int guid_compare(Guid* l, Guid* r) {
+int guid_compare(Guid *l, Guid *r) {
   int min_depth = l->depth < r->depth ? l->depth : r->depth;
   unsigned long l_keys = l->keys;
   unsigned long r_keys = r->keys;
@@ -172,7 +172,7 @@ int guid_compare(Guid* l, Guid* r) {
  *
  * @return If both Guids are equal, returns true.
  */
-bool guid_equal(Guid* l, Guid* r) {
+bool guid_equal(Guid *l, Guid *r) {
   return l->depth == r->depth && l->keys == r->keys && l->uids == r->uids;
 }
 
@@ -182,7 +182,7 @@ bool guid_equal(Guid* l, Guid* r) {
  * @param g A pointer to the Guid.
  * @param t The token to add to the Guid.
  */
-void guid_add_token(Guid* g, token t) {
+void guid_add_token(Guid *g, token t) {
   int key_base = g->depth * (g->depth + 1) / 2;
   g->keys += ((unsigned long) t.key) << key_base;
   int uids_base = g->depth * 6;

@@ -7,8 +7,8 @@
 #include <sequence.h>
 
 START_TEST(test_seq_insert_value) {
-  Sequence* s = seq_new();
-  char* data = "this is a string";
+  Sequence *s = seq_new();
+  char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
     seq_insert_value(s, data[i], i);
@@ -16,22 +16,22 @@ START_TEST(test_seq_insert_value) {
 
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
-    Element* e = seq_get_element(s, i);
+    Element *e = seq_get_element(s, i);
     char c = e->data.value;
     ck_assert_int_eq(c, data[i]);
   }
 
   // check that all elements are sorted by Guid.
   for (unsigned int i = 1; i < s->elements.size; i++) {
-    Element* prev = al_get(&s->elements, i - 1);
-    Element* curr = al_get(&s->elements, i);
+    Element *prev = al_get(&s->elements, i - 1);
+    Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 } END_TEST
 
 START_TEST(test_seq_insert) {
-  Sequence* s = seq_new();
-  char* data = "this is a string";
+  Sequence *s = seq_new();
+  char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
     seq_insert(s, data + i, i);
@@ -39,22 +39,22 @@ START_TEST(test_seq_insert) {
 
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
-    Element* e = seq_get_element(s, i);
+    Element *e = seq_get_element(s, i);
     char c = *((char*) e->data.ptr);
     ck_assert_int_eq(c, data[i]);
   }
 
   // check that all elements are sorted by Guid.
   for (unsigned int i = 1; i < s->elements.size; i++) {
-    Element* prev = al_get(&s->elements, i - 1);
-    Element* curr = al_get(&s->elements, i);
+    Element *prev = al_get(&s->elements, i - 1);
+    Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 } END_TEST
 
 START_TEST(test_seq_delete) {
-  Sequence* s = seq_new();
-  char* data = "this is a string";
+  Sequence *s = seq_new();
+  char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
     seq_insert_value(s, data[i], i);
@@ -65,33 +65,33 @@ START_TEST(test_seq_delete) {
   seq_delete(s, 4);
   seq_delete(s, 4);
 
-  char* expected = "tis  a string";
+  char *expected = "tis  a string";
   n = strlen(expected);
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
-    Element* e = seq_get_element(s, i);
+    Element *e = seq_get_element(s, i);
     char c = e->data.value;
     ck_assert_int_eq(c, expected[i]);
   }
 
   // check that all elements are sorted by Guid.
   for (unsigned int i = 1; i < s->elements.size; i++) {
-    Element* prev = al_get(&s->elements, i - 1);
-    Element* curr = al_get(&s->elements, i);
+    Element *prev = al_get(&s->elements, i - 1);
+    Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 } END_TEST
 
 START_TEST(test_seq_remote_insert) {
-  Sequence* s = seq_new();
-  char* data = "this is a string";
+  Sequence *s = seq_new();
+  char *data = "this is a string";
   int n = strlen(data);
   Element remote_inserts[n];
   for (int i = 0; i < n; i++) {
     seq_insert_value_save(s, data[i], i, &remote_inserts[i]);
   }
 
-  Sequence* s2 = seq_new();
+  Sequence *s2 = seq_new();
   // insert remote elements twice.
   for (int i = 0; i < n; i++) {
     seq_remote_insert(s2, &remote_inserts[i]);
@@ -102,24 +102,24 @@ START_TEST(test_seq_remote_insert) {
 
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
-    Element* e = seq_get_element(s, i);
+    Element *e = seq_get_element(s, i);
     char c = e->data.value;
     ck_assert_int_eq(c, data[i]);
   }
 
   // check that all elements are sorted by Guid.
   for (unsigned int i = 1; i < s2->elements.size; i++) {
-    Element* prev = al_get(&s->elements, i - 1);
-    Element* curr = al_get(&s->elements, i);
+    Element *prev = al_get(&s->elements, i - 1);
+    Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 } END_TEST
 
 START_TEST(test_seq_remote_delete) {
-  Sequence* s = seq_new();
-  Sequence* s2 = seq_new();
+  Sequence *s = seq_new();
+  Sequence *s2 = seq_new();
 
-  char* data = "this is a string";
+  char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
     Element buf;
@@ -138,24 +138,24 @@ START_TEST(test_seq_remote_delete) {
     seq_remote_delete(s2, &remote_deletes[i]);
   }
 
-  char* expected = "tis  a string";
+  char *expected = "tis  a string";
   n = strlen(expected);
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
-    Element* e = seq_get_element(s2, i);
+    Element *e = seq_get_element(s2, i);
     char c = e->data.value;
     ck_assert_int_eq(c, expected[i]);
   }
 
   // check that all elements are sorted by Guid.
   for (unsigned int i = 1; i < s2->elements.size; i++) {
-    Element* prev = al_get(&s->elements, i - 1);
-    Element* curr = al_get(&s->elements, i);
+    Element *prev = al_get(&s->elements, i - 1);
+    Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 } END_TEST
 
-Suite* sequence_insert_delete_suite(void) {
+Suite *sequence_insert_delete_suite(void) {
   Suite *s;
   TCase *tc_core;
 

@@ -223,8 +223,19 @@ unsigned int seq_size(Sequence *s) {
   return s->elements.size - 2;
 }
 
+/**
+ * @brief Get the element in the sequence with a specified index.
+ *
+ * This method treats the sequence as an ordered collection of elements, not
+ * inclusive of the header and trailer elements.
+ *
+ * @param s     The sequence to get the element from.
+ * @param index The index of the element.
+ *
+ * @return A pointer to the element in the sequence.
+ */
 Element *seq_get_element(Sequence *s, unsigned int index) {
-  if (index < 0 || index > seq_size(s)) {
+  if (index < 0 || index >= seq_size(s)) {
     return NULL;
   }
   return al_get(&s->elements, index + 1);
@@ -290,7 +301,7 @@ bool seq_delete_save(Sequence *s, unsigned int index, Element *buf) {
 
 bool seq_remote_insert(Sequence *s, Element *to_insert) {
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_insert);
-  Element *e = seq_get_element(s, iindex - 1);
+  Element *e = al_get(&s->elements, iindex);
   if (guid_equal(&e->id, &to_insert->id)) {
     return false;
   }
@@ -301,7 +312,7 @@ bool seq_remote_insert(Sequence *s, Element *to_insert) {
 
 bool seq_remote_delete(Sequence *s, Element *to_delete) {
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_delete);
-  Element *e = seq_get_element(s, iindex - 1);
+  Element *e = al_get(&s->elements, iindex);
   if (!guid_equal(&e->id, &to_delete->id)) {
     return false;
   }

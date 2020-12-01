@@ -3,21 +3,6 @@
 
 #include <arraylist.h>
 
-START_TEST(test_al_init) {
-  ArrayList al;
-  al_init(&al, sizeof(int));
-  ck_assert_int_eq(al.cap, 16);
-  ck_assert_int_eq(al.size, 0);
-  al_free_internal(&al);
-} END_TEST
-
-START_TEST(test_al_new) {
-  ArrayList* al = al_new(sizeof(int));
-  ck_assert_int_eq(al->cap, 16);
-  ck_assert_int_eq(al->size, 0);
-  free(al);
-} END_TEST
-
 START_TEST(test_al_add_at_expand) {
   ArrayList al;
   al_init(&al, sizeof(int));
@@ -362,19 +347,17 @@ START_TEST(test_al_remove_all_at_invalid_from_to) {
   al_free_internal(&al);
 } END_TEST
 
-Suite* arraylist_suite(void) {
+Suite* arraylist_insert_delete_suite(void) {
   Suite *s;
   TCase *tc_add;
   TCase *tc_remove;
   TCase *tc_boundary;
 
-  s = suite_create("check_arraylist");
+  s = suite_create("check_arraylist_insert_delete");
   tc_add = tcase_create("add");
   tc_remove = tcase_create("remove");
   tc_boundary = tcase_create("boundary");
 
-  tcase_add_test(tc_add, test_al_init);
-  tcase_add_test(tc_add, test_al_new);
   tcase_add_test(tc_add, test_al_add_at_expand);
   tcase_add_test(tc_add, test_al_add_expand);
   tcase_add_test(tc_add, test_al_add_all_at_expand);

@@ -1,9 +1,6 @@
 #include <check.h>
 #include <stdlib.h>
 
-#include <arraylist.h>
-#include <element.h>
-#include <guid.h>
 #include <sequence.h>
 
 START_TEST(test_seq_insert_value) {

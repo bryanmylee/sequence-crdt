@@ -10,7 +10,7 @@
  *
  * @return A sequence marker.
  */
-Element _seq_marker(bool is_trailer) {
+static Element seq_marker(bool is_trailer) {
   Element new;
   element_init(&new);
   new.id.depth = 1;
@@ -27,8 +27,8 @@ void seq_init(Sequence* s) {
   s->uid = 0;
   s->version = 0;
   al_init(&s->elements, sizeof(Element));
-  Element header = _seq_marker(false);
-  Element trailer = _seq_marker(true);
+  Element header = seq_marker(false);
+  Element trailer = seq_marker(true);
   al_add(&s->elements, &header);
   al_add(&s->elements, &trailer);
 }
@@ -72,7 +72,7 @@ void seq_free_internal(Sequence* s) {
  * @return The boundary strategy. Returns true if the strategy is boundary+.
  *         Otherwise, returns false if the strategy is boundary-.
  */
-bool _is_boundary_plus(int depth) {
+static bool is_boundary_plus(int depth) {
   return depth % 2 == 0;
 }
 
@@ -83,7 +83,7 @@ bool _is_boundary_plus(int depth) {
  *
  * @return The number of potential nodes.
  */
-int _get_base(int depth) {
+static int get_base(int depth) {
   return 1 << depth;
 }
 
@@ -109,13 +109,13 @@ token seq_gen_token_between(token* l, token* r, int depth, char uid) {
   }
   int step = BOUNDARY < interval ? BOUNDARY : interval;
   int rand_step = (rand() % step) + 1;
-  if (_is_boundary_plus(depth)) {
+  if (is_boundary_plus(depth)) {
     return (token) { .key = l->key + rand_step, .uid = uid };
   }
   return (token) { .key = r->key - rand_step, .uid = uid };
 }
 
-void _r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int curr_r_depth, char uid) {
+static void r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int curr_r_depth, char uid) {
   int new_depth = new_guid->depth + 1;
 
   bool l_has_next = curr_l_depth <= l->depth;
@@ -126,7 +126,7 @@ void _r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int
 
   bool r_has_next = r != NULL && curr_r_depth <= r->depth;
   token r_token = {
-    .key = r_has_next ? r->keys & bit_n_ones_i(curr_r_depth) : _get_base(new_depth),
+    .key = r_has_next ? r->keys & bit_n_ones_i(curr_r_depth) : get_base(new_depth),
     .uid = r_has_next ? r->uids & 63 : uid,
   };
 
@@ -139,21 +139,21 @@ void _r_gen_guid_between(Guid* new_guid, Guid* l, int curr_l_depth, Guid* r, int
     guid_add_token(new_guid, l_token);
     l->keys >>= curr_l_depth;
     l->uids >>= 6;
-    return _r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
+    return r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
   }
   if (interval == 0) {
     guid_add_token(new_guid, l_token);
     if (l_token.uid < r_token.uid) {
       l->keys >>= curr_l_depth;
       l->uids >>= 6;
-      return _r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
+      return r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
     }
     if (l_token.uid == r_token.uid) {
       l->keys >>= curr_l_depth;
       l->uids >>= 6;
       r->keys >>= curr_r_depth;
       r->uids >>= 6;
-      return _r_gen_guid_between(new_guid, l, curr_l_depth + 1, r, curr_r_depth + 1, uid);
+      return r_gen_guid_between(new_guid, l, curr_l_depth + 1, r, curr_r_depth + 1, uid);
     }
   }
 }
@@ -164,7 +164,7 @@ void seq_gen_guid_between(Guid* buf, Guid* l, Guid* r, char uid) {
   Guid r_guid;
   guid_copy_into(&l_guid, l);
   guid_copy_into(&r_guid, r);
-  _r_gen_guid_between(buf, &l_guid, 1, &r_guid, 1, uid);
+  r_gen_guid_between(buf, &l_guid, 1, &r_guid, 1, uid);
 }
 
 /**
@@ -181,7 +181,7 @@ void seq_gen_guid_at(Sequence* s, Guid* buf, unsigned int iindex) {
   seq_gen_guid_between(buf, before, after, s->uid);
 }
 
-bool _is_larger_than_max(Sequence* s, Element* target) {
+static bool is_larger_than_max(Sequence* s, Element* target) {
   Element* last = al_get(&s->elements, s->elements.size - 1);
   return guid_compare(&target->id, &last->id) > 0;
 }
@@ -196,7 +196,7 @@ bool _is_larger_than_max(Sequence* s, Element* target) {
  * @return The internal index of an element.
  */
 unsigned int seq_iindex_of_element_or_after(Sequence* s, Element* target) {
-  if (_is_larger_than_max(s, target)) {
+  if (is_larger_than_max(s, target)) {
     return s->elements.size;
   }
   unsigned int max_i = s->elements.size - 1;
@@ -230,7 +230,7 @@ Element* seq_get_element(Sequence* s, unsigned int index) {
   return al_get(&s->elements, index + 1);
 }
 
-bool _seq_insert(Sequence* s, void* insert_ptr, long insert_val, unsigned int index, Element* buf) {
+static bool i_seq_insert(Sequence* s, void* insert_ptr, long insert_val, unsigned int index, Element* buf) {
   if (index < 0 || index > seq_size(s)) {
     return false;
   }
@@ -251,22 +251,22 @@ bool _seq_insert(Sequence* s, void* insert_ptr, long insert_val, unsigned int in
 }
 
 bool seq_insert(Sequence* s, void* to_insert, unsigned int index) {
-  return _seq_insert(s, to_insert, 0, index, NULL);
+  return i_seq_insert(s, to_insert, 0, index, NULL);
 }
 
 bool seq_insert_save(Sequence* s, void* to_insert, unsigned int index, Element* buf) {
-  return _seq_insert(s, to_insert, 0, index, buf);
+  return i_seq_insert(s, to_insert, 0, index, buf);
 }
 
 bool seq_insert_value(Sequence* s, long to_insert, unsigned int index) {
-  return _seq_insert(s, NULL, to_insert, index, NULL);
+  return i_seq_insert(s, NULL, to_insert, index, NULL);
 }
 
 bool seq_insert_value_save(Sequence* s, long to_insert, unsigned int index, Element* buf) {
-  return _seq_insert(s, NULL, to_insert, index, buf);
+  return i_seq_insert(s, NULL, to_insert, index, buf);
 }
 
-bool _seq_delete(Sequence* s, unsigned int index, Element* buf) {
+static bool i_seq_delete(Sequence* s, unsigned int index, Element* buf) {
   if (index < 0 || index > seq_size(s)) {
     return false;
   }
@@ -281,11 +281,11 @@ bool _seq_delete(Sequence* s, unsigned int index, Element* buf) {
 }
 
 bool seq_delete(Sequence* s, unsigned int index) {
-  return _seq_delete(s, index, NULL);
+  return i_seq_delete(s, index, NULL);
 }
 
 bool seq_delete_save(Sequence* s, unsigned int index, Element* buf) {
-  return _seq_delete(s, index, buf);
+  return i_seq_delete(s, index, buf);
 }
 
 bool seq_remote_insert(Sequence* s, Element* to_insert) {

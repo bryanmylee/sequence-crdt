@@ -85,7 +85,7 @@ void al_set(ArrayList* al, unsigned int index, void* new_value) {
  *
  * @param al A pointer to the ArrayList to expand.
  */
-void _al_expand(ArrayList* al) {
+static void al_expand(ArrayList* al) {
   al->cap *= EXPAND_FACTOR;
   al->data = realloc(al->data, al->cap * al->esize);
 }
@@ -97,7 +97,7 @@ void _al_expand(ArrayList* al) {
  * @param al  A pointer to the ArrayList to expand.
  * @param min The minimum capacity to expand to.
  */
-void _al_expand_to_min(ArrayList* al, unsigned int min) {
+static void al_expand_to_min(ArrayList* al, unsigned int min) {
   while (al->cap < min) {
     al->cap *= EXPAND_FACTOR;
   }
@@ -118,7 +118,7 @@ bool al_add_at(ArrayList* al, void* to_add, unsigned int index) {
     return false;
   }
   if (al->size == al->cap) {
-    _al_expand(al);
+    al_expand(al);
   }
   // move right elements to the right.
   char* move_dst = al->data + (index + 1) * al->esize;
@@ -160,7 +160,7 @@ bool al_add_all_at(ArrayList* al, void* to_adds, unsigned int n, unsigned int in
   if (index < 0 || index > al->size) {
     return false;
   }
-  _al_expand_to_min(al, al->size + n);
+  al_expand_to_min(al, al->size + n);
   // move right elements to the right.
   char* move_dst = al->data + (index + n) * al->esize;
   char* move_src = al->data + index * al->esize;
@@ -198,7 +198,7 @@ bool al_add_all(ArrayList* al, void* to_adds, unsigned int n) {
  *
  * @return if the remove was successful, returns true.
  */
-bool _al_remove_at(ArrayList* al, unsigned int index, void* buf) {
+static bool i_al_remove_at(ArrayList* al, unsigned int index, void* buf) {
   if (index < 0 || index >= al->size) {
     return false;
   }
@@ -223,7 +223,7 @@ bool _al_remove_at(ArrayList* al, unsigned int index, void* buf) {
  * @return If the remove was successful, returns true.
  */
 bool al_remove_at(ArrayList* al, unsigned int index) {
-  return _al_remove_at(al, index, NULL);
+  return i_al_remove_at(al, index, NULL);
 }
 
 /**
@@ -237,7 +237,7 @@ bool al_remove_at(ArrayList* al, unsigned int index) {
  * @return If the remove was successful, returns true.
  */
 bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf) {
-  return _al_remove_at(al, index, buf);
+  return i_al_remove_at(al, index, buf);
 }
 
 /**
@@ -254,7 +254,7 @@ bool al_remove_at_save(ArrayList* al, unsigned int index, void* buf) {
  *
  * @return if the remove was successful, returns true.
  */
-bool _al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
+static bool i_al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
   if (from < 0 || from > al->size || to < 0 || to > al->size || from > to) {
     return false;
   }
@@ -283,7 +283,7 @@ bool _al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to, void* 
  * @return If the remove is successful, returns true.
  */
 bool al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to) {
-  return _al_remove_all_at(al, from, to, NULL);
+  return i_al_remove_all_at(al, from, to, NULL);
 }
 
 /**
@@ -299,6 +299,6 @@ bool al_remove_all_at(ArrayList* al, unsigned int from, unsigned int to) {
  * @return If the remove is successful, returns true.
  */
 bool al_remove_all_at_save(ArrayList* al, unsigned int from, unsigned int to, void* buf) {
-  return _al_remove_all_at(al, from, to, buf);
+  return i_al_remove_all_at(al, from, to, buf);
 }
 

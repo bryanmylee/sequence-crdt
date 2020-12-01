@@ -278,7 +278,7 @@ bool seq_insert_value_save(Sequence *s, long to_insert, unsigned int index, Elem
 }
 
 static bool i_seq_delete(Sequence *s, unsigned int index, Element *buf) {
-  if (index < 0 || index > seq_size(s)) {
+  if (index < 0 || index >= seq_size(s)) {
     return false;
   }
   s->version++;

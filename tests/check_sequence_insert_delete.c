@@ -194,6 +194,19 @@ START_TEST(test_seq_insert_out_of_bounds) {
   ck_assert(seq_insert_value(s, 'a', n) == true);
 } END_TEST
 
+START_TEST(test_seq_delete_out_of_bounds) {
+  Sequence *s = seq_new();
+  char *data = "this is a string";
+  int n = strlen(data);
+  for (int i = 0; i < n; i++) {
+    seq_insert(s, data + i, i);
+  }
+
+  // n is out of bounds, but n - 1 is in bounds.
+  ck_assert(seq_delete(s, n) == false);
+  ck_assert(seq_delete(s, n - 1) == true);
+} END_TEST
+
 Suite *sequence_insert_delete_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -212,6 +225,7 @@ Suite *sequence_insert_delete_suite(void) {
   suite_add_tcase(s, tc_core);
 
   tcase_add_test(tc_boundary, test_seq_insert_out_of_bounds);
+  tcase_add_test(tc_boundary, test_seq_delete_out_of_bounds);
   suite_add_tcase(s, tc_boundary);
 
   return s;

@@ -157,7 +157,6 @@ static void r_gen_guid_between(Guid *new_guid, Guid *l, int curr_l_depth, Guid *
     }
   }
   // If this line is reached, there is a serious error with the order of Guids.
-  // TODO Handle error situation.
 }
 
 void seq_gen_guid_between(Guid *buf, Guid *l, Guid *r, char uid) {

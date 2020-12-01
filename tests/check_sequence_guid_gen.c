@@ -161,6 +161,32 @@ START_TEST(test_seq_gen_guid_between_same_key_different_uid) {
   ck_assert_int_lt(guid_compare(&result, &r), 0);
 } END_TEST
 
+START_TEST(test_seq_gen_guid_invalid) {
+  Guid l = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 2, 2),
+    .uids = uids_from_tokens(3, 1, 1, 1),
+  };
+  Guid r = {
+    .depth = 3,
+    .keys = keys_from_tokens(3, 0, 2, 2),
+    .uids = uids_from_tokens(3, 1, 2, 1),
+  };
+  // tokens will be generated until an invalid ordering is found.
+  // depth 2 contains an invalid ordering.
+  Guid expected = {
+    .depth = 2,
+    .keys = keys_from_tokens(2, 0, 2),
+    .uids = uids_from_tokens(2, 1, 2),
+  };
+  Guid result;
+  // flipped left and right.
+  seq_gen_guid_between(&result, &r, &l, 1);
+  ck_assert_int_eq(expected.depth, result.depth);
+  ck_assert_uint_eq(expected.keys, result.keys);
+  ck_assert_uint_eq(expected.uids, result.uids);
+} END_TEST
+
 Suite *sequence_guid_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -177,6 +203,7 @@ Suite *sequence_guid_suite(void) {
   tcase_add_test(tc_core, test_seq_gen_guid_between_uncle_nephew);
   tcase_add_test(tc_core, test_seq_gen_guid_between_nephew_uncle);
   tcase_add_test(tc_core, test_seq_gen_guid_between_same_key_different_uid);
+  tcase_add_test(tc_core, test_seq_gen_guid_invalid);
   suite_add_tcase(s, tc_core);
 
   return s;

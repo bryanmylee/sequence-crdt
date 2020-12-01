@@ -18,6 +18,12 @@ START_TEST(test_al_new) {
   free(al);
 } END_TEST
 
+START_TEST(test_al_free) {
+  ArrayList* al = al_new(sizeof(int));
+  al_free(&al);
+  ck_assert_ptr_null(al);
+} END_TEST
+
 Suite* arraylist_init_suite(void) {
   Suite *s;
   TCase *tc_init;
@@ -26,6 +32,7 @@ Suite* arraylist_init_suite(void) {
   tc_init = tcase_create("init");
   tcase_add_test(tc_init, test_al_init);
   tcase_add_test(tc_init, test_al_new);
+  tcase_add_test(tc_init, test_al_free);
   suite_add_tcase(s, tc_init);
 
   return s;

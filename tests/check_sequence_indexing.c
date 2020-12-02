@@ -6,7 +6,7 @@
 START_TEST(test_seq_iindex_of_even) {
   Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements, sizeof(Element));
+  al_remove_all_at(&s->elements, 0, 2);
   // insert 8 Element pointers.
   for (int i = 0; i < 8; i++) {
     // give all elements a simple incremental guid.
@@ -53,7 +53,7 @@ START_TEST(test_seq_iindex_of_even) {
 START_TEST(test_seq_iindex_of_odd) {
   Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements, sizeof(Element));
+  al_remove_all_at(&s->elements, 0, 2);
   // insert 7 Element pointers.
   for (int i = 0; i < 7; i++) {
     Element e = {
@@ -98,7 +98,7 @@ START_TEST(test_seq_iindex_of_odd) {
 START_TEST(test_seq_iindex_of_even_non_existent) {
   Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements, sizeof(Element));
+  al_remove_all_at(&s->elements, 0, 2);
   // insert 8 Element pointers with even key tokens.
   for (int i = 0; i < 8; i++) {
     // give all elements a simple incremental guid.
@@ -149,7 +149,7 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
 START_TEST(test_seq_iindex_of_odd_non_existent) {
   Sequence *s = seq_new();
   // remove header and trailer elements for the purpose of this test.
-  al_init(&s->elements, sizeof(Element));
+  al_remove_all_at(&s->elements, 0, 2);
   // insert 7 Element pointers with even key tokens.
   for (int i = 0; i < 7; i++) {
     // give all elements a simple incremental guid.

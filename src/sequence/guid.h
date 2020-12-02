@@ -5,12 +5,13 @@
 #include "token.h"
 
 typedef struct {
-  unsigned long keys; // bits of multiple keys, up to 10 tokens (55 bits).
+  char *keys; // an array of bytes representing the key.
   unsigned long uids; // bits of multiple user ids, up to 10 tokens (60 bits).
-  int depth;          // length of the Guid.
+  int depth;  // length of the Guid.
 } Guid;
 
-unsigned long keys_from_tokens(int depth, ...);
+char *keys_from_tokens(int depth, ...);
+unsigned int token_from_keys(char *keys, int depth);
 unsigned long uids_from_tokens(int depth, ...);
 void guid_init(Guid *g);
 Guid *guid_new(void);

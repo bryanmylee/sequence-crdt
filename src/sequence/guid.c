@@ -2,16 +2,39 @@
 #include <stdlib.h>
 #include "guid.h"
 
-static unsigned long vkeys_from_tokens(int depth, va_list valist) {
-  unsigned long key = 0;
-  int base = 0;
-  for (int i = 0; i < depth; i++) {
-    unsigned long token = va_arg(valist, int);
-    key |= token << base;
-    base += i + 1;
+static int n_key_bits(int depth) {
+  return (depth * (depth + 1)) / 2;
+}
+
+/**
+ * @brief Get the number of bytes required to store a given number of bits.
+ *
+ * This is a fast method to compute math.ceil(x / 8).
+ *
+ * @param bits The number of bits to store.
+ *
+ * @return The number of bytes required.
+ */
+static int n_bytes_for_bits(int bits) {
+  return (bits + 7) / 8;
+}
+
+static char *vkeys_from_tokens(int depth, va_list valist) {
+  char *keys = malloc(n_bytes_for_bits(n_key_bits(depth)));
+  for (int i = 1; i <= depth; i++) {
+    unsigned int token = va_arg(valist, int);
+    int offset = n_key_bits(i - 1);
+    void *base = keys + offset;
+    // account for the current size of the token.
+    if (i <= 8) {
+      *(unsigned char *) base = token;
+    } else if (i <= 16) {
+      *(unsigned short *) base = token;
+    } else {
+      *(unsigned int *) base = token;
+    }
   }
-  // 55 bits
-  return key & bit_n_ones_l(55);
+  return keys;
 }
 
 /**
@@ -26,20 +49,28 @@ static unsigned long vkeys_from_tokens(int depth, va_list valist) {
  * The next three bits hold the values of the next token with size 8.
  * ... and so on.
  *
- * With an unsigned long (64 bits), a total of 10 tokens can be fitted:
- * 1 + 2 + 3 + ... + 10 = 55 bits < 64 bits.
- *
  * @param depth The number of tokens in the key.
  * @param ... The integer tokens of the key.
  *
  * @return An unsigned long representation of the keys.
  */
-unsigned long keys_from_tokens(int depth, ...) {
+char *keys_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
-  unsigned long key = vkeys_from_tokens(depth, valist);
+  char *key = vkeys_from_tokens(depth, valist);
   va_end(valist);
   return key;
+}
+
+unsigned int token_from_keys(char *keys, int depth) {
+  int offset = n_key_bits(depth - 1);
+  if (depth <= 8) {
+    return *(unsigned char *) (keys + offset) & bit_n_ones_i(depth);
+  }
+  if (depth <= 16) {
+    return *(unsigned short *) (keys + offset) & bit_n_ones_i(depth);
+  }
+  return *(unsigned int *) (keys + offset) & bit_n_ones_i(depth);
 }
 
 static unsigned long vuids_from_tokens(int depth, va_list valist) {

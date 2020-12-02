@@ -16,7 +16,12 @@ include(CheckTypeSize)
 # Since Check uses Threads to parallelize tests, it's mandatory to add pthread
 # as a dependency, alongside the Check libraries.
 add_executable(main_test main_test.c)
-target_link_libraries(main_test ${CHECK_LIBRARIES} pthread sequence)
+find_library(RT_LIB rt)
+if(NOT RT_LIB)
+  target_link_libraries(main_test sequence ${CHECK_LIBRARIES} m pthread)
+else()
+  target_link_libraries(main_test sequence ${CHECK_LIBRARIES} m rt subunit pthread)
+endif()
 target_include_directories(main_test PUBLIC ${CHECK_INCLUDE_DIR})
 
 # Create testing target and redirect its output to 'Testing' folder.

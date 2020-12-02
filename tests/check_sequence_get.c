@@ -18,6 +18,8 @@ START_TEST(test_seq_get) {
   // last character
   result = seq_get_element(s, n - 1);
   ck_assert_int_eq('g', (char) result->data.value);
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_get_out_of_bounds_positive) {
@@ -31,6 +33,8 @@ START_TEST(test_seq_get_out_of_bounds_positive) {
 
   Element *result = seq_get_element(s, n);
   ck_assert_ptr_null(result);
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_get_out_of_bounds_negative) {
@@ -44,6 +48,8 @@ START_TEST(test_seq_get_out_of_bounds_negative) {
 
   Element *result = seq_get_element(s, -1);
   ck_assert_ptr_null(result);
+
+  seq_free(&s);
 } END_TEST
 
 

@@ -23,35 +23,43 @@ Element *element_new(void) {
 }
 
 /**
- * @brief Free an allocated Element with value-type data.
- *
- * @param e A pointer to a pointer to the allocated Element.
- */
-void element_free(Element **e) {
-  free(*e);
-  *e = NULL;
-}
-
-/**
- * @brief Free an allocated Element with memory-allocated data, while cleaning
- *        up any internal data.
- *
- * @param e A pointer to a pointer to the allocated Element.
- */
-void element_free_ptr(Element **e) {
-  element_free_internal_ptr(*e);
-  free(*e);
-  *e = NULL;
-}
-
-
-/**
  * @brief Free up any internal data of an Element with memory-allocated data.
  *
  * @param e A pointer to the Element.
  */
-void element_free_internal_ptr(Element *e) {
+static void element_free_ptr(Element *e) {
   free(e->data.ptr);
   e->data.ptr = NULL;
+}
+
+/**
+ * @brief Free an allocated Element.
+ *
+ * @param e A pointer to a pointer to the allocated Element.
+ */
+void element_free(Element **e) {
+  if ((**e).type == EREF) {
+    element_free_ptr(*e);
+  }
+  free(*e);
+  *e = NULL;
+}
+
+void *element_get_ptr(Element *e) {
+  return e->data.ptr;
+}
+
+long element_get_value(Element *e) {
+  return e->data.value;
+}
+
+void element_set_ptr(Element *e, void *ptr) {
+  e->type = EREF;
+  e->data.ptr = ptr;
+}
+
+void element_set_value(Element *e, long value) {
+  e->type = EVALUE;
+  e->data.value = value;
 }
 

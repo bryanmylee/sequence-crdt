@@ -24,6 +24,8 @@ START_TEST(test_seq_insert) {
     Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_insert_save) {
@@ -51,6 +53,8 @@ START_TEST(test_seq_insert_save) {
     Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_insert_value) {
@@ -74,6 +78,8 @@ START_TEST(test_seq_insert_value) {
     Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_delete) {
@@ -104,10 +110,14 @@ START_TEST(test_seq_delete) {
     Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_remote_insert) {
   Sequence *s = seq_new();
+  Sequence *s2 = seq_new();
+
   char *data = "this is a string";
   int n = strlen(data);
   Element remote_inserts[n];
@@ -115,7 +125,6 @@ START_TEST(test_seq_remote_insert) {
     seq_insert_value_save(s, data[i], i, &remote_inserts[i]);
   }
 
-  Sequence *s2 = seq_new();
   // insert remote elements twice.
   for (int i = 0; i < n; i++) {
     seq_remote_insert(s2, &remote_inserts[i]);
@@ -139,6 +148,8 @@ START_TEST(test_seq_remote_insert) {
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 
+  seq_free(&s);
+  seq_free(&s2);
 } END_TEST
 
 START_TEST(test_seq_remote_delete) {
@@ -179,6 +190,9 @@ START_TEST(test_seq_remote_delete) {
     Element *curr = al_get(&s->elements, i);
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
+
+  seq_free(&s);
+  seq_free(&s2);
 } END_TEST
 
 START_TEST(test_seq_insert_out_of_bounds) {
@@ -192,6 +206,8 @@ START_TEST(test_seq_insert_out_of_bounds) {
   // n + 1 is out of bounds, but n is in bounds.
   ck_assert(seq_insert_value(s, 'a', n + 1) == false);
   ck_assert(seq_insert_value(s, 'a', n) == true);
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_delete_out_of_bounds) {
@@ -205,6 +221,8 @@ START_TEST(test_seq_delete_out_of_bounds) {
   // n is out of bounds, but n - 1 is in bounds.
   ck_assert(seq_delete(s, n) == false);
   ck_assert(seq_delete(s, n - 1) == true);
+
+  seq_free(&s);
 } END_TEST
 
 START_TEST(test_seq_remote_delete_non_existent) {
@@ -235,6 +253,9 @@ START_TEST(test_seq_remote_delete_non_existent) {
     ck_assert(seq_remote_delete(s, &remote_deletes[i]) == false);
     ck_assert(seq_remote_delete(s2, &remote_deletes[i]) == false);
   }
+
+  seq_free(&s);
+  seq_free(&s2);
 } END_TEST
 
 

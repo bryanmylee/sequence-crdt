@@ -30,7 +30,7 @@ START_TEST(test_element_set_ptr) {
   ck_assert_int_eq(EREF, e->type);
 
   element_free(&e);
-}
+} END_TEST
 
 START_TEST(test_element_get_ptr) {
   Element *e = element_new();
@@ -52,7 +52,7 @@ START_TEST(test_element_set_value) {
   ck_assert_int_eq(EVALUE, e->type);
 
   element_free(&e);
-}
+} END_TEST
 
 START_TEST(test_element_get_value) {
   Element *e = element_new();

@@ -17,6 +17,7 @@ unsigned long uids_from_tokens(int depth, ...);
 void guid_init(Guid *g);
 Guid *guid_new(void);
 void guid_new_copy(Guid *dst, Guid *src);
+void guid_copy(Guid *dst, Guid *src);
 void guid_free(Guid **g);
 void guid_free_internal(Guid *g);
 int guid_compare(Guid *l, Guid *r);

@@ -200,14 +200,32 @@ Guid *guid_new(void) {
 /**
  * @brief Copy the values of one Guid into another.
  *
- * @param g    A pointer to the Guid receiving the copied data.
- * @param from A pointer to the Guid being copied from.
+ * @param dst A pointer to the Guid receiving the copied data.
+ * @param src A pointer to the Guid being copied from.
  */
 void guid_new_copy(Guid *dst, Guid *src) {
   dst->depth = src->depth;
   int n_keys_bytes = n_bytes_for_bits(n_key_bits(dst->depth));
   dst->keys = calloc(n_keys_bytes, 1);
   memcpy(dst->keys, src->keys, n_keys_bytes);
+  dst->uids = src->uids;
+}
+
+/**
+ * @brief A temporary function to copy only value types of Guid.
+ *
+ * In the future, both keys and uids should be dynamically allocated. No copy
+ * is required with the new method since it no longer modifies the original
+ * Guid.
+ *
+ * TODO remove usage of this function.
+ *
+ * @param dst A pointer to the Guid receiving the copied data.
+ * @param src A pointer to the Guid being copied from.
+ */
+void guid_copy(Guid *dst, Guid *src) {
+  dst->depth = src->depth;
+  dst->keys = src->keys;
   dst->uids = src->uids;
 }
 

@@ -17,7 +17,7 @@ START_TEST(test_seq_iindex_of_even) {
         .keys = guid_new_keys_from_tokens(3, 0, 0, i),
       },
     };
-    e.data.value = i;
+    element_set_value(&e, i);
     al_add(&s->elements, &e);
   }
 
@@ -66,7 +66,7 @@ START_TEST(test_seq_iindex_of_odd) {
         .keys = guid_new_keys_from_tokens(3, 0, 0, i),
       },
     };
-    e.data.value = i;
+    element_set_value(&e, i);
     al_add(&s->elements, &e);
   }
 
@@ -117,7 +117,7 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
         .keys = guid_new_keys_from_tokens(4, 0, 0, 0, i * 2),
       },
     };
-    e.data.value = i;
+    element_set_value(&e, i);
     al_add(&s->elements, &e);
   }
 
@@ -170,7 +170,7 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
         .keys = guid_new_keys_from_tokens(4, 0, 0, 0, i * 2),
       },
     };
-    e.data.value = i;
+    element_set_value(&e, i);
     al_add(&s->elements, &e);
   }
 

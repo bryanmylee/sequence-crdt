@@ -23,6 +23,7 @@ bool al_add(ArrayList *al, void *to_add);
 bool al_add_all_at(ArrayList *al, void *to_adds, unsigned int n, unsigned int index);
 bool al_add_all(ArrayList *al, void *to_adds, unsigned int n);
 bool al_remove_at(ArrayList *al, unsigned int index);
+bool al_remove_at_cleanup(ArrayList *al, unsigned int index, void (*efree)(void *e));
 bool al_remove_at_save(ArrayList *al, unsigned int index, void *buf);
 bool al_remove_all_at(ArrayList *al, unsigned int from, unsigned int to);
 bool al_remove_all_at_save(ArrayList *al, unsigned int from, unsigned int to, void *buf);

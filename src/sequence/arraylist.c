@@ -210,15 +210,20 @@ bool al_add_all(ArrayList *al, void *to_adds, unsigned int n) {
  * @param al    A pointer to the ArrayList.
  * @param index The index of the element to remove.
  * @param buf   A pointer to a buffer to store the removed element in.
+ * @param efree A pointer to a freeing function that takes a pointer to an
+ *              element and cleans up any memory allocations.
  *
  * @return if the remove was successful, returns true.
  */
-static bool i_al_remove_at(ArrayList *al, unsigned int index, void *buf) {
+static bool i_al_remove_at(ArrayList *al, unsigned int index, void *buf, void (*efree)(void *e)) {
   if (index < 0 || index >= al->size) {
     return false;
   }
   if (buf != NULL) {
     memcpy(buf, al->data + index * al->esize, al->esize);
+  }
+  if (efree != NULL) {
+    (*efree)(al->data + index * al->esize);
   }
   // move right elements to the left.
   char *dst = al->data + index * al->esize;
@@ -238,7 +243,11 @@ static bool i_al_remove_at(ArrayList *al, unsigned int index, void *buf) {
  * @return If the remove was successful, returns true.
  */
 bool al_remove_at(ArrayList *al, unsigned int index) {
-  return i_al_remove_at(al, index, NULL);
+  return i_al_remove_at(al, index, NULL, NULL);
+}
+
+bool al_remove_at_cleanup(ArrayList *al, unsigned int index, void (*efree)(void *e)) {
+  return i_al_remove_at(al, index, NULL, efree);
 }
 
 /**
@@ -252,7 +261,7 @@ bool al_remove_at(ArrayList *al, unsigned int index) {
  * @return If the remove was successful, returns true.
  */
 bool al_remove_at_save(ArrayList *al, unsigned int index, void *buf) {
-  return i_al_remove_at(al, index, buf);
+  return i_al_remove_at(al, index, buf, NULL);
 }
 
 /**

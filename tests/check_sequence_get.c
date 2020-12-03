@@ -13,11 +13,11 @@ START_TEST(test_seq_get) {
   }
 
   Element *result = seq_get_element(s, 12);
-  ck_assert_int_eq('r', (char) result->data.value);
+  ck_assert_int_eq('r', (char) element_get_value(result));
 
   // last character
   result = seq_get_element(s, n - 1);
-  ck_assert_int_eq('g', (char) result->data.value);
+  ck_assert_int_eq('g', (char) element_get_value(result));
 
   seq_free(&s);
 } END_TEST

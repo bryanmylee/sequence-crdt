@@ -8,7 +8,9 @@ START_TEST(test_seq_insert) {
   char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
-    seq_insert(s, data + i, i);
+    char *to_insert = malloc(sizeof(char));
+    *to_insert = data[i];
+    seq_insert(s, to_insert, sizeof(char), i);
   }
 
   // check that all elements are stored properly.
@@ -34,10 +36,12 @@ START_TEST(test_seq_insert_save) {
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
     Element e;
+    char *to_insert = malloc(sizeof(char));
+    *to_insert = data[i];
     // insert and save the element inserted.
-    seq_insert_save(s, data + i, i, &e);
+    seq_insert_save(s, to_insert, sizeof(char), i, &e);
     // check if the data pointer is the same.
-    ck_assert_ptr_eq(data + i, e.data.ptr);
+    ck_assert_ptr_eq(to_insert, e.data.ptr);
   }
 
   // check that all elements are stored properly.
@@ -68,7 +72,7 @@ START_TEST(test_seq_insert_value) {
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
     Element *e = seq_get_element(s, i);
-    char c = e->data.value;
+    char c = element_get_value(e);
     ck_assert_int_eq(c, data[i]);
   }
 
@@ -100,7 +104,7 @@ START_TEST(test_seq_delete) {
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
     Element *e = seq_get_element(s, i);
-    char c = e->data.value;
+    char c = element_get_value(e);
     ck_assert_int_eq(c, expected[i]);
   }
 
@@ -139,7 +143,7 @@ START_TEST(test_seq_remote_insert) {
   ck_assert_int_eq(n, seq_size(s2));
   for (int i = 0; i < n; i++) {
     Element *e2 = seq_get_element(s2, i);
-    char c2 = e2->data.value;
+    char c2 = element_get_value(e2);
     ck_assert_int_eq(c2, data[i]);
   }
 
@@ -184,7 +188,7 @@ START_TEST(test_seq_remote_delete) {
   // check that all elements are stored properly.
   for (int i = 0; i < n; i++) {
     Element *e = seq_get_element(s2, i);
-    char c = e->data.value;
+    char c = element_get_value(e);
     ck_assert_int_eq(c, expected[i]);
   }
 
@@ -204,7 +208,9 @@ START_TEST(test_seq_insert_out_of_bounds) {
   char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
-    seq_insert(s, data + i, i);
+    char *to_insert = malloc(sizeof(char));
+    *to_insert = data[i];
+    seq_insert(s, to_insert, sizeof(char), i);
   }
 
   // n + 1 is out of bounds, but n is in bounds.
@@ -219,10 +225,12 @@ START_TEST(test_seq_delete_out_of_bounds) {
   char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
-    seq_insert(s, data + i, i);
+    char *to_insert = malloc(sizeof(char));
+    *to_insert = data[i];
+    seq_insert(s, to_insert, sizeof(char), i);
   }
 
-  // n is out of bounds, but n - 1 is in bounds.
+  // // n is out of bounds, but n - 1 is in bounds.
   ck_assert(seq_delete(s, n) == false);
   ck_assert(seq_delete(s, n - 1) == true);
 

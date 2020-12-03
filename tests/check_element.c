@@ -26,6 +26,7 @@ START_TEST(test_element_set_ptr) {
 
   element_set_ptr(e, x, sizeof(int));
 
+  ck_assert_ptr_eq(x, e->data.ptr);
   ck_assert_int_eq(5, *(int *) e->data.ptr);
   ck_assert_int_eq(EREF, e->type);
 

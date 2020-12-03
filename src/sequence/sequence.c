@@ -133,7 +133,8 @@ static void r_gen_guid_between(Guid *new_guid, Guid *l, int curr_l_depth, Guid *
   int interval = r_token.key - l_token.key;
   if (interval > 1) {
     token new_token = seq_gen_token_between(&l_token, &r_token, new_depth, uid);
-    return guid_add_token(new_guid, new_token);
+    guid_add_token(new_guid, new_token);
+    return;
   }
   if (interval == 1) {
     guid_add_token(new_guid, l_token);
@@ -163,8 +164,8 @@ void seq_gen_guid_between(Guid *buf, Guid *l, Guid *r, char uid) {
   buf->keys = calloc(max_depth + 1, 1);
   Guid l_guid;
   Guid r_guid;
-  guid_new_copy(&l_guid, l);
-  guid_new_copy(&r_guid, r);
+  guid_copy(&l_guid, l);
+  guid_copy(&r_guid, r);
   r_gen_guid_between(buf, &l_guid, 1, &r_guid, 1, uid);
 }
 
@@ -242,16 +243,16 @@ Element *seq_get_element(Sequence *s, unsigned int index) {
   return al_get(&s->elements, index + 1);
 }
 
-static bool i_seq_insert(Sequence *s, void *insert_ptr, long insert_val, unsigned int index, Element *buf) {
+static bool i_seq_insert(Sequence *s, void *insert_ptr, size_t esize, long insert_val, unsigned int index, Element *buf) {
   if (index < 0 || index > seq_size(s)) {
     return false;
   }
   s->version++;
   Element new = { .version = s->version };
   if (insert_ptr == NULL) {
-    new.data.value = insert_val;
+    element_set_value(&new, insert_val);
   } else {
-    new.data.ptr = insert_ptr;
+    element_set_ptr(&new, insert_ptr, esize);
   }
   // account for header index.
   seq_gen_guid_at(s, &new.id, index + 1);
@@ -262,20 +263,20 @@ static bool i_seq_insert(Sequence *s, void *insert_ptr, long insert_val, unsigne
   return true;
 }
 
-bool seq_insert(Sequence *s, void *to_insert, unsigned int index) {
-  return i_seq_insert(s, to_insert, 0, index, NULL);
+bool seq_insert(Sequence *s, void *to_insert, size_t esize, unsigned int index) {
+  return i_seq_insert(s, to_insert, esize, 0, index, NULL);
 }
 
-bool seq_insert_save(Sequence *s, void *to_insert, unsigned int index, Element *buf) {
-  return i_seq_insert(s, to_insert, 0, index, buf);
+bool seq_insert_save(Sequence *s, void *to_insert, size_t esize, unsigned int index, Element *buf) {
+  return i_seq_insert(s, to_insert, esize, 0, index, buf);
 }
 
 bool seq_insert_value(Sequence *s, long to_insert, unsigned int index) {
-  return i_seq_insert(s, NULL, to_insert, index, NULL);
+  return i_seq_insert(s, NULL, 0, to_insert, index, NULL);
 }
 
 bool seq_insert_value_save(Sequence *s, long to_insert, unsigned int index, Element *buf) {
-  return i_seq_insert(s, NULL, to_insert, index, buf);
+  return i_seq_insert(s, NULL, 0, to_insert, index, buf);
 }
 
 static bool i_seq_delete(Sequence *s, unsigned int index, Element *buf) {
@@ -287,7 +288,7 @@ static bool i_seq_delete(Sequence *s, unsigned int index, Element *buf) {
   if (buf != NULL) {
     al_remove_at_save(&s->elements, index + 1, buf);
   } else {
-    al_remove_at(&s->elements, index + 1);
+    al_remove_at_cleanup(&s->elements, index + 1, (void (*)(void *e)) element_free_internal);
   }
   return true;
 }

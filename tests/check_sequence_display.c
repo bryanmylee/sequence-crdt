@@ -10,7 +10,9 @@ START_TEST(test_seq_gen_char) {
   Element inserted[40];
   // Stage one arrange
   for (int i = 0; i < n; i++) {
-    seq_insert_value_save(s1, data[i], i, inserted + i);
+    Element saved;
+    seq_insert_value_save(s1, data[i], i, &saved);
+    element_new_deep_copy(&inserted[i], &saved);
   }
   // Act
   char result1[40] = { 0 };

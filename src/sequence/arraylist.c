@@ -45,10 +45,24 @@ void al_free(ArrayList **al) {
  *
  * @param al A pointer to the ArrayList.
  */
-// TODO implement per-element free.
 void al_free_internal(ArrayList *al) {
   free(al->data);
   al->data = NULL;
+}
+
+/**
+ * @brief Free up any internal data of the ArrayList and call a free function
+ *        on all elements of the ArrayList.
+ *
+ * @param al    A pointer to the ArrayList.
+ * @param efree A pointer to a freeing function that takes a pointer to an
+ *              element and cleans up any memory allocations.
+ */
+void al_free_internal_cleanup(ArrayList *al, void (*efree)(void *e)) {
+  for (unsigned int i = 0; i < al->size; i++) {
+    (*efree)(al_get(al, i));
+  }
+  al_free_internal(al);
 }
 
 /**

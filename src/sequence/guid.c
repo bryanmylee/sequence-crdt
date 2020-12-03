@@ -203,10 +203,12 @@ Guid *guid_new(void) {
  * @param g    A pointer to the Guid receiving the copied data.
  * @param from A pointer to the Guid being copied from.
  */
-void guid_copy_into(Guid *g, Guid *from) {
-  g->depth = from->depth;
-  g->keys = from->keys;
-  g->uids = from->uids;
+void guid_new_copy(Guid *dst, Guid *src) {
+  dst->depth = src->depth;
+  int n_keys_bytes = n_bytes_for_bits(n_key_bits(dst->depth));
+  dst->keys = calloc(n_keys_bytes, 1);
+  memcpy(dst->keys, src->keys, n_keys_bytes);
+  dst->uids = src->uids;
 }
 
 /**

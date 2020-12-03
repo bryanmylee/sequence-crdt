@@ -14,7 +14,7 @@ START_TEST(test_element_free) {
   Element *e = element_new();
   int *x = malloc(sizeof(int));
   *x = 5;
-  element_set_ptr(e, x);
+  element_set_ptr(e, x, sizeof(int));
   element_free(&e);
   ck_assert_ptr_null(e);
 } END_TEST
@@ -24,7 +24,7 @@ START_TEST(test_element_set_ptr) {
   int *x = malloc(sizeof(int));
   *x = 5;
 
-  element_set_ptr(e, x);
+  element_set_ptr(e, x, sizeof(int));
 
   ck_assert_int_eq(5, *(int *) e->data.ptr);
   ck_assert_int_eq(EREF, e->type);
@@ -36,7 +36,7 @@ START_TEST(test_element_get_ptr) {
   Element *e = element_new();
   int *x = malloc(sizeof(int));
   *x = 5;
-  element_set_ptr(e, x);
+  element_set_ptr(e, x, sizeof(int));
 
   ck_assert_int_eq(5, *(int *) element_get_ptr(e));
 

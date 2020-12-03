@@ -61,8 +61,7 @@ void seq_free(Sequence **s) {
  * @param s A pointer to the Sequence.
  */
 void seq_free_internal(Sequence *s) {
-  // TODO free each element in the Arraylist.
-  al_free_internal(&s->elements);
+  al_free_internal_cleanup(&s->elements, (void (*)(void *e)) element_free_internal);
 }
 
 /**
@@ -164,8 +163,8 @@ void seq_gen_guid_between(Guid *buf, Guid *l, Guid *r, char uid) {
   buf->keys = calloc(max_depth + 1, 1);
   Guid l_guid;
   Guid r_guid;
-  guid_copy_into(&l_guid, l);
-  guid_copy_into(&r_guid, r);
+  guid_new_copy(&l_guid, l);
+  guid_new_copy(&r_guid, r);
   r_gen_guid_between(buf, &l_guid, 1, &r_guid, 1, uid);
 }
 
@@ -301,6 +300,17 @@ bool seq_delete_save(Sequence *s, unsigned int index, Element *buf) {
   return i_seq_delete(s, index, buf);
 }
 
+/**
+ * @brief Insert a remotely generated Element into the Sequence.
+ *
+ * The Element being inserted must not already belong to another Sequence
+ * structure.
+ *
+ * @param s         The Sequence to insert into.
+ * @param to_insert The remotely generated Element.
+ *
+ * @return True if the element was inserted successfully, otherwise false.
+ */
 bool seq_remote_insert(Sequence *s, Element *to_insert) {
   unsigned int iindex = seq_iindex_of_element_or_after(s, to_insert);
   Element *e = al_get(&s->elements, iindex);

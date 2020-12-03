@@ -15,6 +15,7 @@ void al_init(ArrayList *al, size_t esize);
 ArrayList *al_new(size_t esize);
 void al_free(ArrayList **al);
 void al_free_internal(ArrayList *al);
+void al_free_internal_cleanup(ArrayList *al, void (*efree)(void *e));
 void *al_get(ArrayList *al, unsigned int index);
 void al_set(ArrayList *al, unsigned int index, void *new_value);
 bool al_add_at(ArrayList *al, void *to_add, unsigned int index);

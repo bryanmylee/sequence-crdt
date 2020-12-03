@@ -1,6 +1,7 @@
 #ifndef CRDT_GUID_H
 #define CRDT_GUID_H
 #include <stdbool.h>
+#include <string.h>
 #include "bit.h"
 #include "token.h"
 
@@ -15,7 +16,7 @@ unsigned int keys_get_token(char *keys, int depth);
 unsigned long uids_from_tokens(int depth, ...);
 void guid_init(Guid *g);
 Guid *guid_new(void);
-void guid_copy_into(Guid *g, Guid *from);
+void guid_new_copy(Guid *dst, Guid *src);
 void guid_free(Guid **g);
 void guid_free_internal(Guid *g);
 int guid_compare(Guid *l, Guid *r);

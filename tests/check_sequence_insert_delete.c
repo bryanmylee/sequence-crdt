@@ -122,7 +122,9 @@ START_TEST(test_seq_remote_insert) {
   int n = strlen(data);
   Element remote_inserts[n];
   for (int i = 0; i < n; i++) {
-    seq_insert_value_save(s, data[i], i, &remote_inserts[i]);
+    Element saved;
+    seq_insert_value_save(s, data[i], i, &saved);
+    element_new_deep_copy(&remote_inserts[i], &saved);
   }
 
   // insert remote elements twice.
@@ -159,9 +161,11 @@ START_TEST(test_seq_remote_delete) {
   char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
-    Element buf;
-    seq_insert_value_save(s, data[i], i, &buf);
-    seq_remote_insert(s2, &buf);
+    Element saved;
+    seq_insert_value_save(s, data[i], i, &saved);
+    Element to_insert;
+    element_new_deep_copy(&to_insert, &saved);
+    seq_remote_insert(s2, &to_insert);
   }
 
   Element remote_deletes[3];
@@ -232,9 +236,11 @@ START_TEST(test_seq_remote_delete_non_existent) {
   char *data = "this is a string";
   int n = strlen(data);
   for (int i = 0; i < n; i++) {
-    Element buf;
-    seq_insert_value_save(s, data[i], i, &buf);
-    seq_remote_insert(s2, &buf);
+    Element saved;
+    seq_insert_value_save(s, data[i], i, &saved);
+    Element copy;
+    element_new_deep_copy(&copy, &saved);
+    seq_remote_insert(s2, &copy);
   }
 
   Element remote_deletes[3];

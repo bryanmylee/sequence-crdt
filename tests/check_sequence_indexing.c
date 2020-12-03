@@ -14,7 +14,7 @@ START_TEST(test_seq_iindex_of_even) {
     Element e = {
       .id = (Guid) {
         .depth = 3,
-        .keys = keys_from_tokens(3, 0, 0, i),
+        .keys = guid_new_keys_from_tokens(3, 0, 0, i),
       },
     };
     e.data.value = i;
@@ -22,30 +22,34 @@ START_TEST(test_seq_iindex_of_even) {
   }
 
   // somewhere in the middle.
-  Element to_find;
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  Element *to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 5),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 5),
   };
-  int iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  int iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 5);
+  element_free(&to_find);
 
   // at the start.
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 0),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 0);
+  element_free(&to_find);
 
   // at the end.
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 7),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 7),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 7);
+  element_free(&to_find);
 
   seq_free(&s);
 } END_TEST
@@ -59,7 +63,7 @@ START_TEST(test_seq_iindex_of_odd) {
     Element e = {
       .id = (Guid) {
         .depth = 3,
-        .keys = keys_from_tokens(3, 0, 0, i),
+        .keys = guid_new_keys_from_tokens(3, 0, 0, i),
       },
     };
     e.data.value = i;
@@ -67,30 +71,34 @@ START_TEST(test_seq_iindex_of_odd) {
   }
 
   // somewhere in the middle.
-  Element to_find;
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  Element *to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 4),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 4),
   };
-  int iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  int iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 4);
+  element_free(&to_find);
 
   // at the start.
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 0),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 0);
+  element_free(&to_find);
 
   // at the end.
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 6),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 6),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 6);
+  element_free(&to_find);
 
   seq_free(&s);
 } END_TEST
@@ -106,7 +114,7 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
     Element e = {
       .id = (Guid) {
         .depth = 4,
-        .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
+        .keys = guid_new_keys_from_tokens(4, 0, 0, 0, i * 2),
       },
     };
     e.data.value = i;
@@ -114,34 +122,36 @@ START_TEST(test_seq_iindex_of_even_non_existent) {
   }
 
   // somewhere in the middle.
-  Element to_find;
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  Element* to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 4,
-    .keys = keys_from_tokens(4, 0, 0, 0, 5),
+    .keys = guid_new_keys_from_tokens(4, 0, 0, 0, 5),
   };
-  int iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  int iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   // index of element with token 6 is 3.
   ck_assert_int_eq(iindex_of_to_find, 3);
+  element_free(&to_find);
 
   // at the start, before index 0.
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 0),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 0);
+  element_free(&to_find);
 
   // at the end.
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 1, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 1, 0, 0),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   // element will come after the last element.
   ck_assert_int_eq(iindex_of_to_find, 8);
+  element_free(&to_find);
 
   seq_free(&s);
 } END_TEST
@@ -157,7 +167,7 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
     Element e = {
       .id = (Guid) {
         .depth = 4,
-        .keys = keys_from_tokens(4, 0, 0, 0, i * 2),
+        .keys = guid_new_keys_from_tokens(4, 0, 0, 0, i * 2),
       },
     };
     e.data.value = i;
@@ -165,34 +175,36 @@ START_TEST(test_seq_iindex_of_odd_non_existent) {
   }
 
   // somewhere in the middle.
-  Element to_find;
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  Element* to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 4,
-    .keys = keys_from_tokens(4, 0, 0, 0, 5),
+    .keys = guid_new_keys_from_tokens(4, 0, 0, 0, 5),
   };
-  int iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  int iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   // index of element with token 6 is 3.
   ck_assert_int_eq(iindex_of_to_find, 3);
+  element_free(&to_find);
 
   // at the start, before index 0.
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 0),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   ck_assert_int_eq(iindex_of_to_find, 0);
+  element_free(&to_find);
 
   // at the end.
-  element_init(&to_find);
-  to_find.id = (Guid) {
+  to_find = element_new();
+  to_find->id = (Guid) {
     .depth = 3,
-    .keys = keys_from_tokens(3, 1, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 1, 0, 0),
   };
-  iindex_of_to_find = seq_iindex_of_element_or_after(s, &to_find);
+  iindex_of_to_find = seq_iindex_of_element_or_after(s, to_find);
   // element will come after the last element.
   ck_assert_int_eq(iindex_of_to_find, 7);
+  element_free(&to_find);
 
   seq_free(&s);
 } END_TEST

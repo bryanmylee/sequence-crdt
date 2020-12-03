@@ -6,54 +6,46 @@
 START_TEST(test_guid_init) {
   Guid g;
   guid_init(&g);
-  ck_assert_int_eq(g.keys, 0);
+  ck_assert_ptr_null(g.keys);
   ck_assert_int_eq(g.uids, 0);
   ck_assert_int_eq(g.depth, 0);
 } END_TEST
 
 START_TEST(test_guid_new) {
   Guid *g = guid_new();
-  ck_assert_int_eq(g->keys, 0);
+  ck_assert_ptr_null(g->keys);
   ck_assert_int_eq(g->uids, 0);
   ck_assert_int_eq(g->depth, 0);
-  free(g);
+  guid_free(&g);
 } END_TEST
 
 START_TEST(test_guid_copy_into) {
-  unsigned long orig_keys = keys_from_tokens(3, 0, 1, 3);
-  Guid orig = {
-    .depth = 3,
-    .keys = orig_keys,
-    .uids = uids_from_tokens(3, 1, 2, 1),
-  };
-  Guid copy;
-  guid_copy_into(&copy, &orig);
-  orig.keys = keys_from_tokens(3, 0, 1, 4);
-
-  ck_assert_int_eq(copy.keys, orig_keys);
+  // depreciated function.
 } END_TEST
 
 START_TEST(test_guid_free) {
   Guid *g = guid_new();
-  ck_assert_int_eq(g->depth, 0);
-  ck_assert_uint_eq(g->keys, 0);
-  ck_assert_uint_eq(g->uids, 0);
+  char *keys = g->keys;
   guid_free(&g);
   ck_assert_ptr_null(g);
+  ck_assert_ptr_null(keys);
 } END_TEST
 
 START_TEST(test_keys_from_tokens) {
-  unsigned long result;
-  result = keys_from_tokens(3, 0, 2, 7);
-  ck_assert_uint_eq(result, 60);
-  result = keys_from_tokens(3, 0, 1, 2);
-  ck_assert_uint_eq(result, 18);
+  char *result = guid_new_keys_from_tokens(3, 0, 2, 7);
+  ck_assert_uint_eq(*result, 60);
+  free(result);
+
+  result = guid_new_keys_from_tokens(3, 0, 1, 2);
+  ck_assert_uint_eq(*result, 18);
+  free(result);
 } END_TEST
 
 START_TEST(test_keys_from_tokens_deep) {
-  unsigned long result;
-  result = keys_from_tokens(10, 0, 2, 7, 1, 30, 4, 118, 40, 506, 1018);
-  ck_assert_uint_eq(result & bit_n_ones_l(55), 0b1111111010111111010001010001110110000100111100001111100 & bit_n_ones_l(55));
+  char *result = guid_new_keys_from_tokens(10, 0, 2, 7, 1, 30, 4, 118, 40, 506, 1018);
+  ck_assert_uint_eq(*(unsigned long *) result & bit_n_ones_l(55), 0b1111111010111111010001010001110110000100111100001111100 & bit_n_ones_l(55));
+
+  free(result);
 } END_TEST
 
 
@@ -68,7 +60,7 @@ START_TEST(test_uids_from_tokens) {
 START_TEST(test_guid_add_token) {
   Guid g = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 0),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   token t = { .key = 1, .uid = 1 };
@@ -76,18 +68,21 @@ START_TEST(test_guid_add_token) {
 
   Guid expected = {
     .depth = 4,
-    .keys = keys_from_tokens(4, 0, 0, 0, 1),
+    .keys = guid_new_keys_from_tokens(4, 0, 0, 0, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
   ck_assert_int_eq(g.depth, expected.depth);
-  ck_assert_int_eq(g.keys, expected.keys);
+  ck_assert_int_eq(*g.keys, *expected.keys);
   ck_assert_int_eq(g.uids, expected.uids);
+
+  guid_free_internal(&g);
+  guid_free_internal(&expected);
 } END_TEST
 
 START_TEST(test_guid_add_token_second_uid) {
   Guid g = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 0),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   token t = { .key = 1, .uid = 2 };
@@ -95,12 +90,15 @@ START_TEST(test_guid_add_token_second_uid) {
 
   Guid expected = {
     .depth = 4,
-    .keys = keys_from_tokens(4, 0, 0, 0, 1),
+    .keys = guid_new_keys_from_tokens(4, 0, 0, 0, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 2),
   };
   ck_assert_int_eq(g.depth, expected.depth);
-  ck_assert_int_eq(g.keys, expected.keys);
+  ck_assert_int_eq(*g.keys, *expected.keys);
   ck_assert_int_eq(g.uids, expected.uids);
+
+  guid_free_internal(&g);
+  guid_free_internal(&expected);
 } END_TEST
 
 Suite *guid_gen_suite(void) {

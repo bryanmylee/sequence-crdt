@@ -14,7 +14,7 @@ static Element seq_marker(bool is_trailer) {
   Element new;
   element_init(&new);
   new.id.depth = 1;
-  new.id.keys = keys_from_tokens(1, is_trailer ? 1 : 0);
+  new.id.keys = guid_new_keys_from_tokens(1, is_trailer ? 1 : 0);
   return new;
 }
 
@@ -61,6 +61,7 @@ void seq_free(Sequence **s) {
  * @param s A pointer to the Sequence.
  */
 void seq_free_internal(Sequence *s) {
+  // TODO free each element in the Arraylist.
   al_free_internal(&s->elements);
 }
 
@@ -120,13 +121,13 @@ static void r_gen_guid_between(Guid *new_guid, Guid *l, int curr_l_depth, Guid *
 
   bool l_has_next = curr_l_depth <= l->depth;
   token l_token = {
-    .key = l_has_next ? l->keys & bit_n_ones_i(curr_l_depth) : 0,
+    .key = l_has_next ? keys_get_token(l->keys, curr_l_depth) : 0,
     .uid = l_has_next ? l->uids & 63 : uid,
   };
 
   bool r_has_next = r != NULL && curr_r_depth <= r->depth;
   token r_token = {
-    .key = r_has_next ? r->keys & bit_n_ones_i(curr_r_depth) : get_base(new_depth),
+    .key = r_has_next ? keys_get_token(r->keys, curr_r_depth): get_base(new_depth),
     .uid = r_has_next ? r->uids & 63 : uid,
   };
 
@@ -137,21 +138,17 @@ static void r_gen_guid_between(Guid *new_guid, Guid *l, int curr_l_depth, Guid *
   }
   if (interval == 1) {
     guid_add_token(new_guid, l_token);
-    l->keys >>= curr_l_depth;
     l->uids >>= 6;
     return r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
   }
   if (interval == 0) {
     guid_add_token(new_guid, l_token);
     if (l_token.uid < r_token.uid) {
-      l->keys >>= curr_l_depth;
       l->uids >>= 6;
       return r_gen_guid_between(new_guid, l, curr_l_depth + 1, NULL, 0, uid);
     }
     if (l_token.uid == r_token.uid) {
-      l->keys >>= curr_l_depth;
       l->uids >>= 6;
-      r->keys >>= curr_r_depth;
       r->uids >>= 6;
       return r_gen_guid_between(new_guid, l, curr_l_depth + 1, r, curr_r_depth + 1, uid);
     }
@@ -161,6 +158,10 @@ static void r_gen_guid_between(Guid *new_guid, Guid *l, int curr_l_depth, Guid *
 
 void seq_gen_guid_between(Guid *buf, Guid *l, Guid *r, char uid) {
   guid_init(buf);
+  // TODO reduce size of key if not used.
+  // give the new guid's key an extra depth just in case.
+  int max_depth = l->depth > r->depth ? l->depth : r->depth;
+  buf->keys = calloc(max_depth + 1, 1);
   Guid l_guid;
   Guid r_guid;
   guid_copy_into(&l_guid, l);

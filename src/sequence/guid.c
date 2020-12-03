@@ -2,6 +2,13 @@
 #include <stdlib.h>
 #include "guid.h"
 
+/**
+ * @brief Get the number of bits required to store a key with a certain depth.
+ *
+ * @param depth The depth of the key.
+ *
+ * @return The number of bits required to store the entire key.
+ */
 static int n_key_bits(int depth) {
   return (depth * (depth + 1)) / 2;
 }
@@ -19,20 +26,58 @@ static int n_bytes_for_bits(int bits) {
   return (bits + 7) / 8;
 }
 
+static int min(int a, int b) {
+  return a < b ? a : b;
+}
+
+/**
+ * @brief Given keys, set the value of a token at a specified depth only if the
+ *        token value at that depth has an initial value of zero.
+ *
+ * @param keys  The array of bytes representing the keys.
+ * @param token The value of the key token to set.
+ * @param depth The depth at which to set the token value.
+ */
+static void keys_set_token(char *keys, unsigned int token, int depth) {
+  int base_bit_index = n_key_bits(depth - 1);
+  int base_byte_index = base_bit_index / 8;
+  int byte_bit_index = base_bit_index % 8;
+  int n_bits_in_base_byte = min(8 - byte_bit_index, depth);
+
+  // assuming token 1111111 is placed across two bytes:
+  //    base_bit_index = 21
+  //    byte_bit_index = 5
+  //          |
+  //          111 1111 - n_bits_in_base_byte = 3
+  // ...|00000000|00000000|
+  //     |
+  // base_byte_index = 2
+
+  // set the bits for the base byte.
+  keys[base_byte_index] |= (bit_n_ones_c(n_bits_in_base_byte) & token) << byte_bit_index;
+
+  int last_bit_index = base_bit_index + depth - 1;
+  int last_byte_index = last_bit_index / 8;
+  // token is contained within one byte.
+  if (last_byte_index == base_byte_index) {
+    return;
+  }
+  // set bytes between base and last byte exclusive.
+  token >>= n_bits_in_base_byte;
+  for (int i = base_byte_index + 1; i < last_byte_index; i++) {
+    keys[i] = bit_n_ones_c(8) & token;
+    token >>= 8;
+  }
+  // set the last byte.
+  keys[last_byte_index] = token;
+}
+
 static char *vkeys_from_tokens(int depth, va_list valist) {
-  char *keys = malloc(n_bytes_for_bits(n_key_bits(depth)));
-  for (int i = 1; i <= depth; i++) {
+  // initialize an array of 0s.
+  char *keys = calloc(n_bytes_for_bits(n_key_bits(depth)), 1);
+  for (int curr_depth = 1; curr_depth <= depth; curr_depth++) {
     unsigned int token = va_arg(valist, int);
-    int offset = n_key_bits(i - 1);
-    void *base = keys + offset;
-    // account for the current size of the token.
-    if (i <= 8) {
-      *(unsigned char *) base = token;
-    } else if (i <= 16) {
-      *(unsigned short *) base = token;
-    } else {
-      *(unsigned int *) base = token;
-    }
+    keys_set_token(keys, token, curr_depth);
   }
   return keys;
 }
@@ -54,7 +99,7 @@ static char *vkeys_from_tokens(int depth, va_list valist) {
  *
  * @return An unsigned long representation of the keys.
  */
-char *keys_from_tokens(int depth, ...) {
+char *guid_new_keys_from_tokens(int depth, ...) {
   va_list valist;
   va_start(valist, depth);
   char *key = vkeys_from_tokens(depth, valist);
@@ -62,15 +107,40 @@ char *keys_from_tokens(int depth, ...) {
   return key;
 }
 
-unsigned int token_from_keys(char *keys, int depth) {
-  int offset = n_key_bits(depth - 1);
-  if (depth <= 8) {
-    return *(unsigned char *) (keys + offset) & bit_n_ones_i(depth);
+unsigned int keys_get_token(char *keys, int depth) {
+  int base_bit_index = n_key_bits(depth - 1);
+  int base_byte_index = base_bit_index / 8;
+  int byte_bit_index = base_bit_index % 8;
+  int n_bits_in_base_byte = min(8 - byte_bit_index, depth);
+
+  // assuming token 1111111 is placed across two bytes:
+  //    base_bit_index = 21
+  //    byte_bit_index = 5
+  //          |
+  //          111 1111 - n_bits_in_base_byte = 3
+  // ...|00000000|00000000|
+  //     |
+  // base_byte_index = 2
+
+  // get bits from the base byte.
+  unsigned int token = (keys[base_byte_index] >> byte_bit_index) & bit_n_ones_c(n_bits_in_base_byte);
+
+  int last_bit_index = base_bit_index + depth - 1;
+  int last_byte_index = last_bit_index / 8;
+  // token is contained within one byte.
+  if (last_byte_index == base_byte_index) {
+    return token;
   }
-  if (depth <= 16) {
-    return *(unsigned short *) (keys + offset) & bit_n_ones_i(depth);
+  // get bytes between base and last byte exclusive.
+  int i;
+  int j;
+  for (i = 0, j = base_byte_index + 1; j < last_byte_index; i++, j++) {
+    token |= (keys[j] & bit_n_ones_c(8)) << (n_bits_in_base_byte + i * 8);
   }
-  return *(unsigned int *) (keys + offset) & bit_n_ones_i(depth);
+  // get the last byte.
+  int n_bits_in_last_byte = (depth - n_bits_in_base_byte - 1) % 8 + 1;
+  token |= (keys[j] & bit_n_ones_c(n_bits_in_last_byte)) << (n_bits_in_base_byte + i * 8);
+  return token;
 }
 
 static unsigned long vuids_from_tokens(int depth, va_list valist) {
@@ -111,7 +181,7 @@ unsigned long uids_from_tokens(int depth, ...) {
  * @param g A pointer to the Guid to initialize.
  */
 void guid_init(Guid *g) {
-  g->keys = 0;
+  g->keys = NULL;
   g->uids = 0;
   g->depth = 0;
 }
@@ -145,8 +215,14 @@ void guid_copy_into(Guid *g, Guid *from) {
  * @param g A pointer to a pointer to the allocated Guid.
  */
 void guid_free(Guid **g) {
+  guid_free_internal(*g);
   free(*g);
   *g = NULL;
+}
+
+void guid_free_internal(Guid *g) {
+  free(g->keys);
+  g->keys = NULL;
 }
 
 /**
@@ -168,14 +244,12 @@ void guid_free(Guid **g) {
  */
 int guid_compare(Guid *l, Guid *r) {
   int min_depth = l->depth < r->depth ? l->depth : r->depth;
-  unsigned long l_keys = l->keys;
-  unsigned long r_keys = r->keys;
   unsigned long l_uids = l->uids;
   unsigned long r_uids = r->uids;
   // traverse down the key and uids and compare each token.
   for (int i = 1; i <= min_depth; i++) {
-    int l_token_key = l_keys & bit_n_ones_i(i);
-    int r_token_key = r_keys & bit_n_ones_i(i);
+    int l_token_key = keys_get_token(l->keys, i);
+    int r_token_key = keys_get_token(r->keys, i);
     int kcompare = l_token_key - r_token_key;
     if (kcompare != 0) {
       return kcompare;
@@ -186,13 +260,20 @@ int guid_compare(Guid *l, Guid *r) {
     if (ucompare != 0) {
       return ucompare;
     }
-    l_keys >>= i;
-    r_keys >>= i;
     l_uids >>= 6;
     r_uids >>= 6;
   }
   // the keys and uids match. the deeper key is larger.
   return l->depth - r->depth;
+}
+
+bool keys_equal(char *l, char *r, int depth) {
+  for (int i = 1; i <= depth; i++) {
+    if (keys_get_token(l, i) != keys_get_token(r, i)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -204,7 +285,9 @@ int guid_compare(Guid *l, Guid *r) {
  * @return If both Guids are equal, returns true.
  */
 bool guid_equal(Guid *l, Guid *r) {
-  return l->depth == r->depth && l->keys == r->keys && l->uids == r->uids;
+  return l->depth == r->depth
+    && keys_equal(l->keys, r->keys, l->depth)
+    && l->uids == r->uids;
 }
 
 /**
@@ -214,8 +297,8 @@ bool guid_equal(Guid *l, Guid *r) {
  * @param t The token to add to the Guid.
  */
 void guid_add_token(Guid *g, token t) {
-  int key_base = g->depth * (g->depth + 1) / 2;
-  g->keys += ((unsigned long) t.key) << key_base;
+  keys_set_token(g->keys, t.key, g->depth + 1);
+
   int uids_base = g->depth * 6;
   g->uids += ((unsigned long) t.uid) << uids_base;
   g->depth++;

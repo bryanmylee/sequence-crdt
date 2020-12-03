@@ -38,11 +38,16 @@ static void element_free_ptr(Element *e) {
  * @param e A pointer to a pointer to the allocated Element.
  */
 void element_free(Element **e) {
-  if ((**e).type == EREF) {
-    element_free_ptr(*e);
-  }
+  element_free_internal(*e);
   free(*e);
   *e = NULL;
+}
+
+void element_free_internal(Element *e) {
+  guid_free_internal(&e->id);
+  if (e->type == EREF) {
+    element_free_ptr(e);
+  }
 }
 
 void *element_get_ptr(Element *e) {

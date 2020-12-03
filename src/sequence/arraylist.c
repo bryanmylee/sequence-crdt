@@ -45,6 +45,7 @@ void al_free(ArrayList **al) {
  *
  * @param al A pointer to the ArrayList.
  */
+// TODO implement per-element free.
 void al_free_internal(ArrayList *al) {
   free(al->data);
   al->data = NULL;

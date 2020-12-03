@@ -24,6 +24,7 @@ typedef struct {
 void element_init(Element *e);
 Element *element_new(void);
 void element_free(Element **e);
+void element_free_internal(Element *e);
 void *element_get_ptr(Element *e);
 long element_get_value(Element *e);
 void element_set_ptr(Element *e, void *ptr);

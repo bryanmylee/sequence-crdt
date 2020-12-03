@@ -6,186 +6,219 @@
 START_TEST(test_guid_compare_siblings) {
   Guid l = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 0),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 0),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   Guid r = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 0, 2),
+    .keys = guid_new_keys_from_tokens(3, 0, 0, 2),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_siblings_nested) {
   Guid l = {
     .depth = 5,
-    .keys = keys_from_tokens(5, 0, 1, 2, 4, 6),
+    .keys = guid_new_keys_from_tokens(5, 0, 1, 2, 4, 6),
     .uids = uids_from_tokens(5, 1, 1, 1, 1, 1),
   };
   Guid r = {
     .depth = 5,
-    .keys = keys_from_tokens(5, 0, 1, 2, 4, 10),
+    .keys = guid_new_keys_from_tokens(5, 0, 1, 2, 4, 10),
     .uids = uids_from_tokens(5, 1, 1, 1, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_parent_child) {
   Guid l = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 3),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 3),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   Guid r = {
     .depth = 4,
-    .keys = keys_from_tokens(4, 0, 1, 3, 0),
+    .keys = guid_new_keys_from_tokens(4, 0, 1, 3, 0),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_parent_second_child) {
   Guid l = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 3),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 3),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   Guid r = {
     .depth = 4,
-    .keys = keys_from_tokens(4, 0, 1, 3, 1),
+    .keys = guid_new_keys_from_tokens(4, 0, 1, 3, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_parent_grandchild) {
   Guid l = {
     .depth = 2,
-    .keys = keys_from_tokens(2, 0, 1),
+    .keys = guid_new_keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
   Guid r = {
     .depth = 4,
-    .keys = keys_from_tokens(4, 0, 1, 3, 1),
+    .keys = guid_new_keys_from_tokens(4, 0, 1, 3, 1),
     .uids = uids_from_tokens(4, 1, 1, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_uncle_nephew) {
   Guid l = {
     .depth = 2,
-    .keys = keys_from_tokens(2, 0, 1),
+    .keys = guid_new_keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
   Guid r = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 4),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 4),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_nephew_uncle) {
   Guid l = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 2),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(2, 1, 1, 1),
   };
   Guid r = {
     .depth = 2,
-    .keys = keys_from_tokens(2, 0, 3),
+    .keys = guid_new_keys_from_tokens(2, 0, 3),
     .uids = uids_from_tokens(2, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_different_user_parent) {
   Guid l = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 2),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(2, 1, 1, 1),
   };
   Guid r = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 2),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(2, 1, 2, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_different_user_sibling) {
   Guid l = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 2),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(3, 1, 1, 1),
   };
   Guid r = {
     .depth = 3,
-    .keys = keys_from_tokens(3, 0, 1, 2),
+    .keys = guid_new_keys_from_tokens(3, 0, 1, 2),
     .uids = uids_from_tokens(3, 1, 1, 2),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_lt(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_gt(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_compare_equal) {
   Guid l = {
     .depth = 2,
-    .keys = keys_from_tokens(2, 0, 1),
+    .keys = guid_new_keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
   Guid r = {
     .depth = 2,
-    .keys = keys_from_tokens(2, 0, 1),
+    .keys = guid_new_keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
   int result = guid_compare(&l, &r);
   ck_assert_int_eq(result, 0);
   result = guid_compare(&r, &l);
   ck_assert_int_eq(result, 0);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 START_TEST(test_guid_equal) {
   Guid l = {
     .depth = 2,
-    .keys = keys_from_tokens(2, 0, 1),
+    .keys = guid_new_keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
   Guid r = {
     .depth = 2,
-    .keys = keys_from_tokens(2, 0, 1),
+    .keys = guid_new_keys_from_tokens(2, 0, 1),
     .uids = uids_from_tokens(2, 1, 1),
   };
   int result = guid_equal(&l, &r);
   ck_assert_int_eq(result, true);
+
+  guid_free_internal(&l);
+  guid_free_internal(&r);
 } END_TEST
 
 Suite *guid_compare_suite(void) {

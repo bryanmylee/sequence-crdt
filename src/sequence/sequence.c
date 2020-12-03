@@ -293,10 +293,32 @@ static bool i_seq_delete(Sequence *s, unsigned int index, Element *buf) {
   return true;
 }
 
+/**
+ * @brief Delete an element from the Sequence.
+ *
+ * The deleted element is automatically freed.
+ *
+ * @param s     The Sequence to delete the Element from.
+ * @param index The index of the Element to delete.
+ *
+ * @return True if the Element was successfully deleted, otherwise false.
+ */
 bool seq_delete(Sequence *s, unsigned int index) {
   return i_seq_delete(s, index, NULL);
 }
 
+/**
+ * @brief Delete an element from the Sequence and save it into a buffer.
+ *
+ * Saved elements are not automatically freed when the sequence is freed, and
+ * must be freed by the caller.
+ *
+ * @param s     The Sequence to delete the Element from.
+ * @param index The index of the Element to delete.
+ * @param buf   The buffer to store the Element in after deletion.
+ *
+ * @return True if the Element was successfully deleted, otherwise false.
+ */
 bool seq_delete_save(Sequence *s, unsigned int index, Element *buf) {
   return i_seq_delete(s, index, buf);
 }

@@ -199,6 +199,9 @@ START_TEST(test_seq_remote_delete) {
     ck_assert_int_lt(guid_compare(&prev->id, &curr->id), 0);
   }
 
+  for (int i = 0; i < 3; i++) {
+    element_free_internal(&remote_deletes[i]);
+  }
   seq_free(&s);
   seq_free(&s2);
 } END_TEST
@@ -268,6 +271,9 @@ START_TEST(test_seq_remote_delete_non_existent) {
     ck_assert(seq_remote_delete(s2, &remote_deletes[i]) == false);
   }
 
+  for (int i = 0; i < 3; i++) {
+    element_free_internal(&remote_deletes[i]);
+  }
   seq_free(&s);
   seq_free(&s2);
 } END_TEST
